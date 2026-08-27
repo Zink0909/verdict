@@ -134,7 +134,7 @@ files that produced them, so this site cannot claim something the code does not.
 
 def nav(active: str) -> str:
     items = [("index.html", "registry"), ("agent.html", "the agent"),
-             ("https://github.com/", "source")]
+             ("https://github.com/Zink0909/verdict", "source")]
     out = []
     for href, label in items:
         out.append(f'<a href="{href}">{label}</a>' if label != active else f"<b>{label}</b>")
