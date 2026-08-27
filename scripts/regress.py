@@ -21,6 +21,7 @@ effect that is really there, otherwise a null proves nothing.
                       guardrail-refuses-tuning, number-audit, pipeline-offline,
                       pipeline-catches-planted-number, data-gated-state, eval-scoring
   site                index-covers-registry
+  app (front end)     form-validation, pages-render
 """
 import json
 import os
@@ -807,6 +808,58 @@ def t_site_index_covers_registry():
         assert jargon.lower() not in lede.lower(), f"positioning language uses {jargon!r}"
 
 
+# ------------------------------------------------------------------- app ----
+
+def t_app_form_validation():
+    """The form is held to the same standard as everything else — especially the
+    one field a form is most tempted to make optional."""
+    from verdict.schema_help import CLAIM_FIELDS, PROTOCOL_FIELDS, build_card, normalize
+    claim = {"signal": "a rule", "universe": "u", "frequency": "monthly",
+             "claimed_effect": "an effect", "sample": "1990-2020", "source": "Author (2024)",
+             "data_needs": "prices\nreturns"}
+    proto = {"data_requirements": "point-in-time prices", "splits": "chronological",
+             "benchmarks": "zero\nmomentum", "cost_model": "10bps on turnover",
+             "diagnostics": "mechanism check", "robustness": "seeds",
+             "kill_criteria": "alpha t below 2 on the sealed block", "rationale": "because"}
+    card = build_card(claim, proto, "demo-claim", "A demo", data_available=True)
+    assert card["state"] == "in-progress" and card["verdict"] is None
+    assert card["claim"]["data_needs"] == ["prices", "returns"]        # lines -> list
+    assert normalize(claim, CLAIM_FIELDS)["signal"] == "a rule"
+    assert len(normalize(proto, PROTOCOL_FIELDS)["benchmarks"]) == 2
+
+    gated = build_card(claim, proto, "demo-claim", "A demo", False, "the corpus is not built")
+    assert gated["state"] == "protocol-ready-data-gated"
+    assert gated["why_not_adjudicated"]["blocker"]
+
+    for bad, why in (((claim, {**proto, "kill_criteria": "  "}, "x-y", "T", True, ""),
+                      "no kill criteria"),
+                     ((claim, proto, "Bad_ID", "T", True, ""), "an unusable id"),
+                     ((claim, proto, "x-y", "", True, ""), "no title"),
+                     ((claim, proto, "x-y", "T", False, ""), "data-gated with no blocker"),
+                     (({**claim, "source": ""}, proto, "x-y", "T", True, ""), "no source")):
+        try:
+            build_card(*bad)
+            raise AssertionError(f"the form accepted a card with {why}")
+        except ValueError:
+            pass
+
+
+def t_app_pages_render():
+    """Every screen runs. A front end that raises on a page is not a front end."""
+    from streamlit.testing.v1 import AppTest
+    at = AppTest.from_file(os.path.join(ROOT, "app.py"), default_timeout=120)
+    at.run()
+    assert not at.exception, [e.value for e in at.exception]
+    for page in ("The register", "New claim", "Evaluate a result", "The agent"):
+        at.sidebar.radio[0].set_value(page).run()
+        assert not at.exception, (page, [e.value for e in at.exception])
+    # the evaluate screen must actually compute when given a series
+    at.sidebar.radio[0].set_value("Evaluate a result").run()
+    at.radio[0].set_value("Use a synthetic example").run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert len(at.metric) >= 3, "the evaluation screen reported no figures"
+
+
 GATES = [
     ("compile", t_compile),
     ("ridge-vs-sklearn", t_ridge_vs_sklearn),
@@ -855,6 +908,8 @@ GATES = [
     ("agent-data-gated-state", t_agent_data_gated_state),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("site-index-covers-registry", t_site_index_covers_registry),
+    ("app-form-validation", t_app_form_validation),
+    ("app-pages-render", t_app_pages_render),
 ]
 
 for nm, fn in GATES:

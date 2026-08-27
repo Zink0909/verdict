@@ -21,8 +21,24 @@ present.
 ```bash
 micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
-micromamba run -n verdict python scripts/regress.py     # 47 known-answer gates, seconds
+
+micromamba run -n verdict streamlit run app.py          # the working surface
+micromamba run -n verdict python scripts/regress.py     # 49 known-answer gates, seconds
 ```
+
+## The working surface
+
+`app.py` is the way in — four screens, no code required:
+
+| | |
+|---|---|
+| **The register** | every claim that has been adjudicated, its protocol, its verdict, its limitations |
+| **New claim** | fill in a claim card and pre-register a protocol. The cheapest thing the system does: if you cannot write a result that would falsify the claim, the claim is not testable and you have saved yourself the weeks you were about to spend |
+| **Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, the diagnosis playbooks, the sealed-holdout ledger, and a verdict document that will not render without limitations |
+| **The agent** | watch the loop run end to end |
+
+The interface computes nothing. It collects inputs, calls the library, and shows what came
+back — so there is one source of truth, and it is the part with the tests.
 
 ## The case library
 
@@ -113,7 +129,7 @@ reach.
 
 ## Status
 
-Built: the framework, the agent layer, the claim-registry site, 47 passing gates, and the four cases in the
+Built: the framework, the working surface, the agent layer, the claim-registry site, 49 passing gates, and the four cases in the
 table. Each case ends in a registry card, and each report is generated from its
 results file so the numbers cannot drift away from the code.
 

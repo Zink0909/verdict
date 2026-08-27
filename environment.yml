@@ -15,5 +15,6 @@ dependencies:
   - openpyxl       # reads the Goyal-Welch predictor workbook
   - requests
   - ipykernel
+  - streamlit      # the working surface (app.py)
   - pip
 # Recreate: micromamba env create -f environment.yml
