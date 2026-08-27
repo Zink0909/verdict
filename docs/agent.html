@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verdict — the agent</title>
+<meta name="description" content="A research-audit agent that pre-registers its protocol, calls deterministic code for every number, and has its prose audited against the results.">
+<style>
+:root {
+  --bg: #fbfaf8; --surface: #ffffff; --ink: #1a1a1a; --muted: #5f5f5f;
+  --line: #e2ded8; --accent: #7a2e2e; --accent-soft: #f3ebe9;
+  --ok: #2e6b45; --warn: #8a5a1a;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14140f; --surface: #1c1c18; --ink: #ece9e3; --muted: #9c968c;
+    --line: #33322c; --accent: #d98b7a; --accent-soft: #2a201d;
+    --ok: #7fbf95; --warn: #d8a860;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14140f; --surface: #1c1c18; --ink: #ece9e3; --muted: #9c968c;
+  --line: #33322c; --accent: #d98b7a; --accent-soft: #2a201d;
+  --ok: #7fbf95; --warn: #d8a860;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 17px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.25rem 5rem; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; }
+h1 { font-size: 2.3rem; margin: 0 0 .35rem; letter-spacing: -.01em; }
+h2 { font-size: 1.4rem; margin: 3rem 0 .75rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+h3 { font-size: 1.08rem; margin: 1.8rem 0 .4rem; }
+.lede { font-size: 1.12rem; color: var(--muted); margin: 0 0 2rem; }
+.kicker { font-family: var(--mono); font-size: .72rem; letter-spacing: .14em;
+          text-transform: uppercase; color: var(--muted); margin: 0 0 .6rem; }
+code, .mono { font-family: var(--mono); font-size: .87em; }
+pre { background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+      padding: .9rem 1rem; overflow-x: auto; font-size: .84rem; line-height: 1.5; }
+blockquote { margin: 1.2rem 0; padding: .1rem 0 .1rem 1.1rem;
+             border-left: 3px solid var(--line); color: var(--muted); }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .92rem; }
+th, td { text-align: left; padding: .6rem .5rem; border-bottom: 1px solid var(--line);
+         vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em;
+     text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.scroll { overflow-x: auto; }
+img { max-width: 100%; height: auto; }
+
+.card { display: block; background: var(--surface); border: 1px solid var(--line);
+        border-radius: 8px; padding: 1.1rem 1.2rem; margin: .85rem 0; color: inherit; }
+a.card:hover { border-color: var(--accent); border-bottom-width: 1px; }
+.card h3 { margin: 0 0 .3rem; }
+.card .src { font-size: .82rem; color: var(--muted); margin: 0 0 .55rem; }
+.card p { margin: 0; font-size: .95rem; }
+.verdict { color: var(--accent); font-weight: 600; }
+.tag { display: inline-block; font-family: var(--mono); font-size: .66rem;
+       letter-spacing: .09em; text-transform: uppercase; padding: .18rem .5rem;
+       border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+       border: 1px solid var(--line); margin-left: .4rem; vertical-align: 2px; }
+.flow { font-family: var(--mono); font-size: .8rem; line-height: 1.9; color: var(--muted);
+        background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+        padding: 1rem 1.1rem; overflow-x: auto; }
+.flow b { color: var(--ink); font-weight: 600; }
+.flow .you { color: var(--accent); }
+footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+         font-size: .85rem; color: var(--muted); }
+.nav { font-family: var(--mono); font-size: .78rem; margin-bottom: 2.5rem; }
+.nav a { margin-right: 1.2rem; }
+</style>
+</head>
+<body><div class="wrap">
+<div class="nav"><a href="index.html">registry</a><b>the agent</b><a href="https://github.com/">source</a></div>
+<p class="kicker">layer B</p>
+<h1>The agent</h1>
+<p class="lede">A thin layer over the harness that reads a paper, pre-registers a protocol,
+executes it by calling deterministic code, and writes the verdict — without ever computing
+a number itself.</p>
+
+<h2>What it is allowed to do</h2>
+<p>The agent chooses: what the claim is, how to test it, which analysis to run with which
+arguments, and how to describe the result. The agent does not compute. Every quantity comes
+back from the harness, and the transcript below records each call and each value it
+returned.</p>
+<p>Two properties are structural rather than promised. The protocol is written and approved
+<em>before</em> any analysis runs, and a later request to tune a parameter, re-open a sealed
+block, or drop inconvenient observations is refused with the clause it violates. And the
+finished prose is checked against the computed values, so a figure the model invented is
+caught rather than published.</p>
+
+<h2>A recorded run</h2>
+<p>This is one complete pass over the complexity claim. The model's turns are replayed from
+a recorded transcript; <strong>every number below was computed live by the harness</strong>
+when this page was built. That split is deliberate — it lets the whole loop be demonstrated
+and regression-tested without an API key, and it keeps the figures real.</p>
+
+<h3>Pre-registered, before any data was touched</h3>
+<p><strong>Diagnostics</strong></p><ul><li>reproduce the reported rise in Sharpe as the number of features grows</li><li>run a formal forecast-accuracy test rather than relying on the strategy Sharpe alone</li><li>inject reversal into the returns as a counterfactual and check whether the strategy&#x27;s behaviour changes</li></ul>
+<p><strong>What would kill the claim</strong></p><ul><li>the forecast fails a formal accuracy test against the no-predictability benchmark</li><li>a trivial alternative rule spans the strategy&#x27;s returns</li><li>performance is unchanged on data where the claimed effect could not exist</li></ul>
+
+<h3>Execution</h3>
+<div class="scroll"><pre>  describe_dataset()
+      → {&quot;observations&quot;: 1117, &quot;predictors&quot;: 15}
+  run_complex_model(n_features=60, window=12, shrinkage=0.001, seeds=2)
+      → {&quot;n_features&quot;: 60, &quot;window&quot;: 12, &quot;shrinkage&quot;: 0.001, &quot;seeds&quot;: 2, &quot;sharpe_annualized&quot;: 0.3148, &quot;oos_r2&quot;: -0.1007, &quot;n_out_of_sample&quot;: 1105}
+  run_complex_model(n_features=1200, window=12, shrinkage=0.001, seeds=2)
+      → {&quot;n_features&quot;: 1200, &quot;window&quot;: 12, &quot;shrinkage&quot;: 0.001, &quot;seeds&quot;: 2, &quot;sharpe_annualized&quot;: 0.3361, &quot;oos_r2&quot;: 0.0036, &quot;n_out_of_sample&quot;: 1105}
+  forecast_comparison_test(n_features=1200, window=12, seeds=2)
+      → {&quot;n_features&quot;: 1200, &quot;window&quot;: 12, &quot;clark_west_t&quot;: 3.3908, &quot;rejects_equal_accuracy_5pct&quot;: true}
+  counterfactual_world(kind=&#x27;reversal&#x27;, n_features=1200, window=12, draws=3, seeds=2)
+      → {&quot;n_features&quot;: 1200, &quot;window&quot;: 12, &quot;draws&quot;: 3, &quot;sharpe_real_data&quot;: 0.3361, &quot;sharpe_counterfactual_mean&quot;: -0.0653, &quot;sharpe_counterfactual_draws&quot;: [-0.0759, -0.0776, -0.0425], &quot;share_negative&quot;: 1.0}</pre></div>
+
+<h3>The written verdict, and the audit of it</h3>
+<div class="scroll"><pre>The claim reproduces in direction: on 1117 monthly observations the timing Sharpe rises from 0.3148 at 60 features to 0.3361 at 1200, with an out-of-sample R-squared of 0.0036 (barely positive).
+
+The formal forecast test is the first real check: the Clark-West statistic is 3.3908, which does beat the no-predictability benchmark by a formal test of accuracy, so at this configuration forecast quality is not obviously absent.
+
+The counterfactual is decisive whichever way that went. Injecting reversal into the returns takes the strategy from 0.3361 to -0.0653, negative in 100% of draws. The model does not learn what the data rewards; it builds the same positions regardless.
+
+Honest limitations: this run used 1200 features rather than the paper&#x27;s largest configuration, a small number of seeds, and did not test the implementation conventions the paper&#x27;s own critics raised. It also did not identify what the model is doing instead — only that it is not learning.</pre></div>
+<p><strong>Number audit:</strong> 11 figures written, checked
+against 38 computed or source values —
+<span class="verdict">every figure traces to a computed result</span>.</p>
+<blockquote>What this check cannot catch: a correct number described wrongly. A sentence that
+cites a real figure and mischaracterises it passes, because the figure is real and only the
+claim about it is false. The audit bounds fabrication, not interpretation.</blockquote>
+
+<h2>Evaluating the agent</h2>
+<p>This claim is unusual in having a published ground truth: two independent critiques of the
+same paper name the specific tests that settled it. A protocol drafted from the paper alone
+can therefore be scored against what expert auditors actually did — and the part worth
+reading is what the agent missed.</p>
+<h1
+id="agent-evaluation-protocol-coverage-against-expert-practice">Agent
+evaluation — protocol coverage against expert practice</h1>
+<p>Coverage: <strong>6/10</strong> (60%) of the checks human auditors
+performed.</p>
+<p><strong>This scores a fixture, not the model.</strong> The protocol
+came from a scripted offline run, so the coverage below measures the
+transcript’s author. It exercises the eval machinery end to end; it is
+not a measurement of agent capability. Re-run with a live model and the
+paper itself for that.</p>
+<h2 id="covered">Covered</h2>
+<ul>
+<li><strong>Span the strategy against a mechanical momentum /
+volatility-timing benchmark</strong> (mechanism critique) — matched: “a
+simple momentum rule on past returns, to check the complex model is
+adding something a trivial alternative would not produce”</li>
+<li><strong>Counterfactual: inject reversal into returns and check the
+model changes behaviour</strong> (mechanism critique) — matched: “inject
+reversal into the returns as a counterfactual and check whether the
+strategy’s behaviour changes”</li>
+<li><strong>Formal forecast-accuracy test rather than strategy Sharpe
+alone</strong> (standard practice) — matched: “run a formal
+forecast-accuracy test rather than relying on the strategy Sharpe
+alone”</li>
+<li><strong>Charge realistic trading frictions</strong> (standard
+practice) — matched: “vary the random-feature seed and report the spread
+across draws”</li>
+<li><strong>Check the result holds across subsamples rather than one
+stretch</strong> (standard practice) — matched: “check the result across
+subsamples rather than one continuous stretch”</li>
+<li><strong>Report variation across random-feature draws rather than one
+seed</strong> (standard practice) — matched: “vary the random-feature
+seed and report the spread across draws”</li>
+</ul>
+<h2 id="missed-what-the-agent-did-not-think-of">Missed — what the agent
+did not think of</h2>
+<ul>
+<li><strong>Test whether the over-parameterized model is equivalent to a
+simple kernel smoother</strong> (mechanism critique)</li>
+<li><strong>Counterfactual: destroy the predictors’ information but keep
+their persistence</strong> (mechanism critique)</li>
+<li><strong>Test sensitivity to the zero-intercept constraint</strong>
+(implementation critique)</li>
+<li><strong>Test sensitivity to the performance-aggregation
+convention</strong> (implementation critique)</li>
+</ul>
+<h2 id="proposed-but-not-on-the-checklist">Proposed but not on the
+checklist</h2>
+<ul>
+<li>“a no-predictability benchmark forecast of zero”</li>
+<li>“reproduce the reported rise in Sharpe as the number of features
+grows”</li>
+<li>“the forecast fails a formal accuracy test against the
+no-predictability benchmark”</li>
+<li>“performance is unchanged on data where the claimed effect could not
+exist”</li>
+<li>“strictly chronological; forecasts use only data from before the
+forecast month, with the rolling window never reaching forward”</li>
+</ul>
+<p>These are not automatically credited: a check the experts did not run
+may be a good idea, a restatement of one they did, or padding.</p>
+<h2 id="honest-limitations">Honest limitations</h2>
+<ul>
+<li>Matching is keyword; a correct test described in unanticipated words
+scores as a miss.</li>
+<li>One checklist, one claim, one run: this measures whether the agent
+proposes the right tests on a case whose answer is already known, not
+whether it would on a fresh one.</li>
+<li>The checklist itself is a judgment about what mattered, assembled
+from the published critiques after the fact.</li>
+<li>Coverage is not correctness: proposing a test is not running it, and
+the execution stage is scored separately by whether its numbers survive
+the audit.</li>
+</ul>
+
+
+<h2>Running it yourself</h2>
+<pre>micromamba run -n verdict python scripts/run_agent.py --offline --yes
+micromamba run -n verdict python scripts/run_agent_eval.py</pre>
+<p>No credentials are needed for the offline path: the analysis runs for real, only the
+model's turns are replayed. A live run needs the paper, the SDK, and an API key.</p>
+
+<footer>
+Generated from the repository on 2026-08-27 —
+the registry table, the case pages and the agent transcript are all built from the
+files that produced them, so this site cannot claim something the code does not.
+</footer>
+</div></body>
+</html>

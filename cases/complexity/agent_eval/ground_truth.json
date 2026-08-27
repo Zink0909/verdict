@@ -1,0 +1,67 @@
+{
+  "claim": "complexity-voc",
+  "what_this_is": "The checks that published human auditors actually performed on this claim, plus the checks any competent evaluation protocol should contain. An agent that reads only the original paper is scored against this list.",
+  "provenance": "Assembled from the two published critiques of the claim (a mechanism critique and an implementation critique) and from standard forecast-evaluation practice, as recorded in CASE_COMPLEXITY_PLAN.md section 8. Assembled after the fact, so it reflects a judgment about what mattered.",
+  "items": [
+    {
+      "id": "kernel-equivalence",
+      "label": "Test whether the over-parameterized model is equivalent to a simple kernel smoother",
+      "source": "mechanism critique",
+      "any_of": ["kernel", "gaussian process", "smoother", "equivalen", "ridgeless limit"]
+    },
+    {
+      "id": "mechanical-benchmark",
+      "label": "Span the strategy against a mechanical momentum / volatility-timing benchmark",
+      "source": "mechanism critique",
+      "any_of": ["momentum", "spanning", "span", "mechanical benchmark", "simple alternative", "volatility.timing", "volatility timing"]
+    },
+    {
+      "id": "reversal-world",
+      "label": "Counterfactual: inject reversal into returns and check the model changes behaviour",
+      "source": "mechanism critique",
+      "any_of": ["reversal", "negative autocorrelation", "sign.flip", "counterfactual", "synthetic data where", "artificial data"]
+    },
+    {
+      "id": "destroy-information",
+      "label": "Counterfactual: destroy the predictors' information but keep their persistence",
+      "source": "mechanism critique",
+      "any_of": ["bootstrap", "destroy", "scramble", "shuffle the predictor", "placebo", "randomiz(e|ed|ing) the predictor"]
+    },
+    {
+      "id": "intercept-switch",
+      "label": "Test sensitivity to the zero-intercept constraint",
+      "source": "implementation critique",
+      "any_of": ["intercept", "demean", "constant term"]
+    },
+    {
+      "id": "aggregation-switch",
+      "label": "Test sensitivity to the performance-aggregation convention",
+      "source": "implementation critique",
+      "any_of": ["aggregat", "how performance is (computed|measured)", "pooling", "averaging convention", "weighting scheme"]
+    },
+    {
+      "id": "formal-forecast-test",
+      "label": "Formal forecast-accuracy test rather than strategy Sharpe alone",
+      "source": "standard practice",
+      "any_of": ["clark.?west", "diebold.?mariano", "forecast[ -](accuracy|comparison) test", "encompassing", "out-of-sample r.?squared", "oos r"]
+    },
+    {
+      "id": "transaction-costs",
+      "label": "Charge realistic trading frictions",
+      "source": "standard practice",
+      "any_of": ["cost", "friction", "spread", "turnover", "slippage"]
+    },
+    {
+      "id": "subsample-stability",
+      "label": "Check the result holds across subsamples rather than one stretch",
+      "source": "standard practice",
+      "any_of": ["subsample", "sub-sample", "sub-period", "subperiod", "regime", "split the sample", "stability (over|across) time", "rolling.origin"]
+    },
+    {
+      "id": "seed-variance",
+      "label": "Report variation across random-feature draws rather than one seed",
+      "source": "standard practice",
+      "any_of": ["seed", "random draw", "multiple draws", "across draws", "monte.?carlo replication"]
+    }
+  ]
+}

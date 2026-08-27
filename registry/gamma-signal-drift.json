@@ -1,0 +1,44 @@
+{
+  "id": "gamma-signal-drift",
+  "title": "A live signal that stopped working",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "dealer-gamma sign as a predictor of an intraday rule's daily win/loss",
+    "universe": "two large-cap index ETFs",
+    "frequency": "daily, traded days only",
+    "claimed_effect": "the gamma reading discriminates winning from losing days",
+    "sample": "700 traded days, 2014-01-23 to 2026-06-17",
+    "source": "deployed feature from a separate intraday-momentum study",
+    "data_needs": "daily prediction stream (score, label) + a published adoption series"
+  },
+  "protocol": {
+    "replication_anchor": "re-derive the original study's rolling discrimination series",
+    "kill_criteria_for_the_claim": "discrimination falling to or below chance out of sample, and failing to replicate on a second instrument",
+    "diagnostics": [
+      "rolling AUC + CUSUM change-point",
+      "phase decomposition with bootstrap bands",
+      "second-instrument replication",
+      "attribution split test"
+    ],
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "DECAYED AND PARTLY RECOVERED \u2014 discrimination 0.597 baseline -> 0.442 trough (below chance) -> 0.548; detectable 2.8 years before the trough; the obvious cause is eliminated, the true one remains unknown",
+    "replication": "re-derivation matches the original rolling series on 551/551 windows (corr 1.000000, max abs diff 2e-16)",
+    "diagnostics": {
+      "detection": "CUSUM alarm 2020-07-30 at AUC 0.548 vs baseline 0.597, 1028 days before the trough",
+      "phases": "win-rate gap +12pp -> -15pp -> +11pp (AUC 0.562 / 0.476 / 0.548)",
+      "replication_second_instrument": "same sign pattern: +5pp -> -6pp -> +29pp",
+      "attribution": "full-sample Spearman -0.72 flips to +0.76 after 2022; erosion began at 19% adoption -> coincides, does not explain"
+    },
+    "honest_limitations": [
+      "weak signal throughout; bootstrap bands brush chance ([0.515, 0.603] in the strongest phase)",
+      "phase samples are small (121 and 134 observations)",
+      "the adoption series is annual and interpolated to daily; adequate for an overlay only",
+      "rank correlation between two trending series is inflated by the trend \u2014 the split, not the level, is the test",
+      "eliminating one cause is not identifying the true one; what changed is unknown",
+      "detector parameters come from the original study and were not pre-registered before it saw the data"
+    ]
+  },
+  "date": "2026-08-26"
+}

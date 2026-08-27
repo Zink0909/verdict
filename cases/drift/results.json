@@ -1,0 +1,108 @@
+{
+  "stream": {
+    "n": 700,
+    "start": "2014-01-23",
+    "end": "2026-06-17"
+  },
+  "monitor": {
+    "n_obs": 700,
+    "n_windows": 551,
+    "window": 150,
+    "overall_auc": 0.5491803278688525,
+    "baseline_auc": 0.5965538467299968,
+    "worst_auc": 0.44222222222222224,
+    "worst_auc_date": "2023-05-24 00:00:00",
+    "n_alarms": 1,
+    "first_alarm": "2020-07-30 00:00:00"
+  },
+  "alarms": [
+    {
+      "date": "2020-07-30",
+      "auc": 0.5475382003395586
+    }
+  ],
+  "alarm_lead_days": 1028,
+  "anchor_check": {
+    "reference_windows": 551,
+    "matched_windows": 551,
+    "corr": 1.0,
+    "max_abs_diff": 1.6653345369377348e-16
+  },
+  "phases_spy": [
+    {
+      "phase": "pre-2022 (2014-21)",
+      "n": 445,
+      "win_short_gamma": 0.42543859649122806,
+      "win_long_gamma": 0.3101851851851852,
+      "gap_pp": 11.52534113060429,
+      "auc": 0.5619086884819026,
+      "auc_lo": 0.5152233447907765,
+      "auc_hi": 0.6026820961801815
+    },
+    {
+      "phase": "0DTE surge (2022-23)",
+      "n": 121,
+      "win_short_gamma": 0.3925233644859813,
+      "win_long_gamma": 0.5384615384615384,
+      "gap_pp": -14.593817397555714,
+      "auc": 0.47619047619047616,
+      "auc_lo": 0.4443292068893673,
+      "auc_hi": 0.5387373846252116
+    },
+    {
+      "phase": "recent (2024-26)",
+      "n": 134,
+      "win_short_gamma": 0.48314606741573035,
+      "win_long_gamma": 0.37777777777777777,
+      "gap_pp": 10.536828963795259,
+      "auc": 0.5475225225225225,
+      "auc_lo": 0.49171004847367367,
+      "auc_hi": 0.6047211672264727
+    }
+  ],
+  "phases_qqq": [
+    {
+      "phase": "pre-2022 (2014-21)",
+      "n": 442,
+      "win_short_gamma": 0.40476190476190477,
+      "win_long_gamma": 0.35106382978723405,
+      "gap_pp": 5.369807497467072,
+      "auc": 0.5276567613845721,
+      "auc_lo": 0.48843321635761466,
+      "auc_hi": 0.5587908322591701
+    },
+    {
+      "phase": "0DTE surge (2022-23)",
+      "n": 123,
+      "win_short_gamma": 0.37755102040816324,
+      "win_long_gamma": 0.43478260869565216,
+      "gap_pp": -5.723158828748892,
+      "auc": 0.489501679731243,
+      "auc_lo": 0.4311945461945462,
+      "auc_hi": 0.5397512359644713
+    },
+    {
+      "phase": "recent (2024-26)",
+      "n": 126,
+      "win_short_gamma": 0.5625,
+      "win_long_gamma": 0.27419354838709675,
+      "gap_pp": 28.830645161290324,
+      "auc": 0.6478418195916258,
+      "auc_lo": 0.5644463081963081,
+      "auc_hi": 0.737248011355651
+    }
+  ],
+  "replication_same_shape": true,
+  "attribution": {
+    "method": "spearman",
+    "corr_full": -0.7188135232126808,
+    "corr_before": -0.6305154637298578,
+    "corr_after": 0.7586359764491277,
+    "n_before": 296,
+    "n_after": 255,
+    "sign_flips_after_split": true,
+    "verdict": "coincides but does not explain \u2014 the relationship reverses after the split",
+    "driver_at_alarm_pct": 19.476712328767125,
+    "driver_latest_pct": 54.92328767123288
+  }
+}

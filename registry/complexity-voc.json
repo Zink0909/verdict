@@ -1,0 +1,41 @@
+{
+  "id": "complexity-voc",
+  "title": "Complexity in return prediction",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "RFF ridge(less) return forecast: P=12,000 random Fourier features of 15 Goyal-Welch predictors",
+    "universe": "CRSP value-weighted market index (aggregate market timing)",
+    "frequency": "monthly",
+    "claimed_effect": "out-of-sample market-timing Sharpe rises with model complexity (P), positive even in T=12 rolling windows with ridgeless regression",
+    "sample": "1926-2020 (Welch-Goyal predictors)",
+    "source": "Kelly, Malamud, Zhou (2024), 'The Virtue of Complexity in Return Prediction', Journal of Finance",
+    "data_needs": "Goyal-Welch predictor dataset (public) + CRSP market return (public via GYdata.mat)"
+  },
+  "protocol": {
+    "replication_anchor": "reproduce SR-vs-P curve, direction and magnitude, vs KMZ + two open-source replications (zivmi, nkonts)",
+    "kill_criteria_for_the_claim": "if a simple mechanical alternative (kernel-weighted momentum) spans the strategy AND the strategy fails under counterfactuals (reversal world, content-destroying bootstrap), the complexity benefit is mechanical, not learned",
+    "diagnostics": [
+      "kernel-equivalence direct test",
+      "Nagel reversal world",
+      "Nagel wild bootstrap"
+    ],
+    "seeds": ">=5 RFF seeds; conclusions on the distribution",
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "MECHANICAL ARTIFACT \u2014 Nagel confirmed",
+    "replication": "PASS (Gate 5): SR 0.00->0.36 as P 2->12000; negative OOS R2 with positive timing SR; interpolation singularity at c=P/T=1",
+    "diagnostics": {
+      "kernel_equivalence": "RFF forecast vs Gaussian-kernel ridgeless forecast corr = 0.997; kernel spans strategy R2 = 0.995, residual alpha t = -0.85; weights decline with lag (recency corr +0.83 = momentum) and shrink with predictor vol (-0.41 = vol timing)",
+      "reversal_world": "real SR +0.36 -> reversal SR -0.085, negative in 8/8 draws",
+      "wild_bootstrap": "real SR +0.36 -> +0.378 unchanged after destroying predictive content"
+    },
+    "boundary": "critique holds in the short-window ridgeless regime; phase diagram maps where the mechanism weakens as T grows",
+    "honest_limitations": [
+      "simplified momentum proxy spans only 10% (alpha t=2.45); the rigorous demonstration is the kernel forecast, not the crude proxy",
+      "reversal/bootstrap parameters are pinned defaults, to be reconciled with Nagel's exact appendix",
+      "original construction has minor look-ahead ambiguities (infl contemporaneous; replication scaling window includes current month) worth ~0.02-0.04 SR; phenomenon survives either way"
+    ]
+  },
+  "date": "2026-08-17"
+}

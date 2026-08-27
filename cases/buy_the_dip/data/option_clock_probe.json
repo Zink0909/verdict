@@ -1,0 +1,16 @@
+{
+  "question": "Of the dip events whose underlying never regained its pre-dip high before the position was closed, how many saw the underlying return to the ENTRY price within 365 days after exit?",
+  "why_it_matters": "It separates two failure modes that look identical in the P&L: a dip that genuinely did not come back (the moat cracked), and a dip that did come back after the call had already expired (the clock, not the thesis, was wrong).",
+  "n_events": 282,
+  "n_recovered_after_exit": 247,
+  "share_recovered_after_exit": 0.8759,
+  "horizon_days": 365,
+  "recovery_level": "entry price (S_in)",
+  "recovery_level_caveat": "the entry price is an easier level to reach than the pre-dip trailing high, which was not retained per trade, so the share is an UPPER bound on the fraction of dips rescued by a longer horizon",
+  "inference_caveat": "recovery within a year of exit does not imply a longer-dated call would have profited: a longer hold pays more theta. The probe establishes that the clock missed the recovery, not that removing the clock would have made money.",
+  "produced_by": "qc/option_clock_probe_qc.py in the original study, executed on the data vendor's research platform (daily equity history for 282 names/dates)",
+  "produced_at": "2026-08-12 (local)",
+  "provenance": "The probe printed its result to the platform console and the output was never written to disk. Recovered on 2026-08-26 from the session transcript ~/.claude/projects/-Users-mmmm/a0452c8a-*.jsonl, line 2168 (original session was closed accidentally).",
+  "reproducible_locally": false,
+  "reproduction_note": "Re-running needs daily equity history from the vendor platform. What IS checked locally, by run.py, is the denominator: deduplicating the never-recovered trades in universe_trades.parquet to unique (ticker, entry_date) dip events must yield exactly n_events, which ties this recovered number to this exact trade record."
+}

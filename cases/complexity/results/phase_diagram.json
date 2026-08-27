@@ -1,0 +1,51 @@
+{
+  "T_grid": [
+    12,
+    24,
+    60,
+    120,
+    240
+  ],
+  "by_T": {
+    "12": {
+      "kernel_SR": 0.36646723531293124,
+      "recency_corr": 0.8332614742127304,
+      "scale_vs_predvol": -0.4127376565442071,
+      "reversal_SR": -0.0607572959594726,
+      "reversal_share_neg": 0.8333333333333334,
+      "anchor_kernel_vs_rff_corr": 0.9845716103664748
+    },
+    "24": {
+      "kernel_SR": 0.38290090992735276,
+      "recency_corr": 0.6710705121215859,
+      "scale_vs_predvol": -0.4108144278125774,
+      "reversal_SR": -0.04651445175061331,
+      "reversal_share_neg": 0.8333333333333334,
+      "anchor_kernel_vs_rff_corr": null
+    },
+    "60": {
+      "kernel_SR": 0.384795508954815,
+      "recency_corr": 0.4673487237990011,
+      "scale_vs_predvol": -0.2768586521818864,
+      "reversal_SR": -0.04951879241742163,
+      "reversal_share_neg": 0.8333333333333334,
+      "anchor_kernel_vs_rff_corr": 0.9299461262377734
+    },
+    "120": {
+      "kernel_SR": 0.3910714786290837,
+      "recency_corr": 0.34736336732690154,
+      "scale_vs_predvol": -0.1946183336392807,
+      "reversal_SR": -0.04838108867080995,
+      "reversal_share_neg": 0.8333333333333334,
+      "anchor_kernel_vs_rff_corr": null
+    },
+    "240": {
+      "kernel_SR": 0.41988856693339865,
+      "recency_corr": 0.26308911935369583,
+      "scale_vs_predvol": -0.1659712773510537,
+      "reversal_SR": -0.0314766930929064,
+      "reversal_share_neg": 0.5,
+      "anchor_kernel_vs_rff_corr": null
+    }
+  }
+}

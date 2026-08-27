@@ -1,0 +1,311 @@
+{
+  "headline": {
+    "n": 2392,
+    "names": 38,
+    "mean_pnl": -262.585293821375,
+    "median_pnl": -2427.7779504687496,
+    "win": 0.3612040133779264
+  },
+  "audit_accounting": {
+    "contracts_mismatch": 0,
+    "pnl_max_abs_error": 7.275957614183426e-12,
+    "invested_max": 9999.310829999999
+  },
+  "audit_universe": {
+    "stored_pairs": 216,
+    "rebuilt_pairs": 241,
+    "jaccard_unrestricted": 0.8577235772357723,
+    "added_unrestricted": 30,
+    "added_names": [
+      "ADP",
+      "BIIB",
+      "INTU",
+      "ITW",
+      "SYK"
+    ],
+    "screen_pairs_reproduced": 211,
+    "screen_jaccard": 0.9254385964912281,
+    "screen_extra_pairs": 12,
+    "screen_unconfirmed": [
+      "2014 MA",
+      "2015 MA",
+      "2016 MA",
+      "2016 MON",
+      "2018 MON"
+    ],
+    "lookahead_problems": []
+  },
+  "expression": {
+    "n": 1917,
+    "underlying_mean": 262.87158015061294,
+    "underlying_median": 149.96355052591338,
+    "underlying_win": 0.5466875326030256,
+    "deriv_mean": -385.9683080522843,
+    "deriv_median": -2557.8140598749997,
+    "deriv_win": 0.3615023474178404,
+    "expression_drag": -648.8398882028973,
+    "deriv_win_when_underlying_wins": 0.6507633587786259,
+    "coverage": {
+      "covered": 1917,
+      "total": 2392,
+      "excluded_no_exit_price": 475,
+      "excluded_mean_option_pnl": 235.36257624315803,
+      "covered_mean_option_pnl": -385.9683080522843
+    }
+  },
+  "recovery": {
+    "never": 1785,
+    "missed": 228,
+    "recovered": 379
+  },
+  "option_clock": {
+    "n_events_probe": 282,
+    "n_events_rederived": 282,
+    "denominator_verified": true,
+    "n_recovered_after_exit": 247,
+    "share": 0.8759,
+    "horizon_days": 365,
+    "recovery_level": "entry price (S_in)",
+    "reproducible_locally": false,
+    "provenance": "The probe printed its result to the platform console and the output was never written to disk. Recovered on 2026-08-26 from the session transcript ~/.claude/projects/-Users-mmmm/a0452c8a-*.jsonl, line 2168 (original session was closed accidentally)."
+  },
+  "observed_mechanism": {
+    "iv_all": {
+      "n": 2392,
+      "mean": 0.057272551630434786,
+      "median": 0.013791800000000007,
+      "share_falling": 0.3795986622073579,
+      "by_status": {
+        "missed": {
+          "mean": 0.13048935789473684,
+          "median": 0.07702250000000002,
+          "n": 228,
+          "share_falling": 0.15789473684210525
+        },
+        "never": {
+          "mean": 0.03654972705882353,
+          "median": 0.004567099999999991,
+          "n": 1785,
+          "share_falling": 0.4492997198879552
+        },
+        "recovered": {
+          "mean": 0.1108261401055409,
+          "median": 0.046189600000000025,
+          "n": 379,
+          "share_falling": 0.18469656992084432
+        }
+      }
+    },
+    "iv_far_from_expiry": {
+      "n": 1683,
+      "mean": 0.016905443969102794,
+      "median": 0.004642499999999994,
+      "share_falling": 0.44325609031491386,
+      "by_status": {
+        "missed": {
+          "mean": 0.07048539918032787,
+          "median": 0.040662000000000004,
+          "n": 122,
+          "share_falling": 0.20491803278688525
+        },
+        "never": {
+          "mean": 0.006793982666666666,
+          "median": -0.0008398000000000017,
+          "n": 1275,
+          "share_falling": 0.5137254901960784
+        },
+        "recovered": {
+          "mean": 0.03912697762237762,
+          "median": 0.03377264999999999,
+          "n": 286,
+          "share_falling": 0.23076923076923078
+        }
+      }
+    },
+    "underlying_move": {
+      "deep|never": {
+        "mean": -0.07292286494048116,
+        "n": 31
+      },
+      "moderate|missed": {
+        "mean": 0.052326705707940076,
+        "n": 128
+      },
+      "moderate|never": {
+        "mean": -0.017427252214992795,
+        "n": 1379
+      },
+      "moderate|recovered": {
+        "mean": 0.1846634649126284,
+        "n": 379
+      }
+    }
+  },
+  "depth_strike": {
+    "deep|ITM": -2663.7951332057287,
+    "deep|OTM": -4596.209981558333,
+    "moderate|ITM": -169.65909083761377,
+    "moderate|OTM": -217.59679659104805
+  },
+  "attribution": {
+    "validity": {
+      "n": 1917,
+      "entry_price_corr": 0.9175981393746088,
+      "entry_price_median_ratio": 0.9646763434272062,
+      "pnl_corr": 0.8097860681400498,
+      "model_minus_actual_mean": 1815.6624353999287
+    },
+    "by_depth": {
+      "deep": {
+        "actual_pnl": -5728.4,
+        "model_pnl": -5642.7,
+        "delta_$": -4536.5,
+        "vega_$": 1448.9,
+        "theta_$": -2624.8,
+        "residual_$": 69.7,
+        "d_iv": 0.0
+      },
+      "moderate": {
+        "actual_pnl": -298.2,
+        "model_pnl": 1545.9,
+        "delta_$": 1758.0,
+        "vega_$": 1831.6,
+        "theta_$": -2615.3,
+        "residual_$": 571.7,
+        "d_iv": 0.1
+      }
+    },
+    "overall": {
+      "delta_$": 1656.165466875328,
+      "vega_$": 1825.3774015438999,
+      "theta_$": -2615.407447183896
+    }
+  },
+  "robustness": {
+    "cells": 9,
+    "all_agree": 8,
+    "untested_names": [
+      "AMGN",
+      "EMR",
+      "GD",
+      "INTC",
+      "ITW",
+      "MDT",
+      "META",
+      "NOC",
+      "PG",
+      "SYK",
+      "UNH"
+    ],
+    "table": [
+      {
+        "label": "roic>=0.13/consist>=0.60",
+        "members": 394,
+        "n_trades": 2368,
+        "mean_pnl": -239.98226110419301,
+        "median_pnl": -2427.0136731979164,
+        "win": 0.3614864864864865,
+        "never_share": 0.7453547297297297,
+        "deep_itm_minus_otm": 1373.2076856447916,
+        "untested_added": 11,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.13/consist>=0.70",
+        "members": 357,
+        "n_trades": 2368,
+        "mean_pnl": -239.98226110419301,
+        "median_pnl": -2427.0136731979164,
+        "win": 0.3614864864864865,
+        "never_share": 0.7453547297297297,
+        "deep_itm_minus_otm": 1373.2076856447916,
+        "untested_added": 7,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.13/consist>=0.80",
+        "members": 294,
+        "n_trades": 2304,
+        "mean_pnl": -186.44904891994543,
+        "median_pnl": -2402.3631404791663,
+        "win": 0.3628472222222222,
+        "never_share": 0.73828125,
+        "deep_itm_minus_otm": 2706.0891150872394,
+        "untested_added": 4,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.15/consist>=0.60",
+        "members": 323,
+        "n_trades": 2368,
+        "mean_pnl": -239.98226110419301,
+        "median_pnl": -2427.0136731979164,
+        "win": 0.3614864864864865,
+        "never_share": 0.7453547297297297,
+        "deep_itm_minus_otm": 1373.2076856447916,
+        "untested_added": 10,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.15/consist>=0.70",
+        "members": 241,
+        "n_trades": 2368,
+        "mean_pnl": -239.98226110419301,
+        "median_pnl": -2427.0136731979164,
+        "win": 0.3614864864864865,
+        "never_share": 0.7453547297297297,
+        "deep_itm_minus_otm": 1373.2076856447916,
+        "untested_added": 0,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.15/consist>=0.80",
+        "members": 174,
+        "n_trades": 1824,
+        "mean_pnl": -389.63425252044266,
+        "median_pnl": -2505.9976507958318,
+        "win": 0.3607456140350877,
+        "never_share": 0.7395833333333334,
+        "deep_itm_minus_otm": 2706.0891150872394,
+        "untested_added": 0,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.18/consist>=0.60",
+        "members": 208,
+        "n_trades": 2016,
+        "mean_pnl": -190.44102120110773,
+        "median_pnl": -2255.459172875,
+        "win": 0.36706349206349204,
+        "never_share": 0.7385912698412699,
+        "deep_itm_minus_otm": 1373.2076856447916,
+        "untested_added": 0,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.18/consist>=0.70",
+        "members": 169,
+        "n_trades": 1808,
+        "mean_pnl": -167.95253900945562,
+        "median_pnl": -2197.635044624999,
+        "win": 0.3711283185840708,
+        "never_share": 0.7372787610619469,
+        "deep_itm_minus_otm": 1151.962379222657,
+        "untested_added": 0,
+        "all_agree": true
+      },
+      {
+        "label": "roic>=0.18/consist>=0.80",
+        "members": 123,
+        "n_trades": 1376,
+        "mean_pnl": 131.809710393126,
+        "median_pnl": -2177.446529916667,
+        "win": 0.39244186046511625,
+        "never_share": 0.7303779069767442,
+        "deep_itm_minus_otm": 2666.1969497838572,
+        "untested_added": 0,
+        "all_agree": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "what_this_is": "Results of running the candidate configurations against REAL option chains on the data vendor's backtesting platform, with conservative fills (sell at the bid, buy at the ask). These are the adjudicating runs: everything else in this case is priced by a model.",
+  "provenance": "Executed on the vendor platform; the console output was pasted back and recorded in the source project's README.md and CLAUDE.md, which are the project's stated authorities. The raw platform logs were not saved to the repository. These figures are therefore RECORDED, not recomputed here.",
+  "fills": "conservative (sell at bid, buy at ask)",
+  "runs": [
+    {
+      "config": "45-delta short leg / 1.5% wide / no stop / 35 DTE",
+      "role": "the configuration the modelled grid ranked as the only feasible positive one",
+      "date": "2026-07-05",
+      "net_return_pct": -43.9,
+      "cagr_pct": -6.75,
+      "sharpe": -3.2
+    },
+    {
+      "config": "25-delta short leg / 2.0% wide",
+      "role": "the earlier candidate, tested first",
+      "date": "2026-06 (late)",
+      "net_return_pct": -14.5,
+      "cagr_pct": -1.94,
+      "expectancy_usd_per_trade": -14.0,
+      "expectancy_usd_per_trade_with_gamma_gate": -4.3,
+      "note": "a dealer-gamma entry gate improved expectancy but never lifted it above zero"
+    },
+    {
+      "config": "45-delta put-write (single leg, minimum friction), gated",
+      "role": "the friction-minimal upper bound on the whole family",
+      "date": "2026-06 (late)",
+      "cagr_pct": 3.0,
+      "note": "underperformed cash over the same period; recorded as an upper bound rather than a candidate"
+    }
+  ],
+  "friction_sensitivity": {
+    "what_this_is": "Expectancy per trade of the modelled winner (45-delta / 1.5%) as the assumed per-leg friction is swept, from the source project's authoritative stage-1b report. Friction is in index points per leg.",
+    "units": "USD expectancy per trade vs index points of friction per leg",
+    "levels_points_per_leg": [0.0, 0.05, 0.1, 0.2, 0.4],
+    "expectancy_usd": [59.0, 17.1, -9.4, -56.2, -136.2]
+  },
+  "premise_check": {
+    "what_this_is": "The premise the whole strategy rests on, measured in the source project's stage-0 scan on 2006-2026 data.",
+    "vrp_mean_vol_points": 3.4,
+    "vrp_share_positive": 0.825,
+    "note": "The volatility risk premium is real. That is exactly why the case is worth adjudicating: a true premise does not guarantee a harvestable edge."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "buy-the-dip-long-calls",
+  "title": "Buying dips with call options",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "buy volatility-normalized dips (>=2 sigma below the trailing high) in a point-in-time wide-moat universe, expressed as long calls",
+    "universe": "point-in-time wide-moat screen on large-cap US equities, 38 names",
+    "frequency": "event-driven, 2014-2024",
+    "claimed_effect": "dips in high-quality names can be bought profitably, with a long call as the defined-risk expression",
+    "sample": "2,392 trades, real daily option chains",
+    "source": "practitioner thesis (no published paper)",
+    "data_needs": "daily option chains with IV and Greeks; point-in-time fundamentals"
+  },
+  "protocol": {
+    "replication_anchor": "re-derive contract counts and dollar P&L from primitives; rebuild the point-in-time universe from raw fundamentals",
+    "kill_criteria_for_the_claim": "net-negative median trade after realistic option costs on the point-in-time universe, with non-recovering dips counted as prominently as recovering ones",
+    "diagnostics": [
+      "expression vs underlying",
+      "observed IV change on recovery",
+      "delta/vega/theta attribution",
+      "moat-definition sweep"
+    ],
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "NEGATIVE on the expression, not on the thesis \u2014 the long call loses $263 mean / $2,428 median per trade (win 0.36) while the same dips in the underlying are roughly flat to positive ($263 mean)",
+    "replication": "accounting re-derived exactly (0 mismatches); universe screen reproduces 211/216 stored pairs",
+    "diagnostics": {
+      "expression": "option expression gives up $649 per trade vs the same entries in the stock; the call wins only 65% of the trades where the stock wins",
+      "volatility_prior_refuted": "implied volatility rose rather than fell on recovering trades (mean +0.039 on trades exited >=30d from expiry; fell in only 23%)",
+      "option_clock": "247/282 (87.6%) of never-recovered dips returned to the entry price within 365d AFTER exit \u2014 the expiry clock, not the dip thesis (RECOVERED from the original session transcript, not locally reproducible; denominator verified against the trade record)",
+      "attribution": "per trade, theta -$2,615 vs vega $1,825; in deep panics delta -$4,536 dominates (modelled levels, observed signs)",
+      "robustness": "median negative in all 9 moat definitions; the mean turns positive only under the tightest screen (ROIC at least 18% in at least 80% of years, 1376 trades)"
+    },
+    "honest_limitations": [
+      "the option-clock figure (87.6%) is recovered from the original session transcript, not recomputed here (needs the vendor platform); pinned in data/option_clock_probe.json, denominator verified locally; it measures recovery to the entry price so it is an upper bound, and it does not imply a longer-dated call would have profited",
+      "the delta/vega/theta decomposition is modelled and overstates P&L levels by $1,816 per trade; only its composition and its observed signs are relied on",
+      "the stock-vs-call comparison covers 1917/2392 trades (no exit price for positions closed at expiry)",
+      "deep-panic subsample is 48 trades; strike ordering is directional",
+      "moat screen uses restated fundamentals; costs use a modelled IV-scaled spread"
+    ]
+  },
+  "date": "2026-08-20"
+}

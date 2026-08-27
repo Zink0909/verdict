@@ -1,0 +1,43 @@
+{
+  "id": "retail-short-volatility",
+  "title": "Harvesting the volatility premium at retail scale",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "systematic short defined-risk index option spreads (put credit spreads) to harvest the volatility risk premium",
+    "universe": "index options, one small account with a fixed per-trade risk budget",
+    "frequency": "35-day holding period, rolling entries",
+    "claimed_effect": "a real and persistent volatility risk premium can be harvested at retail scale with capped-loss structures",
+    "sample": "2007-2026 modelled grid of 108 configurations; 3 configurations run against real option chains",
+    "source": "practitioner thesis (no published paper)",
+    "data_needs": "index and volatility history; real option chains for adjudication"
+  },
+  "protocol": {
+    "replication_anchor": "re-execute the pre-registered selection rule on the modelled grid; recompute the friction breakeven",
+    "kill_criteria_for_the_claim": "net edge at or below zero on real chains with conservative fills",
+    "diagnostics": [
+      "friction sensitivity and breakeven",
+      "granularity feasibility",
+      "win-rate vs expectancy across configurations",
+      "modelled ranking vs real-chain ranking"
+    ],
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "FALSIFIED \u2014 true premise, unreachable conclusion. Real chains with conservative fills: -43.9% net (-6.75% CAGR) on the model's own pick, -14.5% on the earlier candidate; every tested configuration negative",
+    "replication": "selection rule re-executed on the 36-config grid: 3 eligible, top by Sharpe is 0.45-delta/2.0% \u2014 the runner-up was carried forward instead, a documented discretionary override",
+    "diagnostics": {
+      "friction_cliff": "modelled expectancy crosses zero at 0.082 index points per leg vs 0.05 assumed \u2014 the entire edge lives inside the first nickel",
+      "granularity": "mean expectancy rises with width while tradability collapses: 1.0% -> 80 trades after 2021, 3.0% -> 0",
+      "win_rate_vs_profit": "corr(win rate, expectancy) = +0.48; 57% of the 30 configurations winning >=85% of trades lose money; the best win rate (92.9%) earns $-1.7/trade",
+      "model_vs_reality": "ranking inverted \u2014 the only configuration the modelled grid rated feasible-and-positive was the worst of those traded"
+    },
+    "honest_limitations": [
+      "real-chain results and the friction sensitivity table are recorded from the source study, not recomputed here (raw platform logs were not saved)",
+      "modelled prices use Black-Scholes with a fixed skew multiplier \u2014 adequate for magnitudes, not for a verdict",
+      "the pre-registered selection rule was overridden by a documented judgment call",
+      "only 3 of 108 configurations were tested against real chains",
+      "findings are specific to one small account's risk budget and the index level over the sample"
+    ]
+  },
+  "date": "2026-08-26"
+}

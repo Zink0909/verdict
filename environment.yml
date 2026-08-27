@@ -1,0 +1,19 @@
+name: verdict
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scipy
+  - statsmodels
+  - scikit-learn
+  - matplotlib
+  - pyarrow
+  - pyyaml
+  - pytest
+  - openpyxl       # reads the Goyal-Welch predictor workbook
+  - requests
+  - ipykernel
+  - pip
+# Recreate: micromamba env create -f environment.yml

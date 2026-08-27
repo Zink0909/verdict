@@ -1,0 +1,156 @@
+{
+  "premise": {
+    "what_this_is": "The premise the whole strategy rests on, measured in the source project's stage-0 scan on 2006-2026 data.",
+    "vrp_mean_vol_points": 3.4,
+    "vrp_share_positive": 0.825,
+    "note": "The volatility risk premium is real. That is exactly why the case is worth adjudicating: a true premise does not guarantee a harvestable edge."
+  },
+  "selection": {
+    "n_configs_ungated": 12,
+    "n_eligible": 3,
+    "selected": {
+      "delta": 0.45,
+      "width_pct": 2.0,
+      "sharpe": 0.33,
+      "expectancy_usd": 22.6,
+      "cagr_pct": 0.9,
+      "n_trades_post2021": 56
+    },
+    "ranking": [
+      {
+        "delta": 0.45,
+        "width_pct": 2.0,
+        "sharpe": 0.33,
+        "expectancy_usd": 22.6,
+        "n_trades_post2021": 56
+      },
+      {
+        "delta": 0.45,
+        "width_pct": 1.5,
+        "sharpe": 0.25,
+        "expectancy_usd": 17.1,
+        "n_trades_post2021": 81
+      },
+      {
+        "delta": 0.35,
+        "width_pct": 2.0,
+        "sharpe": 0.17,
+        "expectancy_usd": 7.9,
+        "n_trades_post2021": 36
+      }
+    ]
+  },
+  "win_rate_vs_profit": {
+    "n_configs": 108,
+    "corr_pearson": 0.4800378350093634,
+    "corr_spearman": 0.537665066178932,
+    "n_win_rate_over_85": 30,
+    "share_of_those_losing": 0.5666666666666667,
+    "best_win_rate": 92.9,
+    "expectancy_at_best_win_rate": -1.7
+  },
+  "feasibility": {
+    "by_width": [
+      {
+        "width_pct": 1.0,
+        "mean_post2021_trades": 79.55555555555556,
+        "mean_expectancy": -12.833333333333334,
+        "n_configs": 9
+      },
+      {
+        "width_pct": 1.5,
+        "mean_post2021_trades": 61.111111111111114,
+        "mean_expectancy": 0.966666666666667,
+        "n_configs": 9
+      },
+      {
+        "width_pct": 2.0,
+        "mean_post2021_trades": 28.555555555555557,
+        "mean_expectancy": 8.733333333333333,
+        "n_configs": 9
+      },
+      {
+        "width_pct": 3.0,
+        "mean_post2021_trades": 0.2222222222222222,
+        "mean_expectancy": 14.91111111111111,
+        "n_configs": 9
+      }
+    ],
+    "widths_dead_after_2021": [
+      3.0
+    ]
+  },
+  "delta_gradient": {
+    "by_delta": [
+      {
+        "delta": 0.25,
+        "mean_expectancy": -4.625,
+        "mean_sharpe": -0.10833333333333334,
+        "n_configs": 12
+      },
+      {
+        "delta": 0.35,
+        "mean_expectancy": 1.4916666666666665,
+        "mean_sharpe": 0.045833333333333344,
+        "n_configs": 12
+      },
+      {
+        "delta": 0.45,
+        "mean_expectancy": 11.966666666666667,
+        "mean_sharpe": 0.18083333333333332,
+        "n_configs": 12
+      }
+    ]
+  },
+  "friction_cliff": {
+    "levels": [
+      0.0,
+      0.05,
+      0.1,
+      0.2,
+      0.4
+    ],
+    "expectancy": [
+      59.0,
+      17.1,
+      -9.4,
+      -56.2,
+      -136.2
+    ],
+    "breakeven_points_per_leg": 0.08226415094339623,
+    "assumed_in_the_grid": 0.05,
+    "headroom_points": 0.03226415094339623
+  },
+  "model_vs_reality": {
+    "rows": [
+      {
+        "config": "45-delta short leg / 1.5% wide / no stop / 35 DTE",
+        "modelled": {
+          "expectancy_usd": 17.1,
+          "cagr_pct": 0.7,
+          "sharpe": 0.25
+        },
+        "real_chain_cagr_pct": -6.75,
+        "real_chain_net_pct": -43.9
+      },
+      {
+        "config": "25-delta short leg / 2.0% wide",
+        "modelled": {
+          "expectancy_usd": 5.2,
+          "cagr_pct": 0.2,
+          "sharpe": 0.16
+        },
+        "real_chain_cagr_pct": -1.94,
+        "real_chain_net_pct": -14.5
+      }
+    ],
+    "rank_inverted": true,
+    "modelled_best": "45-delta short leg / 1.5% wide / no stop / 35 DTE",
+    "real_chain_best": "25-delta short leg / 2.0% wide",
+    "real_chain_worst": "45-delta short leg / 1.5% wide / no stop / 35 DTE"
+  },
+  "grids": {
+    "phase1_configs": 72,
+    "phase2_configs": 36
+  }
+}

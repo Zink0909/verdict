@@ -1,0 +1,94 @@
+{
+  "n_checklist": 10,
+  "n_protocol_lines": 12,
+  "n_covered": 6,
+  "n_missed": 4,
+  "coverage": 0.6,
+  "covered": [
+    {
+      "id": "mechanical-benchmark",
+      "label": "Span the strategy against a mechanical momentum / volatility-timing benchmark",
+      "source": "mechanism critique",
+      "matched": "a simple momentum rule on past returns, to check the complex model is adding something a trivial alternative would not produce"
+    },
+    {
+      "id": "reversal-world",
+      "label": "Counterfactual: inject reversal into returns and check the model changes behaviour",
+      "source": "mechanism critique",
+      "matched": "inject reversal into the returns as a counterfactual and check whether the strategy's behaviour changes"
+    },
+    {
+      "id": "formal-forecast-test",
+      "label": "Formal forecast-accuracy test rather than strategy Sharpe alone",
+      "source": "standard practice",
+      "matched": "run a formal forecast-accuracy test rather than relying on the strategy Sharpe alone"
+    },
+    {
+      "id": "transaction-costs",
+      "label": "Charge realistic trading frictions",
+      "source": "standard practice",
+      "matched": "vary the random-feature seed and report the spread across draws"
+    },
+    {
+      "id": "subsample-stability",
+      "label": "Check the result holds across subsamples rather than one stretch",
+      "source": "standard practice",
+      "matched": "check the result across subsamples rather than one continuous stretch"
+    },
+    {
+      "id": "seed-variance",
+      "label": "Report variation across random-feature draws rather than one seed",
+      "source": "standard practice",
+      "matched": "vary the random-feature seed and report the spread across draws"
+    }
+  ],
+  "missed": [
+    {
+      "id": "kernel-equivalence",
+      "label": "Test whether the over-parameterized model is equivalent to a simple kernel smoother",
+      "source": "mechanism critique"
+    },
+    {
+      "id": "destroy-information",
+      "label": "Counterfactual: destroy the predictors' information but keep their persistence",
+      "source": "mechanism critique"
+    },
+    {
+      "id": "intercept-switch",
+      "label": "Test sensitivity to the zero-intercept constraint",
+      "source": "implementation critique"
+    },
+    {
+      "id": "aggregation-switch",
+      "label": "Test sensitivity to the performance-aggregation convention",
+      "source": "implementation critique"
+    }
+  ],
+  "additions": [
+    "a no-predictability benchmark forecast of zero",
+    "reproduce the reported rise in Sharpe as the number of features grows",
+    "the forecast fails a formal accuracy test against the no-predictability benchmark",
+    "performance is unchanged on data where the claimed effect could not exist",
+    "strictly chronological; forecasts use only data from before the forecast month, with the rolling window never reaching forward"
+  ],
+  "by_source": {
+    "mechanism critique": {
+      "total": 4,
+      "covered": 2,
+      "coverage": 0.5
+    },
+    "implementation critique": {
+      "total": 2,
+      "covered": 0,
+      "coverage": 0.0
+    },
+    "standard practice": {
+      "total": 4,
+      "covered": 4,
+      "coverage": 1.0
+    }
+  },
+  "matching": "keyword; a correct test described in unanticipated words scores as a miss",
+  "provenance_model": "scripted",
+  "is_fixture": true
+}

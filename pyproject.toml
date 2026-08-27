@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verdict"
+version = "0.1.0"
+description = "A validation harness for time-series prediction claims"
+requires-python = ">=3.11"
+
+[tool.setuptools]
+packages = ["verdict"]
