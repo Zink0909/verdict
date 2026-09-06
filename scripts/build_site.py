@@ -136,7 +136,7 @@ files that produced them, so this site cannot claim something the code does not.
 
 def nav(active: str) -> str:
     items = [("index.html", "the system"), ("registry.html", "registry"),
-             ("agent.html", "the agent"),
+             ("demo.html", "demo"), ("agent.html", "the agent"),
              ("https://github.com/Zink0909/verdict", "source")]
     out = []
     for href, label in items:
@@ -370,10 +370,59 @@ fresh recomputation.</p>
 <p>The point is not to recommend a trade. It is to show the ability to abstract common
 research discipline from different projects, build the shared infrastructure, preserve
 the provenance and limits of each case, and let a conclusion be negative when the evidence
-requires it. Browse the <a href="registry.html">claim register</a> or inspect
+requires it. Browse the <a href="registry.html">claim register</a>, follow the
+<a href="demo.html">three-minute demo</a>, or inspect
 <a href="agent.html">the recorded Agent loop</a>.</p>
 """,
         "A validation framework and research-audit agent extracted from four completed studies.")
+
+
+def build_demo_page() -> str:
+    """A self-contained viewing route that distinguishes static evidence from local UI."""
+    return page(
+        "Verdict — a three-minute demo",
+        f"""{nav("demo")}
+<p class="kicker">guided tour</p>
+<h1>See the system in three minutes.</h1>
+<p class="lede">This is a research-validation workflow: define what would falsify a claim,
+run deterministic checks, preserve evidence, and publish a bounded verdict. It is not a
+trading terminal or an automated investment adviser.</p>
+
+<h2>Minute 1 · Start with the system, not a strategy</h2>
+<p>Open <a href="index.html">the system overview</a>. The table shows how four prior studies
+became reusable playbooks: sealed holdouts and spanning; point-in-time construction and
+instrument expression; real friction; and distribution-shift diagnosis. Later cases exercise
+that shared infrastructure without rewriting its provenance.</p>
+
+<h2>Minute 2 · Follow one claim to its evidence</h2>
+<p>Open the <a href="registry.html">claim register</a>, then choose a case. Each case links a
+claim, a pre-registered protocol, an outcome, limitations, and its evidence mode. A case is
+either executable, a labelled read-only replay of pinned evidence, or data-gated. No mode is
+silently promoted to another.</p>
+
+<h2>Minute 3 · Watch the workflow run</h2>
+<p>Open <a href="agent.html">the Agent</a>. It turns a paper into a structured claim, drafts a
+falsifiable protocol, waits for human approval, calls deterministic tools, and writes a
+verdict whose figures are checked against tool output. The demo also exposes what its
+evaluation did <em>not</em> measure.</p>
+
+<h2>Interactive companion: run locally</h2>
+<p>The GitHub Pages site is intentionally static: it is the shareable evidence layer. The
+interactive working surface runs locally and has a guided <em>Start here</em> screen:</p>
+<pre>micromamba env create -f environment.yml
+micromamba run -n verdict pip install -e .
+micromamba run -n verdict streamlit run app.py</pre>
+<p>From there, create a local protocol draft, upload a dated return CSV or use the synthetic
+control, run the validation battery, and inspect the recorded Agent loop. Local drafts are
+kept outside the public register until a case contract, evidence artifacts, report, and
+integrity audit exist.</p>
+
+<h2>What to say while presenting it</h2>
+<blockquote>I did not combine internship projects by putting their reports in one folder. I
+looked for the repeated research discipline behind them, made that discipline reusable and
+testable, then used a common evidence contract to retain both results and their limits.</blockquote>
+""",
+        "A guided tour of Verdict's system, evidence register, and interactive local working surface.")
 
 
 def build_agent_page() -> str:
@@ -480,9 +529,11 @@ def main() -> int:
     (SITE / "index.html").write_text(system_page)
     (SITE / "registry.html").write_text(build_index(cards, links))
     (SITE / "system.html").write_text(system_page)
+    (SITE / "demo.html").write_text(build_demo_page())
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = sorted(["index.html", "registry.html", "system.html", "agent.html", ".nojekyll", *links.values()])
+    generated = sorted(["index.html", "registry.html", "system.html", "demo.html", "agent.html",
+                        ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),
                     ROOT / "cases/complexity/agent_run/run.json",

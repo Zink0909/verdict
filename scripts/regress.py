@@ -865,6 +865,9 @@ def t_site_index_covers_registry():
     assert "one system, not a pile of backtests" in system
     assert "Chart-CNN stock selection" in system
     assert 'href="registry.html"' in system
+    demo = build_site.build_demo_page()
+    assert "See the system in three minutes" in demo
+    assert "streamlit run app.py" in demo
 
 
 def t_case_catalog_is_complete():
@@ -951,7 +954,7 @@ def t_app_pages_render():
     at = AppTest.from_file(os.path.join(ROOT, "app.py"), default_timeout=120)
     at.run()
     assert not at.exception, [e.value for e in at.exception]
-    for page in ("The register", "New claim", "Evaluate a result", "The agent"):
+    for page in ("Start here", "The register", "New claim", "Evaluate a result", "The agent"):
         at.sidebar.radio[0].set_value(page).run()
         assert not at.exception, (page, [e.value for e in at.exception])
     # the evaluate screen must actually compute when given a series

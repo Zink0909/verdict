@@ -5,6 +5,7 @@
 The library underneath is the system; this is the way in. Four things you can do
 without writing a line of code:
 
+  Start here  take the three-minute guided tour of the system
   Register    browse every claim that has been adjudicated, and what it cost
   New claim   draft a claim card and pre-register a protocol locally — the step
               that decides whether a claim is worth weeks of work, done in an hour
@@ -109,6 +110,40 @@ def page_register() -> None:
                 if rep and rep.exists():
                     st.caption(f"full write-up: `{rep.relative_to(ROOT)}` · "
                                f"rendered: `docs/cases/{folder}.html`")
+
+
+def page_start_here() -> None:
+    """A short, honest route through the interactive surface for a live demo."""
+    st.title("Start here")
+    st.caption("A three-minute tour of the research-validation system — not a trading demo.")
+    st.info("Verdict asks a narrow question: what evidence would make a predictive claim fail, "
+            "and can the result be checked afterwards? The interface is a working surface for "
+            "that question; it does not recommend trades or connect to a broker.")
+
+    st.subheader("1 · Start with a claim, before touching data")
+    st.write("Draft a claim card and a protocol with explicit kill criteria. It saves as a "
+             "local draft, not as a published verdict.")
+    if st.button("Open New claim", type="primary"):
+        st.session_state["section"] = "New claim"
+        st.rerun()
+
+    st.subheader("2 · Run the deterministic validation battery")
+    st.write("Use the built-in synthetic series or upload a dated return CSV. The library, "
+             "not this interface, computes time splits, spanning, bootstrap uncertainty, "
+             "cost sensitivity, and diagnosis playbooks.")
+    if st.button("Open Evaluate a result"):
+        st.session_state["section"] = "Evaluate a result"
+        st.rerun()
+
+    st.subheader("3 · Inspect the Agent boundary")
+    st.write("Watch a recorded end-to-end audit. The Agent chooses a protocol and tool calls; "
+             "deterministic code supplies every number, and unsupported figures are withheld.")
+    if st.button("Open The agent"):
+        st.session_state["section"] = "The agent"
+        st.rerun()
+
+    st.caption("For the application-facing narrative, open `docs/index.html` or the GitHub "
+               "Pages site first. This local interface is the interactive companion.")
 
 
 def page_new_claim() -> None:
@@ -359,13 +394,13 @@ def page_agent() -> None:
             st.markdown(rep.read_text())
 
 
-PAGES = {"The register": page_register, "New claim": page_new_claim,
+PAGES = {"Start here": page_start_here, "The register": page_register, "New claim": page_new_claim,
          "Evaluate a result": page_evaluate, "The agent": page_agent}
 
 with st.sidebar:
     st.markdown("## ⚖ Verdict")
     st.caption("A harness for checking predictive claims.")
-    choice = st.radio("Section", list(PAGES), label_visibility="collapsed")
+    choice = st.radio("Section", list(PAGES), label_visibility="collapsed", key="section")
     st.divider()
     st.caption("Every figure on every screen is computed by the library, not by this "
                "interface. Analysis lives in `verdict/`; this file only collects inputs "

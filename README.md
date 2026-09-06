@@ -42,6 +42,15 @@ micromamba run -n verdict python scripts/audit_integrity.py
 The interface computes nothing. It collects inputs, calls the library, and shows what came
 back — so there is one source of truth, and it is the part with the tests.
 
+## A three-minute demo
+
+Open the public [system overview](https://zink0909.github.io/verdict/) first, then follow
+the [guided tour](https://zink0909.github.io/verdict/demo.html): system origin → claim
+register → one evidence case → recorded Agent loop. For a live demo, run
+`micromamba run -n verdict streamlit run app.py` and use **Start here**. It guides a viewer
+through a local protocol draft, the deterministic CSV evaluation battery, and the Agent
+boundary. The interactive surface is research infrastructure, not a trading interface.
+
 ## The case library
 
 | Case | Claim under audit | Verdict |
