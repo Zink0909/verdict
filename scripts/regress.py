@@ -27,6 +27,7 @@ effect that is really there, otherwise a null proves nothing.
   case: tsmom         controls (common / idio / tilt / noise)
 """
 import json
+import io
 import os
 import py_compile
 import sys
@@ -898,6 +899,35 @@ def t_agent_archives_approved_run():
             assert manifest["artifacts"][name]["sha256"] == hashlib.sha256(raw).hexdigest()
 
 
+def t_agent_vault_verifies_compares_exports():
+    """The Vault detects tampering, compares only checked records, and exports portable evidence."""
+    from verdict.agent import archive, pipeline, vault
+    from verdict.agent.schema import ClaimCard, Protocol
+    claim = ClaimCard("signal", "universe", "monthly", "effect", "sample", "source", ["returns"])
+    protocol = Protocol(["returns"], "chronological", ["market"], "10 bps", ["spanning"],
+                        ["windows"], ["alpha is not positive"], "test it")
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "audits"
+        first = archive.save_audit_package(
+            root, paper_text="same paper", origin="test", run=pipeline.data_gated_audit(
+                claim, protocol, "first missing input"))
+        second_protocol = Protocol(["returns"], "sealed holdout", ["market"], "10 bps",
+                                   ["spanning"], ["windows"], ["alpha is not positive"], "test it")
+        second = archive.save_audit_package(
+            root, paper_text="same paper", origin="test", run=pipeline.data_gated_audit(
+                claim, second_protocol, "second missing input"))
+        listed = vault.list_packages(root)
+        assert len(listed) == 2 and all(item["ok"] for item in listed)
+        comparison = vault.compare_packages(root, first, second)
+        assert comparison["same_paper"] and "protocol" in comparison["differences"]
+        import zipfile
+        with zipfile.ZipFile(io.BytesIO(vault.package_zip(root, first))) as zipped:
+            assert f"{first.name}/manifest.json" in zipped.namelist()
+        (first / "paper.txt").write_text("tampered")
+        invalid = vault.verify_package(root, first)
+        assert not invalid["ok"] and any("hash mismatch" in error for error in invalid["errors"])
+
+
 def t_agent_eval_scoring():
     """Coverage, and — the point — the omissions listed individually."""
     from verdict.agent import evals
@@ -1040,7 +1070,8 @@ def t_app_pages_render():
     at = AppTest.from_file(os.path.join(ROOT, "app.py"), default_timeout=120)
     at.run()
     assert not at.exception, [e.value for e in at.exception]
-    for page in ("Start here", "Audit a paper", "The register", "New claim", "Evaluate a result", "The agent"):
+    for page in ("Start here", "Audit a paper", "Evidence vault", "The register", "New claim",
+                 "Evaluate a result", "The agent"):
         at.sidebar.radio[0].set_value(page).run()
         assert not at.exception, (page, [e.value for e in at.exception])
     # the evaluate screen must actually compute when given a series
@@ -1206,6 +1237,7 @@ GATES = [
     ("agent-execute-approved-protocol", t_agent_execute_approved_protocol),
     ("agent-csv-evidence-provider", t_agent_csv_evidence_provider),
     ("agent-archives-approved-run", t_agent_archives_approved_run),
+    ("agent-vault-verifies-compares-exports", t_agent_vault_verifies_compares_exports),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("case-catalog-is-complete", t_case_catalog_is_complete),

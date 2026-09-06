@@ -23,7 +23,7 @@ micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
 
 micromamba run -n verdict streamlit run app.py          # the working surface
-micromamba run -n verdict python scripts/regress.py     # 60 known-answer gates, seconds
+micromamba run -n verdict python scripts/regress.py     # 61 known-answer gates, seconds
 micromamba run -n verdict python scripts/run_case.py --all --verify
 micromamba run -n verdict python scripts/audit_integrity.py
 ```
@@ -36,6 +36,7 @@ micromamba run -n verdict python scripts/audit_integrity.py
 |---|---|
 | **The register** | every claim that has been adjudicated, its protocol, its verdict, its limitations |
 | **Audit a paper** | paste or upload a `.txt`, `.md`, or `.pdf` paper; extract a Claim Card, pre-register a protocol, approve it, then execute through a matching provider, a clearly bounded return/benchmark CSV evaluation, or stop honestly at data-gated |
+| **Evidence vault** | inspect, hash-verify, compare, and export local approved paper-audit packages without silently promoting them to the public register |
 | **New claim** | fill in a claim card and pre-register a local protocol draft. The cheapest thing the system does: if you cannot write a result that would falsify the claim, the claim is not testable and you have saved yourself the weeks you were about to spend. A draft is not silently published into the evidence register |
 | **Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, the diagnosis playbooks, the sealed-holdout ledger, and a verdict document that will not render without limitations |
 | **The agent** | watch the loop run end to end |
@@ -63,6 +64,11 @@ saved locally under `.verdict-workspace/audits/` as a hashed evidence package (p
 claim, protocol, approval, tool trace, outcome, and supplied CSV); it is not silently published
 to the public register. A new paper without a matching data/provider adapter ends as
 `protocol-ready-data-gated`, never as an invented verdict.
+
+Open **Evidence vault** after an audit to verify every declared artifact, review the Claim,
+Protocol, Outcome and tool trace, download a portable ZIP, or compare two approved audit
+records. A hash mismatch fails closed: the package stays visible as invalid but cannot be
+opened as verified evidence.
 
 ## The case library
 

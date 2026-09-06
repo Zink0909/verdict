@@ -47,6 +47,7 @@ st.set_page_config(page_title="Verdict", page_icon="⚖", layout="centered")
 
 REGISTRY = ROOT / "registry"
 DRAFT_REGISTRY = ROOT / ".verdict-workspace" / "claims"
+AUDIT_VAULT = ROOT / ".verdict-workspace" / "audits"
 STATE_LABEL = {"verdict-delivered": "verdict delivered",
                "protocol-ready-data-gated": "protocol ready · data-gated",
                "in-progress": "in progress"}
@@ -148,6 +149,14 @@ def page_start_here() -> None:
              "deterministic code supplies every number, and unsupported figures are withheld.")
     if st.button("Open The agent"):
         st.session_state["section"] = "The agent"
+        st.rerun()
+
+    st.subheader("4 · Review what was actually saved")
+    st.write("Every approved paper audit is local and hash-checked. Open the Evidence Vault to "
+             "inspect its source text, approval, protocol, tool trace, conclusion, and any "
+             "uploaded CSV — or compare two audit records.")
+    if st.button("Open Evidence vault"):
+        st.session_state["section"] = "Evidence vault"
         st.rerun()
 
     st.caption("For the application-facing narrative, open `docs/index.html` or the GitHub "
@@ -593,7 +602,82 @@ def page_paper_audit() -> None:
             st.error(f"Draft withheld: unsupported figures {audit.get('unsupported', [])}.")
 
 
+def page_evidence_vault() -> None:
+    """Review local audit packages without confusing them with published case evidence."""
+    from verdict.agent import vault
+
+    st.title("Evidence vault")
+    st.caption("Local paper-audit records only. Nothing on this page is in the public claim "
+               "register unless it separately passes the case-contract publication path.")
+    st.info("A package is trustworthy here only when each declared file still matches its "
+            "recorded SHA-256 hash. An invalid package remains visible but cannot be opened "
+            "or exported as verified evidence.")
+    packages = vault.list_packages(AUDIT_VAULT)
+    if not packages:
+        st.info("No approved paper audits are saved yet. Run Audit a paper, approve the fixed "
+                "protocol, and its outcome will appear here.")
+        return
+
+    rows = pd.DataFrame([{
+        "package": item["name"], "integrity": "verified" if item["ok"] else "FAILED",
+        "created": item["created_at"], "case": item["case_id"] or "data-gated",
+        "state": item["state"], "mode": item["execution_mode"], "origin": item["origin"],
+    } for item in packages])
+    st.dataframe(rows, width="stretch", hide_index=True)
+    by_name = {item["name"]: item for item in packages}
+    selected_name = st.selectbox("Open a local audit package", list(by_name))
+    selected = by_name[selected_name]
+    check = vault.verify_package(AUDIT_VAULT, selected["path"])
+    if not check["ok"]:
+        st.error("Integrity verification failed: " + "; ".join(check["errors"]))
+    else:
+        st.success(f"Verified {check['checked']} declared artifacts.")
+        record = vault.load_package(AUDIT_VAULT, selected["path"])
+        manifest = record["manifest"]
+        st.caption(f"Source: {manifest['origin']} · created: {manifest['created_at']} · "
+                   f"public status: {manifest['public_registry_status']}")
+        tabs = st.tabs(["Claim", "Protocol", "Outcome", "Trace", "Manifest"])
+        with tabs[0]:
+            st.json(record.get("claim"), expanded=False)
+        with tabs[1]:
+            st.json(record.get("protocol"), expanded=False)
+        with tabs[2]:
+            st.write(f"**State:** `{manifest['state']}` · **Mode:** `{manifest['execution_mode']}`")
+            if record.get("verdict"):
+                st.markdown(record["verdict"])
+            else:
+                st.info("No verdict was issued for this record.")
+            st.json(record.get("number_audit", {}), expanded=False)
+        with tabs[3]:
+            st.json(record.get("tool_trace", []), expanded=False)
+        with tabs[4]:
+            st.json(manifest, expanded=False)
+        st.download_button("Download verified evidence package (.zip)",
+                           vault.package_zip(AUDIT_VAULT, selected["path"]),
+                           file_name=f"{selected_name}.zip", mime="application/zip")
+
+    if len(packages) >= 2:
+        st.divider()
+        st.subheader("Compare two audit records")
+        labels = list(by_name)
+        left_name = st.selectbox("First package", labels, key="vault_left")
+        right_choices = [label for label in labels if label != left_name]
+        right_name = st.selectbox("Second package", right_choices, key="vault_right")
+        if st.button("Compare verified records"):
+            try:
+                comparison = vault.compare_packages(AUDIT_VAULT, by_name[left_name]["path"],
+                                                    by_name[right_name]["path"])
+                st.write("Same extracted paper text:" + (" yes" if comparison["same_paper"] else " no"))
+                if not comparison["differences"]:
+                    st.success("No differences in Claim, Protocol, Outcome, or numeric audit.")
+                for field, diff in comparison["differences"].items():
+                    st.code(diff, language="diff")
+            except ValueError as exc:
+                st.error(str(exc))
+
+
 PAGES = {"Start here": page_start_here, "Audit a paper": page_paper_audit,
+         "Evidence vault": page_evidence_vault,
          "The register": page_register, "New claim": page_new_claim,
          "Evaluate a result": page_evaluate, "The agent": page_agent}
 
