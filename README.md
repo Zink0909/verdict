@@ -35,7 +35,7 @@ micromamba run -n verdict python scripts/audit_integrity.py
 | | |
 |---|---|
 | **The register** | every claim that has been adjudicated, its protocol, its verdict, its limitations |
-| **New claim** | fill in a claim card and pre-register a protocol. The cheapest thing the system does: if you cannot write a result that would falsify the claim, the claim is not testable and you have saved yourself the weeks you were about to spend |
+| **New claim** | fill in a claim card and pre-register a local protocol draft. The cheapest thing the system does: if you cannot write a result that would falsify the claim, the claim is not testable and you have saved yourself the weeks you were about to spend. A draft is not silently published into the evidence register |
 | **Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, the diagnosis playbooks, the sealed-holdout ledger, and a verdict document that will not render without limitations |
 | **The agent** | watch the loop run end to end |
 

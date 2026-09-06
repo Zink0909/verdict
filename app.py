@@ -6,8 +6,8 @@ The library underneath is the system; this is the way in. Four things you can do
 without writing a line of code:
 
   Register    browse every claim that has been adjudicated, and what it cost
-  New claim   fill in a claim card and pre-register a protocol — the step that
-              decides whether a claim is worth weeks of work, done in an hour
+  New claim   draft a claim card and pre-register a protocol locally — the step
+              that decides whether a claim is worth weeks of work, done in an hour
   Evaluate    point at a return series and get the whole battery: interval,
               spanning, cost sensitivity, breakeven, the diagnosis playbooks,
               and a verdict document that will not render without limitations
@@ -44,6 +44,7 @@ from verdict.splits import HoldoutAlreadyUnsealed, SealedHoldout   # noqa: E402
 st.set_page_config(page_title="Verdict", page_icon="⚖", layout="centered")
 
 REGISTRY = ROOT / "registry"
+DRAFT_REGISTRY = ROOT / ".verdict-workspace" / "claims"
 STATE_LABEL = {"verdict-delivered": "verdict delivered",
                "protocol-ready-data-gated": "protocol ready · data-gated",
                "in-progress": "in progress"}
@@ -118,6 +119,9 @@ def page_new_claim() -> None:
             "the kill criteria: if you cannot write down a result that would falsify the "
             "claim, the claim is not testable and you have just saved yourself the weeks "
             "you were about to spend on it.")
+    st.caption("This screen saves a local protocol draft. A claim reaches the public register "
+               "only after it has a catalog entry, declared evidence contract, case report, "
+               "and integrity checks; a form submission must not weaken those boundaries.")
 
     with st.form("claim"):
         st.subheader("1 · The claim card")
@@ -142,7 +146,7 @@ def page_new_claim() -> None:
         title = st.text_input("Short title", placeholder="Plain English, no jargon")
         blocker = st.text_input("If data-gated: what is the blocker?",
                                 placeholder="e.g. the corpus has not been built")
-        submitted = st.form_submit_button("Validate and register", type="primary")
+        submitted = st.form_submit_button("Validate and save draft", type="primary")
 
     if not submitted:
         return
@@ -151,14 +155,20 @@ def page_new_claim() -> None:
     try:
         card = build_card(claim, proto, card_id, title, available.startswith("Yes"), blocker)
     except ValueError as e:
-        st.error(f"**Not registered.** {e}")
+        st.error(f"**Not saved.** {e}")
         return
 
-    path = write_card(card, REGISTRY)
-    st.success(f"Registered as `{path.name}` — state **{card['state']}**.")
+    target = DRAFT_REGISTRY / f"{card['id']}.json"
+    if target.exists():
+        st.error(f"**Not saved.** A local draft named `{target.name}` already exists. "
+                 "Choose a new id rather than silently overwriting it.")
+        return
+    path = write_card(card, DRAFT_REGISTRY)
+    st.success(f"Saved local draft `{path.name}` — state **{card['state']}**.")
     st.json(card, expanded=False)
-    st.caption("The register index and the site are generated from the cards: run "
-               "`python scripts/build_site.py` to refresh them.")
+    st.caption("This draft is intentionally outside the published register and is ignored by "
+               "Git. To publish it, first add a catalog case, evidence artifacts, a report, "
+               "and a declared execution mode; then run the repository integrity audit.")
 
 
 def page_evaluate() -> None:

@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 .DS_Store
+.verdict-workspace/
 *.egg-info/
 .ipynb_checkpoints/
 # large intermediate data kept but heavy re-derivables ignored

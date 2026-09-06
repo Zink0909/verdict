@@ -939,6 +939,9 @@ def t_app_form_validation():
             raise AssertionError(f"the form accepted a card with {why}")
         except ValueError:
             pass
+    app_source = RP.Path(ROOT, "app.py").read_text()
+    assert "write_card(card, DRAFT_REGISTRY)" in app_source
+    assert "write_card(card, REGISTRY)" not in app_source
 
 
 def t_app_pages_render():
