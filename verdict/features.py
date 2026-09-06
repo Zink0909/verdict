@@ -20,9 +20,13 @@ def rff(X: np.ndarray, P: int, gamma: float = 2.0, seed: int = 0) -> np.ndarray:
     Interleaves sin/cos pairs so that truncating columns keeps matched pairs.
     P must be even.
     """
-    if P % 2 != 0:
-        raise ValueError("P must be even (sin/cos pairs)")
     X = np.asarray(X, dtype=float)
+    if X.ndim != 2 or X.shape[0] == 0 or X.shape[1] == 0:
+        raise ValueError("X must be a non-empty two-dimensional matrix")
+    if P <= 0 or P % 2 != 0:
+        raise ValueError("P must be a positive even integer (sin/cos pairs)")
+    if not np.isfinite(gamma) or gamma <= 0 or not np.isfinite(X).all():
+        raise ValueError("X must be finite and gamma must be positive")
     rng = np.random.default_rng(seed)
     omega = rng.standard_normal((X.shape[1], P // 2))
     A = gamma * (X @ omega)
@@ -42,11 +46,22 @@ def ridge_path(X: np.ndarray, y: np.ndarray, z_grid: np.ndarray,
     """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).ravel()
+    z_grid = np.asarray(z_grid, dtype=float)
+    if X.ndim != 2 or X.shape[0] == 0 or X.shape[1] == 0:
+        raise ValueError("X must be a non-empty two-dimensional matrix")
+    if len(y) != X.shape[0]:
+        raise ValueError("X and y must have the same number of observations")
+    if z_grid.ndim != 1 or len(z_grid) == 0 or not np.isfinite(z_grid).all():
+        raise ValueError("z_grid must be a non-empty finite one-dimensional array")
+    if (z_grid < 0).any():
+        raise ValueError("ridge penalties cannot be negative")
+    if not np.isfinite(X).all() or not np.isfinite(y).all():
+        raise ValueError("X and y must be finite")
     T = X.shape[0]
     U, s, Vt = np.linalg.svd(X, full_matrices=False)
     Uty = U.T @ y
     out = np.empty((len(z_grid), X.shape[1]), dtype=float)
-    for i, z in enumerate(np.asarray(z_grid, dtype=float)):
+    for i, z in enumerate(z_grid):
         lam = z * T if scale_by_T else z
         if lam <= 0:
             d = np.divide(1.0, s, out=np.zeros_like(s), where=s > 1e-12)
@@ -68,6 +83,11 @@ def rolling_forecasts(S: np.ndarray, R: np.ndarray, T: int, z_grid: np.ndarray,
     """
     S = np.asarray(S, dtype=float)
     R = np.asarray(R, dtype=float).ravel()
+    z_grid = np.asarray(z_grid, dtype=float)
+    if S.ndim != 2 or len(R) != S.shape[0]:
+        raise ValueError("S must be two-dimensional and aligned one-to-one with R")
+    if T <= 0 or T >= len(R):
+        raise ValueError("T must be positive and leave at least one forecast observation")
     n = S.shape[0]
     out = np.full((len(z_grid), n), np.nan)
     for t in range(T, n):
@@ -82,4 +102,8 @@ def timing_strategy(forecasts: np.ndarray, R: np.ndarray) -> np.ndarray:
     Strategy return at t = forecast_t * R_t (R aligned as in rolling_forecasts).
     Accepts (n,) or (n_z, n) forecasts; returns the same shape.
     """
-    return np.asarray(forecasts) * np.asarray(R, dtype=float)
+    forecasts = np.asarray(forecasts, dtype=float)
+    R = np.asarray(R, dtype=float)
+    if R.ndim != 1 or forecasts.ndim not in (1, 2) or forecasts.shape[-1] != len(R):
+        raise ValueError("forecasts must end in the same observation dimension as R")
+    return forecasts * R

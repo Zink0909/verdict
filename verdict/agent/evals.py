@@ -46,9 +46,13 @@ def score_protocol(protocol_items: list[str], checklist: list[dict]) -> dict:
     covered, missed = [], []
     matched_lines: set[int] = set()
     for item in checklist:
-        hits = [i for i, line in enumerate(lines) if _matches(line, item["any_of"])]
+        # One sentence cannot earn credit for several distinct expert checks.
+        # This is intentionally conservative: ambiguous coverage is an omission,
+        # not a free multiplier.
+        hits = [i for i, line in enumerate(lines)
+                if i not in matched_lines and _matches(line, item["any_of"])]
         if hits:
-            matched_lines.update(hits)
+            matched_lines.add(hits[0])
             covered.append({"id": item["id"], "label": item["label"],
                             "source": item["source"], "matched": lines[hits[0]]})
         else:
@@ -66,7 +70,8 @@ def score_protocol(protocol_items: list[str], checklist: list[dict]) -> dict:
         "covered": covered, "missed": missed, "additions": additions,
         "by_source": {k: {**v, "coverage": round(v["covered"] / v["total"], 4)}
                       for k, v in by_source.items()},
-        "matching": "keyword; a correct test described in unanticipated words scores as a miss",
+        "matching": ("one-to-one keyword matching; a correct test described in "
+                     "unanticipated words scores as a miss"),
     }
 
 

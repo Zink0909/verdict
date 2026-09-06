@@ -58,6 +58,10 @@ def breakeven_friction(levels, expectancies) -> float:
     """
     lv = np.asarray(levels, dtype=float)
     ex = np.asarray(expectancies, dtype=float)
+    if lv.ndim != 1 or ex.ndim != 1 or len(lv) != len(ex) or len(lv) < 2:
+        raise ValueError("levels and expectancies must be equally sized one-dimensional arrays")
+    if not np.isfinite(lv).all() or not np.isfinite(ex).all():
+        raise ValueError("levels and expectancies must be finite")
     order = np.argsort(lv)
     lv, ex = lv[order], ex[order]
     for i in range(len(lv) - 1):
@@ -76,6 +80,14 @@ def cost_sensitivity(gross: pd.Series, turn, bps_grid=(0, 5, 10, 20),
     """
     g = pd.Series(gross).dropna()
     t = pd.Series(turn, index=g.index) if np.isscalar(turn) else pd.Series(turn).reindex(g.index)
+    if g.empty:
+        raise ValueError("gross returns must contain at least one observation")
+    if t.isna().any():
+        raise ValueError("turnover is missing for one or more gross-return observations")
+    if (t < 0).any() or not np.isfinite(t).all():
+        raise ValueError("turnover must be finite and non-negative")
+    if any((not np.isfinite(bps) or bps < 0) for bps in bps_grid):
+        raise ValueError("cost grid must contain finite non-negative values")
     rows = []
     for bps in bps_grid:
         net = g - t * (bps / 1e4) * sides

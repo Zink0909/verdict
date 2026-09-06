@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "case_id": "complexity-voc",
+  "role": "foundation",
+  "state": "verdict-delivered",
+  "evidence_pattern": "mechanism / counterfactual",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "the final narrative report is maintained rather than generated"
+    ]
+  },
+  "agent_mode": "executable",
+  "artifacts": [
+    {
+      "path": "registry/complexity-voc.json",
+      "sha256": "575bc4dc792e0ebe013170340ea1c10ec5654df353ee303293821eb1f52a1dd9",
+      "bytes": 2719
+    },
+    {
+      "path": "cases/complexity/results/kmz_sweep.parquet",
+      "sha256": "a56bee48fd24e29cf61cb240bd42ab1cdfafd8de3be526baf2f3d248bb6c8285",
+      "bytes": 26626
+    },
+    {
+      "path": "cases/complexity/results/nagel_diagnostics.json",
+      "sha256": "ed43028f6e1abf97f5201108cc2d082a38d679bf3feb779b60b4120102bcd4d6",
+      "bytes": 1274
+    },
+    {
+      "path": "cases/complexity/results/phase_diagram.json",
+      "sha256": "291da24863bf6b5d63ad75fff327a94e160905df2e00d928c1ffdd2834ec4273",
+      "bytes": 1485
+    },
+    {
+      "path": "cases/complexity/report.md",
+      "sha256": "bc83c7a3defe4703bbfd9219c8ea54e41269b83a15912a99fd0982fddecc891d",
+      "bytes": 6911
+    },
+    {
+      "path": "cases/complexity/report.html",
+      "sha256": "67d61fcb0aac04bf9fc1b43413bc2d3979ecb89deed438fa14dd37a593c81a15",
+      "bytes": 292560
+    }
+  ]
+}

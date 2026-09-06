@@ -15,11 +15,13 @@ index cannot drift away from the evidence.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
 CARD_STATES = ("in-progress", "verdict-delivered", "protocol-ready-data-gated")
+_CARD_ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
 @dataclass
@@ -91,23 +93,48 @@ def to_html(md_path: Path | str, out_path: Path | str | None = None) -> Path | N
 # registry
 # --------------------------------------------------------------------------
 
-def write_card(card: dict, registry_dir: Path | str = "registry") -> Path:
-    """Validate and write one claim card, then refresh the registry index."""
+def validate_card(card: dict) -> None:
+    """Validate the cross-field invariants shared by every registry consumer."""
+    if not isinstance(card, dict):
+        raise ValueError("registry card must be a JSON object")
     for required in ("id", "state", "claim"):
         if required not in card:
             raise ValueError(f"registry card is missing '{required}'")
+    if not isinstance(card["id"], str) or not _CARD_ID.fullmatch(card["id"]):
+        raise ValueError("registry card id must be lower-case kebab-case")
     if card["state"] not in CARD_STATES:
         raise ValueError(f"invalid card state {card['state']!r}; allowed: {CARD_STATES}")
+    if not isinstance(card["claim"], dict) or not any(
+            str(card["claim"].get(k, "")).strip() for k in ("signal", "claimed_effect")):
+        raise ValueError("registry card claim must describe a signal or claimed effect")
     if card["state"] == "verdict-delivered":
         v = card.get("verdict") or {}
         if not v.get("outcome"):
             raise ValueError("a delivered verdict must state an outcome")
-        if not v.get("honest_limitations"):
+        limitations = v.get("honest_limitations") or []
+        if not isinstance(limitations, list) or not any(str(x).strip() for x in limitations):
             raise ValueError("a delivered verdict must list honest limitations")
+    elif card.get("verdict"):
+        raise ValueError("only a delivered card may carry a verdict")
+    if card["state"] == "protocol-ready-data-gated":
+        blocker = (card.get("why_not_adjudicated") or {}).get("blocker", "")
+        if not str(blocker).strip():
+            raise ValueError("a data-gated card must name its blocker")
+
+
+def _atomic_write(path: Path, text: str) -> None:
+    tmp = path.with_name(f".{path.name}.tmp")
+    tmp.write_text(text)
+    tmp.replace(path)
+
+
+def write_card(card: dict, registry_dir: Path | str = "registry") -> Path:
+    """Validate and atomically write one claim card, then refresh the index."""
+    validate_card(card)
     registry_dir = Path(registry_dir)
     registry_dir.mkdir(parents=True, exist_ok=True)
     path = registry_dir / f"{card['id']}.json"
-    path.write_text(json.dumps(card, indent=2))
+    _atomic_write(path, json.dumps(card, indent=2) + "\n")
     refresh_index(registry_dir)
     return path
 
@@ -119,9 +146,13 @@ def refresh_index(registry_dir: Path | str = "registry") -> Path:
     cards = []
     for p in sorted(registry_dir.glob("*.json")):
         try:
-            cards.append(json.loads(p.read_text()))
-        except json.JSONDecodeError:
-            continue
+            card = json.loads(p.read_text())
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"malformed registry card {p.name}: {exc}") from exc
+        validate_card(card)
+        if card["id"] != p.stem:
+            raise ValueError(f"registry id {card['id']!r} does not match filename {p.name!r}")
+        cards.append(card)
     rows = ["| id | claim | source | state | verdict |",
             "|----|-------|--------|-------|---------|"]
     for c in cards:
@@ -131,15 +162,21 @@ def refresh_index(registry_dir: Path | str = "registry") -> Path:
         outcome = (c.get("verdict") or {}).get("outcome", "")
         if c["state"] == "protocol-ready-data-gated":
             outcome = outcome or "not adjudicable with available data"
-        rows.append(f"| {c.get('id','')} | {_clip(summary)} | {_clip(source)} | "
-                    f"{c.get('state','')} | {_clip(outcome)} |")
+        rows.append(f"| {_cell(c.get('id',''))} | {_cell(_clip(summary))} | "
+                    f"{_cell(_clip(source))} | {_cell(c.get('state',''))} | "
+                    f"{_cell(_clip(outcome))} |")
     table = "\n".join(rows)
     head = readme.read_text().split("## Cards")[0].rstrip() if readme.exists() else \
         "# Claim Registry"
-    readme.write_text(f"{head}\n\n## Cards\n\n{table}\n")
+    _atomic_write(readme, f"{head}\n\n## Cards\n\n{table}\n")
     return readme
 
 
 def _clip(text: str, n: int = 160) -> str:
     text = " ".join(str(text).split())
     return text if len(text) <= n else text[: n - 1] + "…"
+
+
+def _cell(text: str) -> str:
+    """Escape content that would corrupt a Markdown table row."""
+    return str(text).replace("|", "\\|").replace("\n", " ")

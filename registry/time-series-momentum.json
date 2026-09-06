@@ -1,0 +1,69 @@
+{
+  "id": "time-series-momentum",
+  "title": "Time-series momentum in futures",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "For each futures market, the sign of its own past 12-month excess return sets a long or short position; each position is scaled inversely to that market's ex-ante volatility so every market contributes equal risk, and the equal-weighted portfolio is scaled to a constant volatility target. Rebalanced monthly.",
+    "universe": "Liquid futures and forwards across commodities, equity indices, bonds and currencies (the source tests 58 instruments).",
+    "frequency": "Monthly rebalance, 12-month lookback, one-month holding period.",
+    "claimed_effect": "A diversified time-series momentum portfolio earns large abnormal returns: a Sharpe ratio around 1.2 for the diversified 12-month strategy, positive predictability in every one of the 58 instruments individually, significant alpha against standard factors, and partial reversal beyond one year.",
+    "sample": "Monthly, 1965-2009, 58 futures and forward contracts.",
+    "source": "Moskowitz, Ooi and Pedersen (2012), 'Time Series Momentum', Journal of Financial Economics",
+    "data_needs": [
+      "roll-adjusted continuous futures series per market, with the roll rule documented",
+      "the risk-free rate over the same sample",
+      "standard factor returns for the spanning tests",
+      "contract multipliers and margin, to size positions the way an account would"
+    ]
+  },
+  "protocol": {
+    "data_requirements": [
+      "roll-adjusted continuous series per market, with both roll choices recorded \u2014 when to roll and how to adjust \u2014 and validated against an independently constructed series before any signal is computed; a wrong roll silently corrupts everything downstream and does not error",
+      "returns taken from the ratio-adjusted series, never from difference-adjusted levels, whose percentage changes are distorted",
+      "the instrument list fixed in advance, with any market that starts late or dies stated rather than quietly dropped"
+    ],
+    "splits": "strictly chronological. Every signal and sizing input is lagged so a position held at t uses only information available through t-1. The post-publication period is sealed and opened once, at the end, with the opening recorded.",
+    "benchmarks": [
+      "a passive long position in the same instruments at the same volatility target \u2014 a rule that is long more often than short inherits the asset class's risk premium and must be charged for it",
+      "cross-sectional momentum on the same universe, which is mechanically related and is the obvious thing this could be a repackaging of",
+      "the same rule with the signal's sign randomised but the volatility scaling left intact, which separates the timing decision from the sizing scheme"
+    ],
+    "cost_model": "roll costs and bid-ask charged per instrument per rebalance and swept across plausible levels, with position granularity applied as an account would face it \u2014 integer contracts and contract multipliers \u2014 because a strategy that cannot be traded at the size tested is not the strategy that was tested.",
+    "diagnostics": [
+      "decompose the return into the part earned by the net long/short tilt and the part earned by the timing decision; if the first dominates, the claim is about exposure, not prediction",
+      "re-run with equal weights to see whether the volatility scaling rather than the momentum sign is carrying the result",
+      "report which instruments carry the effect; if a handful do, say so rather than reporting the average as if it were general",
+      "measure the post-2009 period the source paper could not see, separately and without pooling"
+    ],
+    "robustness": [
+      "lookback horizons either side of 12 months, reported as a surface rather than a chosen point",
+      "holding periods beyond one month",
+      "the volatility estimation window",
+      "dropping the most correlated markets, since apparent breadth across correlated instruments is not diversification"
+    ],
+    "kill_criteria": [
+      "the strategy's returns are spanned by the passive long position plus cross-sectional momentum, leaving an alpha whose confidence interval contains zero",
+      "the effect is absent at conventional significance in the post-publication period held out",
+      "net of roll and transaction costs at plausible levels, the interval on the mean return contains zero",
+      "the result survives randomising the sign of the signal \u2014 which would mean the volatility scaling, not the momentum, is doing the work"
+    ],
+    "rationale": "The claim is that a timing rule adds something. So the protocol spends its effort separating timing from the two things that could masquerade as it \u2014 a persistent net long exposure and a volatility-scaling scheme \u2014 and then asks whether anything survives the frictions that are specific to futures. Everything else is secondary.",
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "DOES NOT SURVIVE \u2014 all four kill criteria fired (commodity sleeve, post-publication)",
+    "summary": "All four pre-registered kill criteria fired over 193 months on seven commodity futures. Sharpe +0.22, interval [-0.17, +0.59]; spanning alpha +1.60% at t = +0.96; the sealed post-publication block [-0.12, +1.21]; and coin-flip signs with the same position sizes place the rule above only 76% of 200 draws. The return that exists comes from the rule's time-varying net exposure (+1.87% a year), not from choosing which markets to hold (-0.01%).",
+    "report": "cases/tsmom/report.html",
+    "boundary": "Seven commodity markets, 2010-2026, entirely post-publication. Does not address the source claim's full 58-instrument, four-asset-class universe.",
+    "honest_limitations": [
+      "**This is the commodity sleeve, not the claim.** Seven commodity futures, not 58 instruments across commodities, equities, bonds and currencies. A large part of the source paper's Sharpe comes from diversifying a weak per-market signal across four asset classes that trend at different times. This run cannot reject the claim as stated for the full universe; it can only say the effect is not present in these seven markets over this period.",
+      "**The whole sample is post-publication.** The source ends in 2009; this begins at 2010-07-31. That makes this a test of whether the effect persisted, not of whether the original finding was correct when it was made. A claim that was true and has since been arbitraged away would produce exactly this result.",
+      "**The panel is unbalanced early.** Only five markets are available until 2011-03 and six until 2012-10; gold's history begins 2012-11. Months before then average over fewer markets. Restricting to the balanced period gives +0.29, so this does not change the conclusion, but the early years are thinner than the market count suggests.",
+      "**One large move could not be corroborated.** Crude in March 2026 moves +54% in a month in this panel. Three other outliers in the sample (crude in March and May 2020, natural gas in July 2022) match known events; this one was not checked against a second data source. Dropping the last twelve months gives +0.11, so the conclusion does not rest on it.",
+      "**The coin-flip comparison is gross only.** Independent monthly sign draws turn over far more than the strategy does, so the random book would pay more in costs than the rule it is being compared with. Charging both would widen the gap in the strategy's favour \u2014 but the gap being tested is against the *gross* distribution, and the strategy sits inside it there.",
+      "**Return space, not account space.** No contract granularity, no margin, no capacity. A real book trades integer contracts with multipliers, which introduces lumpiness this run does not model. That matters for sizing a sleeve; it does not rescue an edge that is absent gross.",
+      "**K4's percentile has 200-draw resolution.** The reported 76% is accurate to about half a percent, which is far finer than the margin by which the criterion is decided, but the number should not be read as more precise than that.",
+      "**The pre-registered robustness and implementation protocol is incomplete.** Holding periods beyond one month, dropping the most correlated individual markets, and integer-contract sizing with multipliers were not executed. The four kill criteria were evaluated, but this is not a claim of full protocol completion."
+    ]
+  }
+}

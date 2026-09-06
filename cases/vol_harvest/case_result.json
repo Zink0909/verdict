@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "case_id": "retail-short-volatility",
+  "role": "foundation",
+  "state": "verdict-delivered",
+  "evidence_pattern": "friction / implementability",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "raw real-chain platform logs are unavailable for recomputation"
+    ]
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/retail-short-volatility.json",
+      "sha256": "0a4e49d3730094860bc9491d02cfabc6466fcd9ff23c21011b462bb74eea88c7",
+      "bytes": 2983
+    },
+    {
+      "path": "cases/vol_harvest/results.json",
+      "sha256": "94f52ec8c767a892483f8a11e1a8cf877632c69d92460d8537644643836c3e0f",
+      "bytes": 3857
+    },
+    {
+      "path": "cases/vol_harvest/report.md",
+      "sha256": "f2206be7fddbabf713c0660bbe1c7f54cc55ec97807ceecd78ae2c53f83b15a5",
+      "bytes": 9180
+    },
+    {
+      "path": "cases/vol_harvest/report.html",
+      "sha256": "2b4d4b4114270f6fadfc3c5d98f5e43cd0c3a1a721b72133a4f7be9b5ee3bb53",
+      "bytes": 266118
+    }
+  ]
+}

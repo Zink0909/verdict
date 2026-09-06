@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "case_id": "buy-the-dip-long-calls",
+  "role": "foundation",
+  "state": "verdict-delivered",
+  "evidence_pattern": "point-in-time / expression",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "option-clock recovery needs vendor-platform re-derivation"
+    ]
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/buy-the-dip-long-calls.json",
+      "sha256": "2518542b7b1f9ae7c7874cda95ec241a7f0f3e39a214a13c4cf92c18ff07f96b",
+      "bytes": 3414
+    },
+    {
+      "path": "cases/buy_the_dip/results.json",
+      "sha256": "3234c391d444d51b953893d294ad0a77a921fb3655a80d3d0058cad192c2d424",
+      "bytes": 8591
+    },
+    {
+      "path": "cases/buy_the_dip/results_attribution.parquet",
+      "sha256": "b0632444405acf91c6ebbdf1fabe56f07b27e5d7a64f42f6750de7b2c3146ded",
+      "bytes": 130882
+    },
+    {
+      "path": "cases/buy_the_dip/results_robustness.csv",
+      "sha256": "09f0744e2192e8dae7dd098714bc53a6d6aff2c8e6d9d05371aeb2bc97a5848f",
+      "bytes": 1804
+    },
+    {
+      "path": "cases/buy_the_dip/report.md",
+      "sha256": "84d51dcadb14e211325fbfb1e6f8a1bbed8c1adca90a357c0cf58dcdef476c68",
+      "bytes": 13666
+    },
+    {
+      "path": "cases/buy_the_dip/report.html",
+      "sha256": "79cb772a54d5538fecd94133a9e0e7fd20ba15362a884ece49d110a40a03c0e6",
+      "bytes": 272724
+    }
+  ]
+}

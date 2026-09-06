@@ -23,7 +23,9 @@ micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
 
 micromamba run -n verdict streamlit run app.py          # the working surface
-micromamba run -n verdict python scripts/regress.py     # 49 known-answer gates, seconds
+micromamba run -n verdict python scripts/regress.py     # 56 known-answer gates, seconds
+micromamba run -n verdict python scripts/run_case.py --all --verify
+micromamba run -n verdict python scripts/audit_integrity.py
 ```
 
 ## The working surface
@@ -54,7 +56,21 @@ each ends in a registry card ([`registry/`](registry)) recording the claim, the
 pre-registered protocol, the verdict, and its honest limitations. The registry index is
 regenerated from the cards, so it cannot drift.
 
-A fifth claim is recorded as **not adjudicable here**: the protocol is written and
+All delivered cases also implement one platform contract. `verdict.case_contract`
+defines their commands, reports, known protocol gaps and normalized `case_result.json`;
+the latter hashes every declared evidence artifact. Use `scripts/run_case.py CASE_ID
+--execute` to recompute one case, `--report-only` to rebuild its presentation, or
+`--all --verify` for the non-computing content-addressed check. The repository-wide
+`scripts/audit_integrity.py` then closes the chain across catalog, registry cards,
+artifact hashes, protocol coverage, Agent providers and generated site pages.
+
+These four are the **foundational studies**: they are the provenance of the reusable
+mechanism, point-in-time, friction and deployment-drift playbooks. A later extension,
+[`cases/tsmom`](cases/tsmom), applies the same contracts to post-publication commodity
+time-series momentum. It is kept separate in the canonical case catalog so adding a case
+cannot rewrite the system's four-project origin story.
+
+A further claim is recorded as **not adjudicable here**: the protocol is written and
 pre-registered, and the corpus needed to execute it has not been built. That state exists
 because the alternative — silence, or a verdict on data that was never assembled — is worse.
 
@@ -105,10 +121,13 @@ Two properties are structural rather than promised:
   draft is withheld rather than published. Rounding is judged at the precision the
   figure was written to.
 
-The agent chooses which tools to call and writes the prose. It never computes: the
-numbers come from `verdict.agent.tools`, which runs the framework. The model is a
-swappable dependency (`llm.py`), so the whole layer — schema validation, the tool
-loop, both guardrails — is tested offline and deterministically.
+The agent chooses which tools to call and writes the prose. It never computes. A
+case-scoped provider supplies the numbers: `complexity-voc` has an executable framework
+adapter, while the other four delivered cases have explicitly labelled read-only
+providers over pinned result documents. Evidence replay is never presented as a fresh
+recomputation. The model is a swappable dependency (`llm.py`), so the whole layer —
+schema validation, provider routing, the tool loop and both guardrails — is tested
+offline and deterministically.
 
 **Evaluating the agent** is possible here in a way it usually is not: two published
 critiques of the complexity claim name the specific tests that settled it, so a
@@ -129,9 +148,11 @@ reach.
 
 ## Status
 
-Built: the framework, the working surface, the agent layer, the claim-registry site, 49 passing gates, and the four cases in the
-table. Each case ends in a registry card, and each report is generated from its
-results file so the numbers cannot drift away from the code.
+Built: the framework, the working surface, the multi-case Agent provider layer, the
+claim-registry site, 56 passing gates, four foundational cases, and the TSMOM extension.
+Each completed case ends in a registry card and a normalized, content-addressed result
+envelope; the integrity audit rejects drift between results, reports, cards, providers
+and site output.
 
 Not built yet: the retrofit of one further completed study — a chart-pattern CNN
 whose validation alpha at t = 2.4 collapsed to t = −0.6 on a sealed block — and a

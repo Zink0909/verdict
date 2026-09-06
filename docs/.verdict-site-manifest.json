@@ -1,0 +1,12 @@
+{
+  "generated": [
+    ".nojekyll",
+    "agent.html",
+    "cases/buy_the_dip.html",
+    "cases/complexity.html",
+    "cases/drift.html",
+    "cases/tsmom.html",
+    "cases/vol_harvest.html",
+    "index.html"
+  ]
+}

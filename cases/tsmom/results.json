@@ -1,0 +1,348 @@
+{
+  "label": "qc-7-market",
+  "config": {
+    "vol_window": 60,
+    "lookback_months": 12,
+    "sigma_each": 0.15,
+    "max_pos": 4.0,
+    "markets": [
+      "CL",
+      "NG",
+      "GC",
+      "HG",
+      "ZC",
+      "ZS",
+      "ZW"
+    ],
+    "sign_draws": 200
+  },
+  "span": [
+    "2010-07-31",
+    "2026-08-31"
+  ],
+  "strategy": {
+    "n_months": 193,
+    "mean_monthly": 0.0015512803190202123,
+    "ann_return": 0.018615363828242547,
+    "ann_vol": 0.08646449557429399,
+    "sharpe": 0.2152948872782983,
+    "sharpe_ci": [
+      -0.17232916455376815,
+      0.5940832926362075
+    ],
+    "sharpe_ci_excludes_zero": false,
+    "mean_ci_monthly": [
+      -0.0011046103237346656,
+      0.004394448587905772
+    ],
+    "mean_ci_excludes_zero": false
+  },
+  "benchmarks": {
+    "passive_long": {
+      "n_months": 193,
+      "mean_monthly": 0.0008281162284617864,
+      "ann_return": 0.009937394741541438,
+      "ann_vol": 0.10218531319530463,
+      "sharpe": 0.0972487574858072,
+      "sharpe_ci": [
+        -0.47138459937726296,
+        0.5381440632249667
+      ],
+      "sharpe_ci_excludes_zero": false,
+      "mean_ci_monthly": [
+        -0.003935498797036694,
+        0.004517308004504228
+      ],
+      "mean_ci_excludes_zero": false
+    },
+    "xs_momentum": {
+      "n_months": 193,
+      "mean_monthly": 0.0003149512343098579,
+      "ann_return": 0.003779414811718295,
+      "ann_vol": 0.03882859757418494,
+      "sharpe": 0.09733585676117813,
+      "sharpe_ci": [
+        -0.3745598775995292,
+        0.5592084783193872
+      ],
+      "sharpe_ci_excludes_zero": false,
+      "mean_ci_monthly": [
+        -0.0012139648611639354,
+        0.001715946522359964
+      ],
+      "mean_ci_excludes_zero": false
+    }
+  },
+  "K1_spanning": {
+    "alpha_monthly": 0.0013320876015533866,
+    "alpha_annualized": 0.01598505121864064,
+    "t_stat_hac": 0.9638197283581468,
+    "alpha_ci_monthly": [
+      -0.001376763075060709,
+      0.004040938278167482
+    ],
+    "alpha_ci_annualized": [
+      -0.016521156900728508,
+      0.04849125933800978
+    ],
+    "betas": {
+      "passive_long": -0.09922973080665431,
+      "xs_momentum": 0.9568670799277391
+    },
+    "beta_t": {
+      "passive_long": -0.6183077380282034,
+      "xs_momentum": 4.794820092619898
+    },
+    "r_squared": 0.18288941978221696,
+    "nobs": 193,
+    "alpha_indistinguishable_from_zero": true
+  },
+  "K1_fires": true,
+  "K4_sign_randomisation": {
+    "draws": 200,
+    "random_sharpe_mean": 0.02718570940282602,
+    "random_sharpe_p05": -0.3859879764271722,
+    "random_sharpe_p95": 0.4662889382512208,
+    "strategy_sharpe": 0.2152948872782983,
+    "strategy_percentile_vs_random": 0.765,
+    "signal_not_distinguishable_from_random": true
+  },
+  "K4_fires": true,
+  "K3_costs": {
+    "mean_turnover_per_rebalance": 0.2553537096854966,
+    "breakeven_cost_bps": 60.750255828702414,
+    "plausible_cost_bps": 10.0,
+    "net_at_plausible": {
+      "n_months": 193,
+      "mean_monthly": 0.0012959266093347168,
+      "ann_return": 0.015551119312016602,
+      "ann_vol": 0.08667512689358253,
+      "sharpe": 0.1794184775882689,
+      "sharpe_ci": [
+        -0.21240053092628094,
+        0.5566614925572598
+      ],
+      "sharpe_ci_excludes_zero": false,
+      "mean_ci_monthly": [
+        -0.0013655277991191977,
+        0.004142271861051738
+      ],
+      "mean_ci_excludes_zero": false
+    },
+    "cost_convention": "bps per unit of absolute position change (round turn already counted)",
+    "grid": [
+      {
+        "cost_bps": 0,
+        "mean_per_period": 0.0015512803190202123,
+        "mean_annualized": 0.018615363828242547,
+        "sharpe": 0.2152948872782983
+      },
+      {
+        "cost_bps": 5,
+        "mean_per_period": 0.0014236034641774643,
+        "mean_annualized": 0.01708324157012957,
+        "sharpe": 0.197336431794441
+      },
+      {
+        "cost_bps": 10,
+        "mean_per_period": 0.0012959266093347168,
+        "mean_annualized": 0.015551119312016602,
+        "sharpe": 0.1794184775882689
+      },
+      {
+        "cost_bps": 20,
+        "mean_per_period": 0.001040572899649219,
+        "mean_annualized": 0.01248687479579063,
+        "sharpe": 0.14370692252111886
+      },
+      {
+        "cost_bps": 40,
+        "mean_per_period": 0.0005298654802782266,
+        "mean_annualized": 0.00635838576333872,
+        "sharpe": 0.07280052405859683
+      }
+    ]
+  },
+  "K3_fires": true,
+  "diagnostic_tilt_vs_timing": {
+    "tilt_ann": 0.01867279018310004,
+    "timing_ann": -5.742635485747389e-05,
+    "tilt_share_of_total": 1.0030848902759752,
+    "timing_sharpe": -0.0008901783475489246
+  },
+  "diagnostic_per_market_ann": {
+    "CL": 0.005420692224691472,
+    "NG": 0.007398735383984552,
+    "GC": 0.0007064755992569101,
+    "HG": 0.006183821394426431,
+    "ZC": 0.004697534757285979,
+    "ZS": -0.013435770295468465,
+    "ZW": -0.0017629489149428182
+  },
+  "diagnostic_equal_weight_no_vol_scaling": {
+    "n_months": 193,
+    "mean_monthly": 0.0017442854913252877,
+    "ann_return": 0.020931425895903452,
+    "ann_vol": 0.13364828819623725,
+    "sharpe": 0.15661574254635874,
+    "sharpe_ci": [
+      -0.26815848831964373,
+      0.6106444926785967
+    ],
+    "sharpe_ci_excludes_zero": false,
+    "mean_ci_monthly": [
+      -0.002771512424419266,
+      0.006810876013405743
+    ],
+    "mean_ci_excludes_zero": false
+  },
+  "robustness": [
+    {
+      "axis": "lookback_months",
+      "value": 3,
+      "sharpe": 0.006521320998139584,
+      "sharpe_ci": [
+        -0.458464851157982,
+        0.5401969694210392
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "lookback_months",
+      "value": 6,
+      "sharpe": -0.12289600541331112,
+      "sharpe_ci": [
+        -0.5586380846332336,
+        0.3399038925171903
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "lookback_months",
+      "value": 9,
+      "sharpe": 0.006379647570791217,
+      "sharpe_ci": [
+        -0.38198507275696214,
+        0.4514226533144224
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "lookback_months",
+      "value": 12,
+      "sharpe": 0.2152948872782983,
+      "sharpe_ci": [
+        -0.17232916455376815,
+        0.5940832926362075
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "lookback_months",
+      "value": 18,
+      "sharpe": 0.44961730779194886,
+      "sharpe_ci": [
+        0.0014318276690750524,
+        0.8313452422957034
+      ],
+      "ci_excludes_zero": true
+    },
+    {
+      "axis": "lookback_months",
+      "value": 24,
+      "sharpe": 0.24166961476071747,
+      "sharpe_ci": [
+        -0.2650951043303136,
+        0.7256797078313947
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "vol_window_days",
+      "value": 20,
+      "sharpe": 0.10519580788021687
+    },
+    {
+      "axis": "vol_window_days",
+      "value": 60,
+      "sharpe": 0.2152948872782983
+    },
+    {
+      "axis": "vol_window_days",
+      "value": 120,
+      "sharpe": 0.2505177072811502
+    },
+    {
+      "axis": "drop_sector",
+      "value": "energy",
+      "sharpe": -0.018988418899408697
+    },
+    {
+      "axis": "drop_sector",
+      "value": "metals",
+      "sharpe": 0.16776270157036594
+    },
+    {
+      "axis": "drop_sector",
+      "value": "grains",
+      "sharpe": 0.41293273043706386
+    },
+    {
+      "axis": "sample",
+      "value": "drop_last_12m",
+      "n_months": 181,
+      "sharpe": 0.11486651410918187
+    },
+    {
+      "axis": "sample",
+      "value": "full_7_markets_only",
+      "n_months": 160,
+      "sharpe": 0.28707352685510046
+    }
+  ],
+  "protocol_coverage": {
+    "executed": [
+      "lookback horizons",
+      "volatility estimation window",
+      "drop sectors"
+    ],
+    "not_executed": [
+      "holding periods beyond one month",
+      "drop the most correlated markets",
+      "integer-contract and multiplier-aware sizing"
+    ],
+    "complete": false
+  },
+  "conclusion_stable_across_perturbations": false,
+  "K2_sealed_block": {
+    "seal_from": "2021-01-01",
+    "unsealed": true,
+    "opening": {
+      "reason": "final evaluation of the pre-registered protocol",
+      "fingerprint": "06c0a7fb49b4"
+    },
+    "n_months": 67,
+    "mean_monthly": 0.004658993005957374,
+    "ann_return": 0.055907916071488484,
+    "ann_vol": 0.0906769455979179,
+    "sharpe": 0.6165615273301863,
+    "sharpe_ci": [
+      -0.11678687974674924,
+      1.2111085598634324
+    ],
+    "sharpe_ci_excludes_zero": false,
+    "mean_ci_monthly": [
+      -0.0007064751829896657,
+      0.009757181188924956
+    ],
+    "mean_ci_excludes_zero": false
+  },
+  "K2_fires": true,
+  "kill_criteria_fired": [
+    "K1_fires",
+    "K2_fires",
+    "K3_fires",
+    "K4_fires"
+  ],
+  "claim_survives": false
+}

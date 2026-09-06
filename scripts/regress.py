@@ -19,9 +19,12 @@ effect that is really there, otherwise a null proves nothing.
   reporting           requires-limitations, embeds-figures, registry-card-states
   agent (layer B)     schema-requires-kill-criteria, tools-are-strict,
                       guardrail-refuses-tuning, number-audit, pipeline-offline,
-                      pipeline-catches-planted-number, data-gated-state, eval-scoring
+                      pipeline-catches-planted-number, provider-coverage,
+                      data-gated-state, eval-scoring
+  platform            case-result-manifests, repository-integrity-audit
   site                index-covers-registry
   app (front end)     form-validation, pages-render
+  case: tsmom         controls (common / idio / tilt / noise)
 """
 import json
 import os
@@ -181,6 +184,11 @@ def t_splits_time_order():
             raise AssertionError(f"bad boundaries accepted: {bad}")
         except ValueError:
             pass
+    try:
+        SP.time_splits(dates[::-1], "2016-12-31", "2019-12-31")
+        raise AssertionError("unsorted dates were accepted")
+    except ValueError:
+        pass
 
 
 def t_splits_no_shuffle_api():
@@ -490,7 +498,8 @@ def t_registry_card_states():
         index = (RP.Path(d) / "README.md").read_text()
         assert "demo-claim" in index and "verdict-delivered" in index
         gated = {"id": "gated-claim", "state": "protocol-ready-data-gated",
-                 "claim": {"source": "Author (2020)", "claimed_effect": "other effect"}}
+                 "claim": {"source": "Author (2020)", "claimed_effect": "other effect"},
+                 "why_not_adjudicated": {"blocker": "source corpus is not assembled"}}
         RP.write_card(gated, d)
         index = (RP.Path(d) / "README.md").read_text()
         assert "not adjudicable" in index and index.count("|") > 10
@@ -727,7 +736,9 @@ def _fast_agent_run(plant_error=False, data_available=True):
         Reply(text="Done."),
         write,
     ])
-    return pipeline.run_audit(model, "paper text", data_available=data_available)
+    return pipeline.run_audit(model, "paper text", data_available=data_available,
+                              approve=lambda _claim, _protocol: True,
+                              case_id="complexity-voc")
 
 
 def t_agent_pipeline_offline():
@@ -746,8 +757,52 @@ def t_agent_pipeline_catches_planted_number():
     """A figure the model invented is flagged rather than published."""
     run = _fast_agent_run(plant_error=True)
     assert not run.number_audit["clean"]
+    assert run.state == "draft-withheld", run.state
     assert 41.7 in run.number_audit["unsupported"], run.number_audit
     assert any("unsupported" in n for n in run.notes), run.notes
+
+
+def t_agent_requires_explicit_approval():
+    """No callback means no human approval, so no analysis may execute."""
+    from verdict.agent import pipeline
+    from verdict.agent.demo import PAPER_STAND_IN, scripted_model
+    run = pipeline.run_audit(scripted_model(), PAPER_STAND_IN, case_id="complexity-voc")
+    assert not run.approved and run.state == "in-progress"
+    assert run.tool_trace == [] and run.verdict_text == ""
+
+
+def t_agent_rejects_data_gated_case():
+    """A registered but unexecuted case must never acquire a tool provider."""
+    from verdict.agent import providers
+    try:
+        providers.get_provider("lazy-prices-10k-changes")
+        raise AssertionError("data-gated case acquired an execution provider")
+    except ValueError as exc:
+        assert "data-gated" in str(exc)
+
+
+def t_agent_providers_cover_delivered_cases():
+    """Every delivered case has an honest case-scoped provider and no others do."""
+    from verdict.agent import providers
+    from verdict.catalog import CASES
+
+    delivered = {case.card_id for case in CASES if case.role != "data-gated"}
+    assert set(providers.supported_case_ids()) == delivered
+    for spec in CASES:
+        if spec.role == "data-gated":
+            continue
+        provider = providers.get_provider(spec.card_id)
+        assert provider.mode == spec.agent_mode
+        names = {item["name"] for item in provider.definitions()}
+        assert names
+        if provider.mode == "evidence-readonly":
+            assert names == {"describe_case_evidence", "read_case_result"}
+            description = provider.run_tool("describe_case_evidence", {})
+            assert description["execution_mode"] == "evidence-readonly"
+            document, sections = next(iter(description["documents"].items()))
+            evidence = provider.run_tool(
+                "read_case_result", {"document": document, "section": sections[0]})
+            assert evidence["case_id"] == spec.card_id and "value" in evidence
 
 
 def t_agent_data_gated_state():
@@ -808,6 +863,42 @@ def t_site_index_covers_registry():
         assert jargon.lower() not in lede.lower(), f"positioning language uses {jargon!r}"
 
 
+def t_case_catalog_is_complete():
+    """One inventory must cover every card and keep four foundations explicit."""
+    from verdict.catalog import CASE_BY_ID, FOUNDATIONAL_CASES
+    card_ids = {p.stem for p in RP.Path(ROOT, "registry").glob("*.json")}
+    assert card_ids == set(CASE_BY_ID), (card_ids ^ set(CASE_BY_ID))
+    assert len(FOUNDATIONAL_CASES) == 4
+    for case in FOUNDATIONAL_CASES:
+        assert RP.Path(ROOT, "cases", case.folder).is_dir(), case
+
+
+def t_case_result_manifests():
+    """Every delivered case has the same normalized, content-addressed envelope."""
+    from pathlib import Path
+    from verdict.case_contract import CaseResult, load_case_result
+    from verdict.catalog import CASES
+
+    root = Path(ROOT)
+    for spec in CASES:
+        if spec.role == "data-gated":
+            continue
+        card = json.loads((root / "registry" / f"{spec.card_id}.json").read_text())
+        actual = load_case_result(root / "cases" / spec.folder / "case_result.json")
+        expected = CaseResult.build(spec, root, card["state"]).to_dict()
+        assert actual == expected, f"stale case_result.json for {spec.card_id}"
+        assert actual["artifacts"] and all(a["sha256"] for a in actual["artifacts"])
+
+
+def t_repository_integrity_audit():
+    """The cross-layer audit must close the card → artifact → site → agent chain."""
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    import audit_integrity
+
+    result = audit_integrity.audit(RP.Path(ROOT))
+    assert result["ok"], "\n".join(result["errors"])
+
+
 # ------------------------------------------------------------------- app ----
 
 def t_app_form_validation():
@@ -860,6 +951,27 @@ def t_app_pages_render():
     assert len(at.metric) >= 3, "the evaluation screen reported no figures"
 
 
+def t_tsmom_controls():
+    """The tsmom case must separate a claim-specific effect from three impostors.
+
+    Two seeds of each world rather than the six the case file runs, to keep this
+    suite in seconds; `cases/tsmom/validate.py` is the full version. The point of
+    having it here at all is that the positive control travels with the negative
+    ones: COMMON must come back clean, or a null this machinery produces later
+    carries no information.
+    """
+    sys.path.insert(0, os.path.join(ROOT, "cases", "tsmom"))
+    from validate import synth, CONTROLS   # noqa: E402
+    from run import execute                # noqa: E402
+
+    for kind, _blurb, checks in CONTROLS:
+        for seed in (0, 1):
+            res = execute(*synth(kind, seed=seed), sign_draws=40,
+                          seal_from=None, label=f"{kind}-{seed}")
+            for name, fn in checks:
+                assert fn(res), f"{kind} seed {seed}: {name}"
+
+
 GATES = [
     ("compile", t_compile),
     ("ridge-vs-sklearn", t_ridge_vs_sklearn),
@@ -905,11 +1017,18 @@ GATES = [
     ("agent-number-audit", t_agent_number_audit),
     ("agent-pipeline-offline", t_agent_pipeline_offline),
     ("agent-pipeline-catches-planted-number", t_agent_pipeline_catches_planted_number),
+    ("agent-requires-explicit-approval", t_agent_requires_explicit_approval),
+    ("agent-rejects-data-gated-case", t_agent_rejects_data_gated_case),
+    ("agent-providers-cover-delivered-cases", t_agent_providers_cover_delivered_cases),
     ("agent-data-gated-state", t_agent_data_gated_state),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("site-index-covers-registry", t_site_index_covers_registry),
+    ("case-catalog-is-complete", t_case_catalog_is_complete),
+    ("case-result-manifests", t_case_result_manifests),
+    ("repository-integrity-audit", t_repository_integrity_audit),
     ("app-form-validation", t_app_form_validation),
     ("app-pages-render", t_app_pages_render),
+    ("tsmom-controls", t_tsmom_controls),
 ]
 
 for nm, fn in GATES:

@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import html
 import json
-import shutil
 import subprocess
 import sys
 from datetime import date
@@ -29,13 +28,10 @@ SITE = ROOT / "docs"        # GitHub Pages serves main:/docs directly
 REGISTRY = ROOT / "registry"
 CASES = ROOT / "cases"
 
-# Case id -> the directory that holds its report source.
-CASE_DIRS = {
-    "complexity-voc": "complexity",
-    "buy-the-dip-long-calls": "buy_the_dip",
-    "retail-short-volatility": "vol_harvest",
-    "gamma-signal-drift": "drift",
-}
+from verdict.catalog import CASE_DIRS  # noqa: E402
+from verdict.report import validate_card  # noqa: E402
+
+MANIFEST = ".verdict-site-manifest.json"
 
 CSS = """
 :root {
@@ -149,7 +145,9 @@ def _clip(text: str, n: int) -> str:
 def load_cards() -> list[dict]:
     cards = []
     for p in sorted(REGISTRY.glob("*.json")):
-        cards.append(json.loads(p.read_text()))
+        card = json.loads(p.read_text())
+        validate_card(card)
+        cards.append(card)
     order = {"verdict-delivered": 0, "in-progress": 1, "protocol-ready-data-gated": 2}
     return sorted(cards, key=lambda c: (order.get(c["state"], 3), c["id"]))
 
@@ -367,15 +365,23 @@ model's turns are replayed. A live run needs the paper, the SDK, and an API key.
 
 
 def main() -> int:
-    if SITE.exists():
-        shutil.rmtree(SITE)
-    SITE.mkdir(parents=True)
+    SITE.mkdir(parents=True, exist_ok=True)
+    manifest_path = SITE / MANIFEST
+    if manifest_path.exists():
+        previous = json.loads(manifest_path.read_text())
+        for rel in previous.get("generated", []):
+            target = (SITE / rel).resolve()
+            if SITE.resolve() in target.parents and target.is_file():
+                target.unlink()
     (SITE / ".nojekyll").write_text("")
 
     cards = load_cards()
     links = render_case_pages()
     (SITE / "index.html").write_text(build_index(cards, links))
     (SITE / "agent.html").write_text(build_agent_page())
+
+    generated = ["index.html", "agent.html", ".nojekyll", *links.values()]
+    manifest_path.write_text(json.dumps({"generated": sorted(generated)}, indent=2) + "\n")
 
     total = sum(p.stat().st_size for p in SITE.rglob("*") if p.is_file())
     print(f"built {SITE}/  ({total/1e6:.1f} MB, {len(list(SITE.rglob('*.html')))} pages)")
@@ -384,6 +390,7 @@ def main() -> int:
     missing = [c["id"] for c in cards if c["id"] not in links and c["state"] != "protocol-ready-data-gated"]
     if missing:
         print(f"  ! delivered verdicts with no page: {missing}")
+        return 1
     return 0
 
 

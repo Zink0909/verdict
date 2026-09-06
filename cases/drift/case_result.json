@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "case_id": "gamma-signal-drift",
+  "role": "foundation",
+  "state": "verdict-delivered",
+  "evidence_pattern": "deployment / distribution shift",
+  "protocol_coverage": {
+    "complete": true,
+    "gaps": []
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/gamma-signal-drift.json",
+      "sha256": "4ad3282c5ffb3cd270ea2871a1066fbd2a57ff045faac2ee23520551aacbac0e",
+      "bytes": 2527
+    },
+    {
+      "path": "cases/drift/results.json",
+      "sha256": "b5c9bad316d2bf96e436fa47f398bef7d286c4591c21912316b21ac5fa2316cf",
+      "bytes": 2923
+    },
+    {
+      "path": "cases/drift/results_rolling.csv",
+      "sha256": "d0dc3aa2218c207f0f4cd18dfbab21721246fa68b2bc1b9462925e40444998ea",
+      "bytes": 29298
+    },
+    {
+      "path": "cases/drift/report.md",
+      "sha256": "43f79f5b3830c62134f921b1b88e72e73a88e7807427a8801276d800b18925b1",
+      "bytes": 7986
+    },
+    {
+      "path": "cases/drift/report.html",
+      "sha256": "c50f94579d4018f694fc59edd8d3001ae7948436a0b6ba19bf3b330c6978fd34",
+      "bytes": 355358
+    }
+  ]
+}

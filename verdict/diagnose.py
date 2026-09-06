@@ -131,9 +131,17 @@ def drift(df, time_col: str, score_col: str, label_col: str, window: int = 150,
 
     d = (df[[time_col, score_col, label_col]].dropna()
          .sort_values(time_col).reset_index(drop=True))
+    if window <= 1 or baseline_n <= 0 or min_class <= 0:
+        raise ValueError("window must exceed one; baseline_n and min_class must be positive")
+    if len(d) < window:
+        raise ValueError("not enough observations for one drift window")
     t = pd.DatetimeIndex(pd.to_datetime(d[time_col]))
     y = d[label_col].to_numpy(int)
     s = d[score_col].to_numpy(float)
+    if t.hasnans or not np.isfinite(s).all():
+        raise ValueError("timestamps and scores must be finite and parseable")
+    if not set(np.unique(y)).issubset({0, 1}):
+        raise ValueError("drift labels must be binary (0/1)")
     rows = []
     for i in range(window, len(d) + 1):
         a, b = i - window, i
@@ -144,6 +152,8 @@ def drift(df, time_col: str, score_col: str, label_col: str, window: int = 150,
         rows.append({"date": t[b - 1], "n": b - a, "auc": auc(yy, ss),
                      "auc_lo": lo, "auc_hi": hi,
                      "calib_err": abs(ss.mean() - yy.mean())})
+    if not rows:
+        raise ValueError("no valid drift windows contain both classes in sufficient counts")
     rolling = pd.DataFrame(rows).set_index("date")
     series = rolling["auc"].to_numpy(float)
 

@@ -49,7 +49,7 @@
       "id": "transaction-costs",
       "label": "Charge realistic trading frictions",
       "source": "standard practice",
-      "any_of": ["cost", "friction", "spread", "turnover", "slippage"]
+      "any_of": ["cost", "friction", "bid.?ask", "turnover", "slippage"]
     },
     {
       "id": "subsample-stability",

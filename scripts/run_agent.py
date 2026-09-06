@@ -5,13 +5,14 @@
     micromamba run -n verdict python scripts/run_agent.py --offline
 
     # live: needs `pip install anthropic` and credentials in the environment
-    micromamba run -n verdict python scripts/run_agent.py --paper path/to/paper.txt
+    micromamba run -n verdict python scripts/run_agent.py --paper path/to/paper.txt \
+      --case-id time-series-momentum
 
     # the honest third outcome: claim extracted, protocol registered, no data to run it
     micromamba run -n verdict python scripts/run_agent.py --offline --data-gated
 
 Writes the full run — claim card, protocol, every tool call and result, the
-verdict draft, and the number audit — to cases/complexity/agent_run/.
+verdict draft, and the number audit — to the selected case's `agent_run/`.
 """
 from __future__ import annotations
 
@@ -23,11 +24,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from verdict.agent import demo, pipeline, tools     # noqa: E402
+from verdict.agent import demo, pipeline, providers  # noqa: E402
 from verdict.agent.llm import MODEL, AnthropicModel  # noqa: E402
-
-OUT = ROOT / "cases" / "complexity" / "agent_run"
-
+from verdict.catalog import CASE_BY_ID               # noqa: E402
 
 def approval_gate(auto: bool):
     """The human in the loop. The agent drafts; a person signs off before execution."""
@@ -55,9 +54,15 @@ def main() -> int:
                     help="offline only: inject an unsupported figure to show the audit catch it")
     ap.add_argument("--yes", action="store_true", help="approve the protocol without prompting")
     ap.add_argument("--max-steps", type=int, default=8)
+    ap.add_argument("--case-id", choices=providers.supported_case_ids(),
+                    default="complexity-voc",
+                    help="case-scoped tool provider (default: complexity-voc)")
     a = ap.parse_args()
 
     if a.offline:
+        if a.case_id != "complexity-voc":
+            ap.error("the offline fixture is specific to complexity-voc; use a live model "
+                     "for another case provider")
         model, paper, provenance = (demo.scripted_model(a.plant_error), demo.PAPER_STAND_IN,
                                     "scripted")
         print("OFFLINE RUN — the model's turns are a fixture; every number below is computed "
@@ -68,7 +73,8 @@ def main() -> int:
         model, paper, provenance = AnthropicModel(), a.paper.read_text(), MODEL
 
     run = pipeline.run_audit(model, paper, data_available=not a.data_gated,
-                             approve=approval_gate(a.yes), max_steps=a.max_steps)
+                             approve=approval_gate(a.yes), max_steps=a.max_steps,
+                             case_id=a.case_id)
 
     print("\n--- execution " + "-" * 49)
     for step in run.tool_trace:
@@ -93,15 +99,20 @@ def main() -> int:
     for note in run.notes:
         print(f"  note: {note}")
 
-    OUT.mkdir(parents=True, exist_ok=True)
+    spec = CASE_BY_ID[a.case_id]
+    out = ROOT / "cases" / spec.folder / "agent_run"
+    out.mkdir(parents=True, exist_ok=True)
     payload = run.to_dict()
-    payload["provenance"] = {"model": provenance, "tools": [d["name"] for d in tools.definitions()],
+    provider = providers.get_provider(a.case_id)
+    payload["provenance"] = {"model": provenance,
+                             "provider_mode": provider.mode,
+                             "tools": [d["name"] for d in provider.definitions()],
                              "note": "tool results are computed by the framework in every mode; "
                                      "in a scripted run the model's turns are a fixture"}
-    (OUT / "run.json").write_text(json.dumps(payload, indent=2, default=str))
+    (out / "run.json").write_text(json.dumps(payload, indent=2, default=str))
     if run.verdict_text:
-        (OUT / "verdict_draft.md").write_text(run.verdict_text + "\n")
-    print(f"\nsaved {OUT/'run.json'}")
+        (out / "verdict_draft.md").write_text(run.verdict_text + "\n")
+    print(f"\nsaved {out/'run.json'}")
     return 0
 
 

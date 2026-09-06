@@ -12,6 +12,17 @@ import pandas as pd
 import statsmodels.api as sm
 
 
+def _bootstrap_input(returns, n_boot: int, block: int, ci: float) -> np.ndarray:
+    r = pd.Series(returns, dtype=float).dropna().to_numpy()
+    if n_boot <= 0:
+        raise ValueError("n_boot must be positive")
+    if block <= 0:
+        raise ValueError("block must be positive")
+    if not 0 < ci < 1:
+        raise ValueError("ci must be between zero and one")
+    return r
+
+
 def sharpe(returns, periods_per_year: int = 12) -> float:
     r = pd.Series(returns).dropna()
     if len(r) < 2 or r.std(ddof=1) == 0:
@@ -23,7 +34,7 @@ def block_bootstrap_sharpe_ci(returns, n_boot: int = 2000, block: int = 6,
                               ci: float = 0.95, seed: int = 0,
                               periods_per_year: int = 12):
     """Moving-block bootstrap CI for the annualized Sharpe ratio."""
-    r = pd.Series(returns).dropna().to_numpy()
+    r = _bootstrap_input(returns, n_boot, block, ci)
     if len(r) < block * 2:
         return (float("nan"), float("nan"))
     rng = np.random.default_rng(seed)
@@ -39,6 +50,23 @@ def block_bootstrap_sharpe_ci(returns, n_boot: int = 2000, block: int = 6,
     return (float(lo), float(hi))
 
 
+def block_bootstrap_mean_ci(returns, n_boot: int = 2000, block: int = 6,
+                            ci: float = 0.95, seed: int = 0):
+    """Moving-block bootstrap interval for the arithmetic mean per period."""
+    r = _bootstrap_input(returns, n_boot, block, ci)
+    if len(r) < block * 2:
+        return (float("nan"), float("nan"))
+    rng = np.random.default_rng(seed)
+    n_blocks = int(np.ceil(len(r) / block))
+    means = []
+    for _ in range(n_boot):
+        starts = rng.integers(0, len(r) - block + 1, size=n_blocks)
+        sample = np.concatenate([r[s:s + block] for s in starts])[:len(r)]
+        means.append(float(sample.mean()))
+    lo, hi = np.percentile(means, [(1 - ci) / 2 * 100, (1 + ci) / 2 * 100])
+    return float(lo), float(hi)
+
+
 def spanning(y, X: pd.DataFrame, hac_lags: int = 3) -> dict:
     """Regress a return series on benchmark factors; the surviving alpha is the
     incremental content beyond what the benchmarks already deliver.
@@ -50,9 +78,12 @@ def spanning(y, X: pd.DataFrame, hac_lags: int = 3) -> dict:
         raise ValueError("not enough observations for spanning regression")
     Xc = sm.add_constant(df.iloc[:, 1:])
     res = sm.OLS(df["y"], Xc).fit(cov_type="HAC", cov_kwds={"maxlags": hac_lags})
+    alpha_ci = res.conf_int().loc["const"]
     return {
         "alpha": float(res.params["const"]),
         "alpha_t": float(res.tvalues["const"]),
+        "alpha_se": float(res.bse["const"]),
+        "alpha_ci": [float(alpha_ci.iloc[0]), float(alpha_ci.iloc[1])],
         "betas": {c: float(res.params[c]) for c in df.columns[1:]},
         "beta_t": {c: float(res.tvalues[c]) for c in df.columns[1:]},
         "r2": float(res.rsquared),
@@ -159,6 +190,8 @@ def clark_west(actual, f_small, f_big, hac_lags: int = 3) -> dict:
     a = np.asarray(actual, dtype=float)
     fs = np.asarray(f_small, dtype=float)
     fb = np.asarray(f_big, dtype=float)
+    if a.ndim != 1 or fs.ndim != 1 or fb.ndim != 1 or not (len(a) == len(fs) == len(fb)):
+        raise ValueError("actual and forecasts must be one-dimensional and equally sized")
     adj = (a - fs) ** 2 - ((a - fb) ** 2 - (fs - fb) ** 2)
     t = _hac_tstat(adj, hac_lags)
     return {"cw_t": t, "reject_5pct": bool(t > 1.645) if t == t else False}
@@ -167,6 +200,10 @@ def clark_west(actual, f_small, f_big, hac_lags: int = 3) -> dict:
 def diebold_mariano(actual, f1, f2, hac_lags: int = 3) -> dict:
     """Diebold-Mariano test (squared-error loss). Positive t favours f2."""
     a = np.asarray(actual, dtype=float)
-    d = (a - np.asarray(f1, dtype=float)) ** 2 - (a - np.asarray(f2, dtype=float)) ** 2
+    f1 = np.asarray(f1, dtype=float)
+    f2 = np.asarray(f2, dtype=float)
+    if a.ndim != 1 or f1.ndim != 1 or f2.ndim != 1 or not (len(a) == len(f1) == len(f2)):
+        raise ValueError("actual and forecasts must be one-dimensional and equally sized")
+    d = (a - f1) ** 2 - (a - f2) ** 2
     t = _hac_tstat(d, hac_lags)
     return {"dm_t": t}

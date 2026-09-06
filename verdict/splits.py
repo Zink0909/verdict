@@ -57,6 +57,7 @@ def time_splits(dates, train_end, valid_end, holdout_start=None) -> TimeSplit:
     function gives it a name and a boundary, `SealedHoldout` gives it teeth.
     """
     dates = pd.to_datetime(pd.Index(dates))
+    _validate_dates(dates)
     train_end = pd.Timestamp(train_end)
     valid_end = pd.Timestamp(valid_end)
     if holdout_start is None:
@@ -67,11 +68,14 @@ def time_splits(dates, train_end, valid_end, holdout_start=None) -> TimeSplit:
             "boundaries must satisfy train_end < valid_end <= holdout_start, got "
             f"{train_end.date()}, {valid_end.date()}, {holdout_start.date()}")
     pos = np.arange(len(dates))
-    return TimeSplit(
+    split = TimeSplit(
         train=pos[dates <= train_end],
         valid=pos[(dates > train_end) & (dates <= valid_end)],
         holdout=pos[dates >= holdout_start],
         train_end=train_end, valid_end=valid_end, holdout_start=holdout_start)
+    if not all((len(split.train), len(split.valid), len(split.holdout))):
+        raise ValueError(f"split boundaries produced an empty block: {split.sizes}")
+    return split
 
 
 def assert_no_leakage(split: TimeSplit) -> None:
@@ -105,11 +109,17 @@ def walk_forward(dates, n_folds: int = 5, min_train: int | None = None,
     include everything before the test block; with `expanding=False` it is a
     rolling window of `min_train` observations.
     """
-    n = len(pd.Index(dates))
+    dates = pd.to_datetime(pd.Index(dates))
+    _validate_dates(dates)
+    n = len(dates)
+    if n_folds <= 0:
+        raise ValueError("n_folds must be positive")
     if min_train is None:
         min_train = max(1, n // (n_folds + 1))
-    if min_train >= n:
-        raise ValueError("min_train must leave observations for testing")
+    if min_train <= 0 or min_train >= n:
+        raise ValueError("min_train must be positive and leave observations for testing")
+    if n - min_train < n_folds:
+        raise ValueError("n_folds would create empty test blocks")
     edges = np.linspace(min_train, n, n_folds + 1).astype(int)
     folds = []
     for i in range(n_folds):
@@ -119,6 +129,15 @@ def walk_forward(dates, n_folds: int = 5, min_train: int | None = None,
         train_lo = 0 if expanding else max(0, lo - min_train)
         folds.append(Fold(train=np.arange(train_lo, lo), test=np.arange(lo, hi)))
     return folds
+
+
+def _validate_dates(dates: pd.DatetimeIndex) -> None:
+    if dates.empty:
+        raise ValueError("dates must not be empty")
+    if dates.hasnans:
+        raise ValueError("dates contain missing or unparseable values")
+    if not dates.is_monotonic_increasing:
+        raise ValueError("dates must be sorted in non-decreasing chronological order")
 
 
 # --------------------------------------------------------------------------
@@ -152,7 +171,16 @@ class SealedHoldout:
     def records(self) -> list[dict]:
         if not self._path.exists():
             return []
-        return [r for r in json.loads(self._path.read_text()) if r["name"] == self.name]
+        try:
+            records = json.loads(self._path.read_text())
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"holdout ledger is malformed: {self._path}") from exc
+        if not isinstance(records, list) or not all(isinstance(r, dict) for r in records):
+            raise ValueError("holdout ledger must contain a JSON list of records")
+        required = {"name", "fingerprint", "utc", "kind"}
+        if any(not required.issubset(r) for r in records):
+            raise ValueError("holdout ledger contains an incomplete record")
+        return [r for r in records if r["name"] == self.name]
 
     @property
     def is_sealed(self) -> bool:
@@ -166,6 +194,8 @@ class SealedHoldout:
         reproduction of the same final evaluation and is allowed, counted, and
         reported as such.
         """
+        if not str(reason).strip():
+            raise ValueError("an unseal reason is required")
         fp = fingerprint(config)
         prior = self.records()
         if prior and prior[0]["fingerprint"] != fp:
@@ -180,7 +210,9 @@ class SealedHoldout:
         allr = json.loads(self._path.read_text()) if self._path.exists() else []
         allr.append(record)
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._path.write_text(json.dumps(allr, indent=2))
+        tmp = self._path.with_name(f".{self._path.name}.tmp")
+        tmp.write_text(json.dumps(allr, indent=2) + "\n")
+        tmp.replace(self._path)
         return record
 
     def summary(self) -> str:

@@ -163,8 +163,8 @@ alone</strong> (standard practice) — matched: “run a formal
 forecast-accuracy test rather than relying on the strategy Sharpe
 alone”</li>
 <li><strong>Charge realistic trading frictions</strong> (standard
-practice) — matched: “vary the random-feature seed and report the spread
-across draws”</li>
+practice) — matched: “charge realistic transaction costs against
+turnover before concluding that any timing performance is usable”</li>
 <li><strong>Check the result holds across subsamples rather than one
 stretch</strong> (standard practice) — matched: “check the result across
 subsamples rather than one continuous stretch”</li>
@@ -192,6 +192,7 @@ checklist</h2>
 grows”</li>
 <li>“the forecast fails a formal accuracy test against the
 no-predictability benchmark”</li>
+<li>“a trivial alternative rule spans the strategy’s returns”</li>
 <li>“performance is unchanged on data where the claimed effect could not
 exist”</li>
 <li>“strictly chronological; forecasts use only data from before the
@@ -201,8 +202,8 @@ forecast month, with the rolling window never reaching forward”</li>
 may be a good idea, a restatement of one they did, or padding.</p>
 <h2 id="honest-limitations">Honest limitations</h2>
 <ul>
-<li>Matching is keyword; a correct test described in unanticipated words
-scores as a miss.</li>
+<li>Matching is one-to-one keyword matching; a correct test described in
+unanticipated words scores as a miss.</li>
 <li>One checklist, one claim, one run: this measures whether the agent
 proposes the right tests on a case whose answer is already known, not
 whether it would on a fresh one.</li>
@@ -221,7 +222,7 @@ micromamba run -n verdict python scripts/run_agent_eval.py</pre>
 model's turns are replayed. A live run needs the paper, the SDK, and an API key.</p>
 
 <footer>
-Generated from the repository on 2026-08-27 —
+Generated from the repository on 2026-09-06 —
 the registry table, the case pages and the agent transcript are all built from the
 files that produced them, so this site cannot claim something the code does not.
 </footer>

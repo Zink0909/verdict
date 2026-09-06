@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "case_id": "time-series-momentum",
+  "role": "extension",
+  "state": "verdict-delivered",
+  "evidence_pattern": "benchmark / sealed holdout",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "holding periods beyond one month",
+      "drop the most correlated markets",
+      "integer-contract and multiplier-aware sizing"
+    ]
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/time-series-momentum.json",
+      "sha256": "678ecd03b0278dbe6bf75691812b82caa11d2af465c6422abce67cc4fe70a177",
+      "bytes": 8562
+    },
+    {
+      "path": "cases/tsmom/results.json",
+      "sha256": "9255a7f3b0405b4e3941555071e796b40e4c98bbb2315124ea00cb2d86e5bf92",
+      "bytes": 8682
+    },
+    {
+      "path": "cases/tsmom/results_series.csv",
+      "sha256": "39a21184b67093b888787e7126071003965f0cbed89b4d7a8ede3d46917a7f06",
+      "bytes": 26964
+    },
+    {
+      "path": "cases/tsmom/results/holdout_ledger.json",
+      "sha256": "10db917d84aec932d50eb5068ef94981cdbd7bc556dbf034386fdba5a13d4cb5",
+      "bytes": 907
+    },
+    {
+      "path": "cases/tsmom/report.md",
+      "sha256": "da77717cdc9be29ee70f4d58d7508ff017782d6dcc5cae1f90408b9cf8c3b5f8",
+      "bytes": 11902
+    },
+    {
+      "path": "cases/tsmom/report.html",
+      "sha256": "1c4c692bb84c78e50ef49eef8dad2fb155e84b4f67dbb9a23838aa76ee345e9a",
+      "bytes": 402517
+    }
+  ]
+}

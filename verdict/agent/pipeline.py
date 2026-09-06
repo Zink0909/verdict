@@ -17,7 +17,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Callable
 
-from . import guardrails, tools
+from . import guardrails, providers
 from .llm import Model, Reply
 from .schema import CLAIM_CARD_SCHEMA, PROTOCOL_SCHEMA, ClaimCard, Protocol
 
@@ -82,6 +82,8 @@ settle, and what a reader should not conclude from it."""
 
 @dataclass
 class AuditRun:
+    case_id: str = ""
+    execution_mode: str = ""
     claim: ClaimCard | None = None
     protocol: Protocol | None = None
     approved: bool = False
@@ -96,7 +98,8 @@ class AuditRun:
         return [step["result"] for step in self.tool_trace if "result" in step]
 
     def to_dict(self) -> dict:
-        return {"state": self.state, "approved": self.approved,
+        return {"case_id": self.case_id, "execution_mode": self.execution_mode,
+                "state": self.state, "approved": self.approved,
                 "claim": self.claim.to_dict() if self.claim else None,
                 "protocol": self.protocol.to_dict() if self.protocol else None,
                 "tool_trace": self.tool_trace, "verdict_text": self.verdict_text,
@@ -125,19 +128,26 @@ def draft_protocol(model: Model, claim: ClaimCard, available_tools: list[str] | 
 
 
 def execute_protocol(model: Model, claim: ClaimCard, protocol: Protocol,
+                     provider: providers.ToolProvider,
                      max_steps: int = MAX_TOOL_STEPS) -> list[dict]:
     """The tool loop. The model chooses calls; this function runs them."""
+    if max_steps <= 0:
+        raise ValueError("max_steps must be positive")
     messages: list[dict] = [{"role": "user", "content":
                              "Claim:\n" + json.dumps(claim.to_dict(), indent=2)
                              + "\n\nApproved protocol:\n" + json.dumps(protocol.to_dict(), indent=2)
+                             + f"\n\nProvider mode: {provider.mode}."
+                             + (" Read the pinned evidence and identify coverage gaps; do not "
+                                "describe it as a fresh recomputation."
+                                if provider.mode == "evidence-readonly" else "")
                              + "\n\nExecute it."}]
     trace: list[dict] = []
     for step in range(max_steps):
         reply: Reply = model.complete(system=EXECUTE_SYSTEM, messages=messages,
-                                      tools=tools.definitions(), effort="high")
+                                      tools=provider.definitions(), effort="high")
         if not reply.wants_tools:
-            if reply.text:
-                trace.append({"step": step, "note": reply.text})
+            trace.append({"step": step, "status": "execution-complete",
+                          "note": reply.text or "execution complete"})
             break
         messages.append({"role": "assistant", "content": reply.raw.content if reply.raw
                          else [{"type": "tool_use", "id": c.id, "name": c.name,
@@ -146,7 +156,7 @@ def execute_protocol(model: Model, claim: ClaimCard, protocol: Protocol,
         for call in reply.tool_calls:
             entry: dict = {"step": step, "tool": call.name, "arguments": call.arguments}
             try:
-                entry["result"] = tools.run_tool(call.name, call.arguments)
+                entry["result"] = provider.run_tool(call.name, call.arguments)
                 content = json.dumps(entry["result"])
                 is_error = False
             except Exception as exc:                       # surfaced, never swallowed
@@ -156,6 +166,9 @@ def execute_protocol(model: Model, claim: ClaimCard, protocol: Protocol,
             results.append({"type": "tool_result", "tool_use_id": call.id,
                             "content": content, "is_error": is_error})
         messages.append({"role": "user", "content": results})
+    else:
+        trace.append({"step": max_steps, "status": "max-steps-exhausted",
+                      "note": "execution stopped before the model declared completion"})
     return trace
 
 
@@ -171,22 +184,28 @@ def draft_verdict(model: Model, claim: ClaimCard, protocol: Protocol,
 
 def run_audit(model: Model, paper_text: str, data_available: bool = True,
               approve: Callable[[ClaimCard, Protocol], bool] | None = None,
-              max_steps: int = MAX_TOOL_STEPS, request: str | None = None) -> AuditRun:
+              max_steps: int = MAX_TOOL_STEPS, request: str | None = None,
+              case_id: str = "") -> AuditRun:
     """Paper in, verdict out — stopping honestly wherever it must.
 
-    `approve` is the human in the loop; the default approves. `data_available=False`
+    `approve` is the human in the loop; omitting it does not approve. `data_available=False`
     stops after pre-registration and yields the 'protocol-ready-data-gated' state,
     which is the honest outcome for a claim that cannot be adjudicated here.
     """
-    run = AuditRun()
+    provider = providers.get_provider(case_id)
+    run = AuditRun(case_id=case_id, execution_mode=provider.mode)
+    if provider.mode == "evidence-readonly":
+        run.notes.append(
+            "provider replays pinned case evidence read-only; this run does not recompute "
+            "the underlying study")
     if request:
         guardrails.check_request(request)          # raises before anything runs
 
     run.claim = extract_claim(model, paper_text)
     run.protocol = draft_protocol(model, run.claim,
-                                  available_tools=[d["name"] for d in tools.definitions()])
+                                  available_tools=[d["name"] for d in provider.definitions()])
 
-    run.approved = True if approve is None else bool(approve(run.claim, run.protocol))
+    run.approved = False if approve is None else bool(approve(run.claim, run.protocol))
     if not run.approved:
         run.state = "in-progress"
         run.notes.append("protocol not approved; nothing was executed")
@@ -198,15 +217,31 @@ def run_audit(model: Model, paper_text: str, data_available: bool = True,
                          "execute it is not available here, so no verdict is issued")
         return run
 
-    run.tool_trace = execute_protocol(model, run.claim, run.protocol, max_steps=max_steps)
+    run.tool_trace = execute_protocol(model, run.claim, run.protocol, provider,
+                                      max_steps=max_steps)
+    errors = [step for step in run.tool_trace if "error" in step]
+    completed = any(step.get("status") == "execution-complete" for step in run.tool_trace)
+    results = [step for step in run.tool_trace if "result" in step]
+    if errors or not completed or not results:
+        run.state = "in-progress"
+        if errors:
+            run.notes.append(f"execution failed closed after {len(errors)} tool error(s)")
+        if not completed:
+            run.notes.append("execution did not complete before the step limit")
+        if not results:
+            run.notes.append("execution produced no computed results")
+        return run
+
     run.verdict_text = draft_verdict(model, run.claim, run.protocol, run.tool_trace)
     run.number_audit = guardrails.audit_numbers(
-        run.verdict_text, tools.collect_numbers(run.results),
+        run.verdict_text, provider.collect_numbers(run.results),
         context=json.dumps(run.claim.to_dict()) + json.dumps(run.protocol.to_dict()))
-    run.state = "verdict-delivered"
     if not run.number_audit["clean"]:
+        run.state = "draft-withheld"
         run.notes.append(
             "number audit found unsupported figures in the draft: "
             f"{run.number_audit['unsupported']} — the draft is retained with this flag "
             "rather than published")
+    else:
+        run.state = "verdict-delivered"
     return run

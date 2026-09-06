@@ -36,15 +36,14 @@ from verdict import costs as C          # noqa: E402
 from verdict import diagnose as D       # noqa: E402
 from verdict import evaluate as E       # noqa: E402
 from verdict import synthetic as S      # noqa: E402
-from verdict.report import CARD_STATES, VerdictReport, write_card  # noqa: E402
+from verdict.catalog import CASE_DIRS    # noqa: E402
+from verdict.report import VerdictReport, validate_card, write_card  # noqa: E402
 from verdict.schema_help import CLAIM_FIELDS, PROTOCOL_FIELDS      # noqa: E402
 from verdict.splits import HoldoutAlreadyUnsealed, SealedHoldout   # noqa: E402
 
 st.set_page_config(page_title="Verdict", page_icon="⚖", layout="centered")
 
 REGISTRY = ROOT / "registry"
-CASE_DIRS = {"complexity-voc": "complexity", "buy-the-dip-long-calls": "buy_the_dip",
-             "retail-short-volatility": "vol_harvest", "gamma-signal-drift": "drift"}
 STATE_LABEL = {"verdict-delivered": "verdict delivered",
                "protocol-ready-data-gated": "protocol ready · data-gated",
                "in-progress": "in progress"}
@@ -58,7 +57,11 @@ def lines(text: str) -> list[str]:
 
 def load_cards() -> list[dict]:
     order = {"verdict-delivered": 0, "in-progress": 1, "protocol-ready-data-gated": 2}
-    cards = [json.loads(p.read_text()) for p in sorted(REGISTRY.glob("*.json"))]
+    cards = []
+    for p in sorted(REGISTRY.glob("*.json")):
+        card = json.loads(p.read_text())
+        validate_card(card)
+        cards.append(card)
     return sorted(cards, key=lambda c: (order.get(c["state"], 3), c["id"]))
 
 
@@ -186,8 +189,15 @@ def page_evaluate() -> None:
     turn = c4.number_input("Turnover per period", 0.0, 10.0, 1.0, 0.1)
     realistic = c5.number_input("Realistic one-way cost (bps)", 0.0, 200.0, 10.0, 1.0)
 
-    r = pd.Series(pd.to_numeric(df[ret_col], errors="coerce").to_numpy(),
-                  index=pd.to_datetime(df[date_col], errors="coerce")).dropna()
+    selected = [ret_col, *bench]
+    clean = df[selected].apply(pd.to_numeric, errors="coerce")
+    clean.index = pd.to_datetime(df[date_col], errors="coerce")
+    clean = clean.loc[~clean.index.isna()].sort_index()
+    if clean.index.has_duplicates:
+        st.error("Dates must be unique; aggregate duplicate observations before evaluation.")
+        st.stop()
+    clean = clean.dropna(subset=[ret_col])
+    r = clean[ret_col]
     st.divider()
 
     st.subheader("Risk-adjusted performance")
@@ -202,7 +212,7 @@ def page_evaluate() -> None:
 
     if bench:
         st.subheader("Spanning — is there anything new here?")
-        res = E.spanning(r, df.set_index(pd.to_datetime(df[date_col]))[bench])
+        res = E.spanning(r, clean[bench])
         s1, s2 = st.columns(2)
         s1.metric("Alpha per period", f"{res['alpha']:+.4f}")
         s2.metric("t-statistic", f"{res['alpha_t']:+.2f}")
@@ -246,7 +256,10 @@ def page_evaluate() -> None:
                               value='{"model": "v1", "seeds": 3}', height=70)
         if st.button("Open the sealed block"):
             try:
-                h = SealedHoldout(name, ROOT / ledger)
+                ledger_name = Path(ledger)
+                if ledger_name.name != ledger or ledger_name.suffix.lower() != ".json":
+                    raise ValueError("Ledger file must be a simple .json filename, not a path.")
+                h = SealedHoldout(name, ROOT / ".verdict" / "holdouts" / ledger_name)
                 rec = h.unseal(reason, json.loads(config))
                 st.success(f"{rec['kind']} — {h.summary()}")
             except HoldoutAlreadyUnsealed as e:
@@ -294,7 +307,11 @@ def page_agent() -> None:
     if st.button("Run the loop (offline)", type="primary"):
         from verdict.agent import demo, pipeline
         with st.spinner("running the protocol — the analysis is executing for real…"):
-            run = pipeline.run_audit(demo.scripted_model(), demo.PAPER_STAND_IN)
+            run = pipeline.run_audit(
+                demo.scripted_model(), demo.PAPER_STAND_IN,
+                approve=lambda _claim, _protocol: True,
+                case_id="complexity-voc",
+            )
         st.session_state["agent_run"] = run.to_dict()
 
     run = st.session_state.get("agent_run")

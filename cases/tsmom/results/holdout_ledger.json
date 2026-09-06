@@ -1,0 +1,30 @@
+[
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-08-27T15:54:26+00:00",
+    "kind": "first-unseal"
+  },
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-08-27T15:54:28+00:00",
+    "kind": "reproduction"
+  },
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-08-27T16:00:14+00:00",
+    "kind": "reproduction"
+  },
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-09-05T16:51:32+00:00",
+    "kind": "reproduction"
+  }
+]
