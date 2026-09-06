@@ -35,14 +35,16 @@
     "cases/vol_harvest/report.md": "f2206be7fddbabf713c0660bbe1c7f54cc55ec97807ceecd78ae2c53f83b15a5",
     "cases/volatility_managed/report.md": "7655cc6e2a91b4be913b4aee0b34fa9e11bc83a5d11b2464b315697060627421",
     "cases/volatility_realtime/report.md": "23509464a8ae274118fa172ca1f6a88d19a2124ff21a3c6693f2663f469a38d5",
+    "cases/agent_benchmark/volatility-managed-market.json": "23fb4fbd7cb83f7b5deb814b4cecbdfd9cc9cb3e3468267c52a0191776e8fdad",
+    "cases/agent_benchmark/volatility-managed-realtime.json": "c96a966c8fc81b6d9135506c6605b38984cbd24b607b42f8a7588d4f2b63d874",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "e2696f88086e5d4abb0ee4d1dc607a4b15abe0f58b6db071b5497f6119905f45",
+    "scripts/build_site.py": "6bf2dd37c7bf52697994d3680affce63ae0699fe3d00d7b3435dc91c22899c70",
     "verdict/catalog.py": "92bfe0830cdf95fe6603492c793ffcb284fb10528ef6932bd844f48251387038"
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "agent.html": "5bf30007932399427e1f80b0f066e0ff4ac5b35628e80f74099e0b9f7f9ea91c",
+    "agent.html": "77043ecf3e686bb4c3754429e2c3abbd8a9a7bdb8edf27ba0c153cf674c48cc5",
     "cases/buy_the_dip.html": "35a56559e212a0a6772bd809827b7efb6f35c6257fd24dbd6ae676c138a91f88",
     "cases/chart_cnn.html": "800cf6f253f9db6b1ae26d44b925aa9ab8c1bb4e1eb8e26437015806d022965e",
     "cases/complexity.html": "9adaa18fb8f52002c78733d842653f39f41dcc5b9c13c4ecee9b8c806612527c",

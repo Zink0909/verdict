@@ -23,7 +23,7 @@ micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
 
 micromamba run -n verdict streamlit run app.py          # the working surface
-micromamba run -n verdict python scripts/regress.py     # 61 known-answer gates, seconds
+micromamba run -n verdict python scripts/regress.py     # known-answer gates, seconds
 micromamba run -n verdict python scripts/run_case.py --all --verify
 micromamba run -n verdict python scripts/audit_integrity.py
 ```
@@ -110,7 +110,7 @@ diagnosis; Vol Harvest contributed friction and implementability; Distribution S
 contributed deployment-drift diagnosis. Their exact catalog IDs are an executable
 invariant, so adding a case cannot rewrite the system's origin story.
 
-Three later studies prove that the framework travels beyond its source material:
+Four later audits show that the framework travels beyond its source material:
 [`cases/complexity`](cases/complexity) is the first fresh, end-to-end audit, and
 [`cases/tsmom`](cases/tsmom) is a post-publication commodity momentum extension;
 [`cases/volatility_managed`](cases/volatility_managed) is a bounded public-data market
@@ -183,6 +183,21 @@ protocol drafted from the paper alone can be scored against expert practice. The
 report in [`cases/complexity/agent_eval`](cases/complexity/agent_eval) lists what the
 agent *missed*, item by item, because that gap is the honest measure of the system's
 reach.
+
+Two curated, real-paper **protocol benchmarks** now complement that Complexity
+evaluation: [`cases/agent_benchmark`](cases/agent_benchmark) contains a bounded
+Moreira–Muir reconstruction checklist and a Cederburg et al. real-time allocation
+checklist. They are written by this project's curator from public paper metadata
+and the stated audit boundaries, not endorsed by the papers' authors. A live run
+stops after Claim Card and protocol drafting — it does not approve, execute, or
+publish the protocol — and its coverage score is a review aid, not a general
+model-capability or paper-correctness claim.
+
+```bash
+micromamba run -n verdict python scripts/run_agent_benchmark.py --list
+micromamba run -n verdict python scripts/run_agent_benchmark.py \
+  --benchmark volatility-managed-market
+```
 
 ## Design principles
 

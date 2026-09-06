@@ -528,6 +528,16 @@ def build_agent_page() -> str:
                   if audit.get("clean") else
                   f"unsupported figures found: {audit.get('unsupported')}")
 
+    benchmark_specs = []
+    for path in sorted((ROOT / "cases" / "agent_benchmark").glob("*.json")):
+        item = json.loads(path.read_text())
+        benchmark_specs.append(
+            f"<li><strong>{html.escape(item['title'])}</strong> — "
+            f"{html.escape(item['paper']['citation'])}; "
+            f"{len(item['checklist'])} pre-written protocol checks. "
+            f"<a href=\"{html.escape(item['paper']['source_url'], quote=True)}\">source</a></li>")
+    benchmark_list = "".join(benchmark_specs) or "<li>No protocol benchmarks are registered.</li>"
+
     return page(
         "Verdict — the agent",
         f"""{nav("the agent")}
@@ -577,6 +587,20 @@ can therefore be scored against what expert auditors actually did — and the pa
 reading is what the agent missed.</p>
 {eval_html}
 
+<h2>Curated real-paper protocol benchmarks</h2>
+<p>Two additional specifications use the linked volatility-management papers. They are not
+pre-filled model results: each is a human-curated, omissions-first checklist written before a
+live model run. The run stops after Claim Card and protocol drafting — before approval, data,
+tools, numerical execution, or publication.</p>
+<ul>{benchmark_list}</ul>
+<pre>micromamba run -n verdict python scripts/run_agent_benchmark.py --list
+micromamba run -n verdict python scripts/run_agent_benchmark.py \\
+  --benchmark volatility-managed-market</pre>
+<p>A live benchmark needs a lawful local paper copy, the optional Anthropic SDK and configured
+API credentials. Its output remains under local <code>.verdict-workspace/benchmarks/</code>;
+the coverage number measures checklist coverage, not research correctness or model capability
+in general.</p>
+
 <h2>Running it yourself</h2>
 <pre>micromamba run -n verdict python scripts/run_agent.py --offline --yes
 micromamba run -n verdict python scripts/run_agent_eval.py</pre>
@@ -612,6 +636,7 @@ def main() -> int:
                         ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),
+                    *sorted((ROOT / "cases" / "agent_benchmark").glob("*.json")),
                     ROOT / "cases/complexity/agent_run/run.json",
                     ROOT / "cases/complexity/agent_eval/report.md",
                     ROOT / "scripts/build_site.py", ROOT / "verdict/catalog.py"]

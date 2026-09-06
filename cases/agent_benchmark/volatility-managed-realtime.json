@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "volatility-managed-realtime",
+  "title": "Volatility-managed market: real-time allocation protocol",
+  "paper": {
+    "citation": "Cederburg, S., O'Doherty, M., Wang, F. and Yan, X. (2020), On the Performance of Volatility-Managed Portfolios, Journal of Financial Economics.",
+    "source_url": "https://doi.org/10.1016/j.jfineco.2020.03.013",
+    "local_default": "cases/volatility_realtime/source/cederburg_etal_2020.pdf"
+  },
+  "scope": "Curator checklist for a market-only expanding-window allocation analogue, not a reproduction of the paper's 103-strategy study or full robustness grid. The model receives the paper only; it receives neither return data nor this checklist.",
+  "claim_review_prompts": [
+    "Does the card represent the claim as a real-time decision problem rather than an in-sample return comparison?",
+    "Does it name the comparison between a volatility-managed opportunity set and a restricted market baseline?",
+    "Does it avoid saying that the paper proves volatility management never works?"
+  ],
+  "checklist": [
+    {
+      "id": "prior-information-only",
+      "label": "Use rolling or expanding estimates based only on information available before each decision",
+      "source": "real-time decision principle",
+      "any_of": ["expanding window", "rolling window", "real.time", "prior information", "available.*before", "out.of.sample"]
+    },
+    {
+      "id": "matched-opportunity-sets",
+      "label": "Compare the expanded managed-market opportunity set with a restricted unscaled-market baseline",
+      "source": "real-time decision principle",
+      "any_of": ["opportunity set", "restricted baseline", "unscaled market", "managed market", "baseline", "cash"]
+    },
+    {
+      "id": "matched-constraints",
+      "label": "Hold portfolio choice assumptions such as risk aversion and leverage constraints fixed across alternatives",
+      "source": "allocation design",
+      "any_of": ["risk aversion", "leverage", "constraint", "utility", "same.*assumption", "matched"]
+    },
+    {
+      "id": "certainty-equivalent",
+      "label": "Evaluate economic value with certainty equivalent or an explicit utility criterion, not Sharpe alone",
+      "source": "real-time decision principle",
+      "any_of": ["certainty equivalent", "cer", "utility", "mean.variance"]
+    },
+    {
+      "id": "uncertainty-and-costs",
+      "label": "Report uncertainty and cost sensitivity for the incremental allocation outcome",
+      "source": "implementation discipline",
+      "any_of": ["confidence interval", "bootstrap", "uncertainty", "transaction cost", "turnover", "cost sensitivity", "basis point"]
+    },
+    {
+      "id": "falsifiable-kill",
+      "label": "State that an uncertain or cost-negative certainty-equivalent increment would fail the bounded real-time claim",
+      "source": "pre-registration discipline",
+      "any_of": ["kill", "falsif", "certainty equivalent.*zero", "cer.*zero", "cost.*negative", "interval.*zero", "not.*improve"]
+    }
+  ]
+}

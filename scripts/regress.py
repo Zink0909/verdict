@@ -20,7 +20,7 @@ effect that is really there, otherwise a null proves nothing.
   agent (layer B)     schema-requires-kill-criteria, tools-are-strict,
                       guardrail-refuses-tuning, number-audit, pipeline-offline,
                       pipeline-catches-planted-number, provider-coverage,
-                      data-gated-state, eval-scoring
+                      data-gated-state, eval-scoring, protocol-benchmark
   platform            case-result-manifests, repository-integrity-audit
   site                index-covers-registry
   app (front end)     form-validation, pages-render
@@ -961,6 +961,38 @@ def t_agent_eval_scoring():
         assert expected in report, expected
 
 
+def t_agent_protocol_benchmark():
+    """Curated paper benchmarks score a protocol only and keep their boundary explicit."""
+    from verdict.agent import benchmark
+    from verdict.agent.schema import ClaimCard, Protocol
+    root = Path(ROOT) / "cases" / "agent_benchmark"
+    managed = benchmark.load(root / "volatility-managed-market.json")
+    realtime = benchmark.load(root / "volatility-managed-realtime.json")
+    claim = ClaimCard("inverse prior realized variance", "US excess market", "monthly",
+                      "incremental alpha", "daily-to-monthly public data", "source", ["Mkt-RF"])
+    managed_protocol = Protocol(
+        ["daily market excess returns"], "calibrate before 2000, then sealed holdout",
+        ["unscaled market spanning alpha"], "turnover transaction cost grid in basis points",
+        ["block bootstrap confidence interval"], ["lagged realized variance only"],
+        ["kill if incremental alpha confidence interval crosses zero"], "bounded test")
+    result = benchmark.score(claim, managed_protocol, managed)
+    assert result["protocol"]["n_covered"] == len(managed["checklist"])
+    assert result["claim_card"]["schema_complete"]
+    assert "No provider was called" in result["result_boundary"]
+    realtime_protocol = Protocol(
+        ["monthly returns"], "expanding window uses prior information before each decision",
+        ["managed market opportunity set versus restricted unscaled market baseline and cash"],
+        "transaction cost sensitivity in basis points", ["bootstrap confidence interval", "evaluate certainty equivalent"],
+        ["same risk aversion and leverage constraint"],
+        ["kill if certainty equivalent is cost negative or confidence interval crosses zero"],
+        "real-time allocation test")
+    realtime_result = benchmark.score(claim, realtime_protocol, realtime)
+    assert realtime_result["protocol"]["n_covered"] == len(realtime["checklist"])
+    report = benchmark.render_report(result, "test-model", "local paper")
+    for expected in ("Protocol coverage", "Missed", "Protocol-drafting benchmark only"):
+        assert expected in report, expected
+
+
 def t_volatility_managed_public_data_audit():
     """The new paper case is deterministic and does not promote a Sharpe comparison to alpha."""
     import importlib.util
@@ -1290,6 +1322,7 @@ GATES = [
     ("agent-archives-approved-run", t_agent_archives_approved_run),
     ("agent-vault-verifies-compares-exports", t_agent_vault_verifies_compares_exports),
     ("agent-eval-scoring", t_agent_eval_scoring),
+    ("agent-protocol-benchmark", t_agent_protocol_benchmark),
     ("volatility-managed-public-data-audit", t_volatility_managed_public_data_audit),
     ("volatility-realtime-audit", t_volatility_realtime_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),

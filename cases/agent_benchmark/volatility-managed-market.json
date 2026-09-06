@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "volatility-managed-market",
+  "title": "Volatility-managed market: bounded reconstruction protocol",
+  "paper": {
+    "citation": "Moreira, A. and Muir, T. (2017), Volatility-Managed Portfolios, Journal of Finance.",
+    "source_url": "https://doi.org/10.1111/jofi.12513",
+    "local_default": "cases/volatility_managed/source/moreira_muir_2016_nber_w22208.pdf"
+  },
+  "scope": "Curator checklist for a market-only public-data reconstruction, not a byte-for-byte reproduction of the paper's full cross-asset study. The model receives the paper only; it receives neither return data nor this checklist.",
+  "claim_review_prompts": [
+    "Does the card distinguish inverse-lagged-realized-variance scaling from a generic volatility target?",
+    "Does it name the universe and make clear that the benchmark is the unscaled excess market?",
+    "Does it preserve the difference between a standalone Sharpe improvement and incremental alpha?"
+  ],
+  "checklist": [
+    {
+      "id": "lagged-realized-variance",
+      "label": "Specify an inverse scale from prior realized variance, with no same-period information",
+      "source": "bounded reconstruction protocol",
+      "any_of": ["lagged realized variance", "previous.*realized variance", "prior.*realized variance", "inverse.*variance", "past.*variance"]
+    },
+    {
+      "id": "chronological-calibration",
+      "label": "Fix normalization before a later sealed chronological evaluation",
+      "source": "bounded reconstruction protocol",
+      "any_of": ["sealed holdout", "holdout", "out.of.sample", "chronological", "calibrat.*before", "pre.*2000"]
+    },
+    {
+      "id": "unscaled-market-spanning",
+      "label": "Compare against the unscaled market and test incremental alpha or spanning",
+      "source": "bounded reconstruction protocol",
+      "any_of": ["unscaled market", "market benchmark", "spanning", "incremental alpha", "alpha.*market"]
+    },
+    {
+      "id": "uncertainty",
+      "label": "Quantify uncertainty around the incremental result",
+      "source": "standard inference",
+      "any_of": ["confidence interval", "bootstrap", "hac", "newey", "uncertainty", "standard error"]
+    },
+    {
+      "id": "turnover-costs",
+      "label": "Measure turnover and apply a friction sensitivity grid",
+      "source": "implementation discipline",
+      "any_of": ["turnover", "transaction cost", "trading cost", "friction", "cost sensitivity", "basis point"]
+    },
+    {
+      "id": "falsifiable-kill",
+      "label": "State that non-positive or uncertain incremental alpha would fail the bounded claim",
+      "source": "pre-registration discipline",
+      "any_of": ["kill", "falsif", "alpha.*zero", "interval.*zero", "confidence.*zero", "not.*incremental"]
+    }
+  ]
+}

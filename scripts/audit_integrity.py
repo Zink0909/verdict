@@ -142,6 +142,7 @@ def _site_manifest(manifest: dict, root: Path) -> str:
         raise ValueError("site manifest schema must be 2; rebuild with scripts/build_site.py")
     expected_inputs = [*sorted((root / "registry").glob("*.json")),
                        *sorted((root / "cases").glob("*/report.md")),
+                       *sorted((root / "cases" / "agent_benchmark").glob("*.json")),
                        root / "cases/complexity/agent_run/run.json",
                        root / "cases/complexity/agent_eval/report.md",
                        root / "scripts/build_site.py", root / "verdict/catalog.py"]

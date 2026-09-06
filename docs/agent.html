@@ -215,6 +215,20 @@ the audit.</li>
 </ul>
 
 
+<h2>Curated real-paper protocol benchmarks</h2>
+<p>Two additional specifications use the linked volatility-management papers. They are not
+pre-filled model results: each is a human-curated, omissions-first checklist written before a
+live model run. The run stops after Claim Card and protocol drafting — before approval, data,
+tools, numerical execution, or publication.</p>
+<ul><li><strong>Volatility-managed market: bounded reconstruction protocol</strong> — Moreira, A. and Muir, T. (2017), Volatility-Managed Portfolios, Journal of Finance.; 6 pre-written protocol checks. <a href="https://doi.org/10.1111/jofi.12513">source</a></li><li><strong>Volatility-managed market: real-time allocation protocol</strong> — Cederburg, S., O&#x27;Doherty, M., Wang, F. and Yan, X. (2020), On the Performance of Volatility-Managed Portfolios, Journal of Financial Economics.; 6 pre-written protocol checks. <a href="https://doi.org/10.1016/j.jfineco.2020.03.013">source</a></li></ul>
+<pre>micromamba run -n verdict python scripts/run_agent_benchmark.py --list
+micromamba run -n verdict python scripts/run_agent_benchmark.py \
+  --benchmark volatility-managed-market</pre>
+<p>A live benchmark needs a lawful local paper copy, the optional Anthropic SDK and configured
+API credentials. Its output remains under local <code>.verdict-workspace/benchmarks/</code>;
+the coverage number measures checklist coverage, not research correctness or model capability
+in general.</p>
+
 <h2>Running it yourself</h2>
 <pre>micromamba run -n verdict python scripts/run_agent.py --offline --yes
 micromamba run -n verdict python scripts/run_agent_eval.py</pre>
