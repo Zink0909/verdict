@@ -1,0 +1,38 @@
+{
+  "id": "volatility-managed-realtime",
+  "title": "Real-time volatility-managed market allocation",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "expanding-window allocation between a volatility-managed market, the original market, and cash",
+    "universe": "public Fama/French U.S. market excess return and the bounded managed-market reconstruction",
+    "frequency": "monthly allocation, using estimates through the prior month only",
+    "claimed_effect": "a real-time investor gains economically by adding a volatility-managed portfolio to the original market and cash",
+    "sample": "January 2000 through July 2026 public-data evaluation, after pre-2000 history for the expanding estimates",
+    "source": "Cederburg, O'Doherty, Wang and Yan (2020), 'On the Performance of Volatility-Managed Portfolios', Journal of Financial Economics",
+    "data_needs": "public market returns, the bounded managed-market series, and a strictly prior-data portfolio-choice rule"
+  },
+  "protocol": {
+    "replication_anchor": "test a market-only expanding-window analogue; do not call it a reproduction of the paper's 103-strategy study",
+    "splits": "each month t estimates all allocation inputs using data only through t-1; evaluation begins 2000-01",
+    "benchmarks": "matched real-time allocation to unscaled market and cash only; HAC(3) spanning of combination on baseline",
+    "cost_model": "one-way turnover is the absolute change in effective market exposure; report 0, 5, 10 and 20 bps sensitivity",
+    "diagnostics": [
+      "block-bootstrap interval of combined-minus-baseline mean return",
+      "annualized quadratic-utility certainty equivalent with risk aversion 5",
+      "record combined and baseline turnover separately"
+    ],
+    "kill_criteria_for_the_claim": "if the real-time combined-minus-baseline interval includes zero, or the certainty-equivalent increment turns negative at a transparent cost level, the bounded real-time-improvement claim is not supported",
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "NO CLEAR REAL-TIME IMPROVEMENT",
+    "summary": "The expanding-window combination has Sharpe 0.50 versus 0.45 for the matched baseline, but its annualized mean increment is only +0.09% with a 95% block-bootstrap interval of -1.75% to +2.13%; at 10 bps its certainty-equivalent increment is negative.",
+    "honest_limitations": [
+      "Only a market-only combination is evaluated, not the paper's 103-strategy cross-section.",
+      "The expanding-window and leverage rules are a declared public-data analogue, not the paper's complete portfolio-choice grid.",
+      "The public French archive is not the paper's historical data vintage.",
+      "Cash is represented as zero excess return and cost sensitivity is linear in turnover."
+    ]
+  },
+  "date": "2026-09-07"
+}

@@ -10,6 +10,7 @@
     "cases/tsmom.html",
     "cases/vol_harvest.html",
     "cases/volatility_managed.html",
+    "cases/volatility_realtime.html",
     "demo.html",
     "index.html",
     "portfolio.html",
@@ -25,6 +26,7 @@
     "registry/retail-short-volatility.json": "0a4e49d3730094860bc9491d02cfabc6466fcd9ff23c21011b462bb74eea88c7",
     "registry/time-series-momentum.json": "cfd998b28c71b389ea0c1c42e2dfa937781e4489ead1c0a1b83f026dea5e1ad9",
     "registry/volatility-managed-market.json": "a9f2a2b46241cdcb13141eb66406e9ac3fdd0a2dcaff794bba1cbb88bead6771",
+    "registry/volatility-managed-realtime.json": "e7323461094f88ae1c780bc53980bb81d97411a3c071158d6c0112134e58fd45",
     "cases/buy_the_dip/report.md": "84d51dcadb14e211325fbfb1e6f8a1bbed8c1adca90a357c0cf58dcdef476c68",
     "cases/chart_cnn/report.md": "4659b4ee6f407edecd154a16a053ef3d13f01bb2c5bbc83cc638e76e37c28c66",
     "cases/complexity/report.md": "bc83c7a3defe4703bbfd9219c8ea54e41269b83a15912a99fd0982fddecc891d",
@@ -32,10 +34,11 @@
     "cases/tsmom/report.md": "6a4e478975a29f1d9ebb96a804e86bf8e8cf350b31e0ebc2c8740db9ff2accd4",
     "cases/vol_harvest/report.md": "f2206be7fddbabf713c0660bbe1c7f54cc55ec97807ceecd78ae2c53f83b15a5",
     "cases/volatility_managed/report.md": "7655cc6e2a91b4be913b4aee0b34fa9e11bc83a5d11b2464b315697060627421",
+    "cases/volatility_realtime/report.md": "23509464a8ae274118fa172ca1f6a88d19a2124ff21a3c6693f2663f469a38d5",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
     "scripts/build_site.py": "e2696f88086e5d4abb0ee4d1dc607a4b15abe0f58b6db071b5497f6119905f45",
-    "verdict/catalog.py": "3cd7a4b97dcb27013579322c15d5701c6bed0b2894246e4908070852b752417a"
+    "verdict/catalog.py": "92bfe0830cdf95fe6603492c793ffcb284fb10528ef6932bd844f48251387038"
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -47,10 +50,11 @@
     "cases/tsmom.html": "aadf65177da0438c71c749e30bd95c4ab4da2819e4c0a4f24fcf59d87cdc9f5e",
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
     "cases/volatility_managed.html": "743fbce9152c631a03f2d663e3eeac404a233fc4cd4d04f9036f328ac9ee7531",
+    "cases/volatility_realtime.html": "8961b0122f910344b9304b9ab214e8f8785bdcef5ad341bbc6ef73e8a6db86c4",
     "demo.html": "008e1ae2e9d81d51be3c52800dffcb914490b9a20bf8b24cbcfa7324693e7097",
-    "index.html": "45f5c3576ec829e16548bbacd21dcddbe5a14906b72f9516470e687eb3fb3374",
-    "portfolio.html": "a2be10b355837235616d8ed4657eca2aa9dfa3b07227750d964119c3efb1772d",
-    "registry.html": "774602add9585791b28b6f57a1c8920c60501c88e1d91f72b9f4dfd4703b7c20",
-    "system.html": "45f5c3576ec829e16548bbacd21dcddbe5a14906b72f9516470e687eb3fb3374"
+    "index.html": "ea2a50ff779fc89090f94bc7c355c2ea5dfb6dc3a5f86f51057d98ed2cbaf9eb",
+    "portfolio.html": "a7e2239b17dfc253fdfb733a3db5bb5f34f434581383a44e0e79784da6c1c4a3",
+    "registry.html": "4b7184d4eb74586537fcdb2a560fa2c3619c0006d5e0c5a06ffaf3c66856b70b",
+    "system.html": "ea2a50ff779fc89090f94bc7c355c2ea5dfb6dc3a5f86f51057d98ed2cbaf9eb"
   }
 }

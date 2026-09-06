@@ -979,6 +979,24 @@ def t_volatility_managed_public_data_audit():
     assert not result["protocol_coverage"]["complete"]
 
 
+def t_volatility_realtime_audit():
+    """The follow-up uses only prior information and keeps the uncertain increment uncertain."""
+    import importlib.util
+    path = RP.Path(ROOT, "cases", "volatility_realtime", "run.py")
+    spec = importlib.util.spec_from_file_location("volatility_realtime_case", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    result = module.execute()
+    evaluation = result["evaluation"]
+    assert evaluation["combined"]["n_months"] > 300
+    assert evaluation["difference"]["mean_ci_95"][0] < 0 < evaluation["difference"]["mean_ci_95"][1]
+    assert evaluation["mean_combined_turnover"] > evaluation["mean_baseline_turnover"]
+    ten_bps = next(row for row in evaluation["cost_sensitivity"] if row["cost_bps"] == 10)
+    assert ten_bps["cer_increment_annualized"] < 0
+    assert not result["protocol_coverage"]["complete"]
+
+
 # ------------------------------------------------------------------ site ----
 
 def t_site_index_covers_registry():
@@ -1273,6 +1291,7 @@ GATES = [
     ("agent-vault-verifies-compares-exports", t_agent_vault_verifies_compares_exports),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("volatility-managed-public-data-audit", t_volatility_managed_public_data_audit),
+    ("volatility-realtime-audit", t_volatility_realtime_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("case-catalog-is-complete", t_case_catalog_is_complete),
     ("case-result-manifests", t_case_result_manifests),

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "case_id": "volatility-managed-realtime",
+  "role": "fresh-audit",
+  "state": "verdict-delivered",
+  "evidence_pattern": "public-data / bounded real-time portfolio-choice audit",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "the paper's 103-strategy cross-section and other factor inputs",
+      "the paper's exact rolling-window, leverage, and portfolio-choice robustness grid",
+      "a byte-for-byte replication using the paper's historical data vintage"
+    ]
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/volatility-managed-realtime.json",
+      "sha256": "e7323461094f88ae1c780bc53980bb81d97411a3c071158d6c0112134e58fd45",
+      "bytes": 2834
+    },
+    {
+      "path": "cases/volatility_realtime/results.json",
+      "sha256": "20cbce16a0a77ad7ab3100d3143834e9fa3f553f711763688e85ae01e3c0e36a",
+      "bytes": 3934
+    },
+    {
+      "path": "cases/volatility_realtime/report.md",
+      "sha256": "23509464a8ae274118fa172ca1f6a88d19a2124ff21a3c6693f2663f469a38d5",
+      "bytes": 1894
+    },
+    {
+      "path": "cases/volatility_realtime/report.html",
+      "sha256": "b0a4986c37ff34993185c7fd1531e43df04781cd2431cc33e6584328b903898b",
+      "bytes": 6018
+    }
+  ]
+}

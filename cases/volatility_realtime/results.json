@@ -1,0 +1,116 @@
+{
+  "case": "volatility-managed-realtime",
+  "source": {
+    "paper": "Cederburg et al. (2020), On the Performance of Volatility-Managed Portfolios",
+    "paper_local_sha256": "5f82689700a360bed1fd371637d4a62090c6715d0cc9bd85c36fc78bc6129919",
+    "public_input_sha256": "478350b8d60831351fbf754bc593fc0112b013552c24639c10902e1f26d7f306"
+  },
+  "protocol": {
+    "decision_time": "every allocation uses an expanding sample ending in t-1",
+    "assets": "managed market, unscaled market, and implicit zero-excess-return cash",
+    "comparator": "unscaled market and implicit cash only, using the same real-time rule",
+    "risk_aversion": 5.0,
+    "gross_leverage_cap": 5.0,
+    "evaluation": "2000-01 through last public-data month; moving-block bootstrap and HAC(3) spanning"
+  },
+  "normalization_scale_from_parent_case": 0.0007671804672210803,
+  "evaluation": {
+    "combined": {
+      "n_months": 319,
+      "mean_annualized": 0.03702833421308766,
+      "sharpe_annualized": 0.49507727074276625,
+      "cer_annualized": 0.023043337056950674,
+      "mean_ci_95": [
+        0.0008456202149507139,
+        0.005420325437075664
+      ],
+      "sharpe_ci_95": [
+        0.12697468853145935,
+        0.927728929938463
+      ]
+    },
+    "baseline": {
+      "n_months": 319,
+      "mean_annualized": 0.036154094007613755,
+      "sharpe_annualized": 0.45358565349461205,
+      "cer_annualized": 0.020270954333950274,
+      "mean_ci_95": [
+        0.0004985305648411626,
+        0.0054589114351122235
+      ],
+      "sharpe_ci_95": [
+        0.06893299722468346,
+        0.8748477417448978
+      ]
+    },
+    "difference": {
+      "mean_annualized": 0.0008742402054739225,
+      "mean_ci_95": [
+        -0.0014591269834944437,
+        0.0017764701500890413
+      ],
+      "sharpe_annualized": 0.019164156809709763
+    },
+    "spanning_combined_on_baseline": {
+      "alpha": 0.000746318133141457,
+      "alpha_t": 0.9562218871758112,
+      "alpha_se": 0.0007804863527498809,
+      "alpha_ci": [
+        -0.0007834070086733338,
+        0.002276043274956248
+      ],
+      "betas": {
+        "baseline": 0.776468540726767
+      },
+      "beta_t": {
+        "baseline": 13.44320673688426
+      },
+      "r2": 0.6847336986516988,
+      "nobs": 319
+    },
+    "mean_combined_turnover": 0.19931235937588737,
+    "mean_baseline_turnover": 0.006335143902085525,
+    "cost_sensitivity": [
+      {
+        "cost_bps": 0,
+        "combined_cer_annualized": 0.023043337056950674,
+        "baseline_cer_annualized": 0.020270954333950274,
+        "cer_increment_annualized": 0.0027723827230003995,
+        "combined_sharpe": 0.49507727074276625,
+        "baseline_sharpe": 0.45358565349461205
+      },
+      {
+        "cost_bps": 5,
+        "combined_cer_annualized": 0.020646126346162856,
+        "baseline_cer_annualized": 0.020194827397968095,
+        "cer_increment_annualized": 0.0004512989481947616,
+        "combined_sharpe": 0.46300863608080284,
+        "baseline_sharpe": 0.452630393401955
+      },
+      {
+        "cost_bps": 10,
+        "combined_cer_annualized": 0.018244738490978286,
+        "baseline_cer_annualized": 0.020118698411397375,
+        "cer_increment_annualized": -0.0018739599204190896,
+        "combined_sharpe": 0.43088824196346254,
+        "baseline_sharpe": 0.4516751104854864
+      },
+      {
+        "cost_bps": 20,
+        "combined_cer_annualized": 0.013429431347418933,
+        "baseline_cer_annualized": 0.0199664342864903,
+        "cer_increment_annualized": -0.006537002939071366,
+        "combined_sharpe": 0.366550111092607,
+        "baseline_sharpe": 0.4497644769230789
+      }
+    ]
+  },
+  "protocol_coverage": {
+    "complete": false,
+    "not_executed": [
+      "the paper's 103-strategy cross-section and other factor inputs",
+      "the paper's exact rolling-window, leverage, and portfolio-choice robustness grid",
+      "a byte-for-byte replication using the paper's historical data vintage"
+    ]
+  }
+}

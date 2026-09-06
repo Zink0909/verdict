@@ -79,6 +79,18 @@ CASES: tuple[CaseSpec, ...] = (
             "Cederburg et al.'s real-time portfolio-combination and certainty-equivalent analysis",
         ),
     ),
+    CaseSpec(
+        "volatility-managed-realtime", "volatility_realtime", "fresh-audit",
+        "public-data / bounded real-time portfolio-choice audit",
+        run_steps=(PYTHON + ("cases/volatility_realtime/run.py",),),
+        report_steps=(PYTHON + ("cases/volatility_realtime/make_report.py",),),
+        result_files=("results.json",),
+        protocol_gaps=(
+            "the paper's 103-strategy cross-section and other factor inputs",
+            "the paper's exact rolling-window, leverage, and portfolio-choice robustness grid",
+            "a byte-for-byte replication using the paper's historical data vintage",
+        ),
+    ),
     CaseSpec("lazy-prices-10k-changes", "lazy_prices", "data-gated", "protocol only"),
 )
 

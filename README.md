@@ -88,6 +88,7 @@ opened as verified evidence.
 | [`cases/vol_harvest`](cases/vol_harvest) | Practitioner thesis: the volatility risk premium is real, so a small account can harvest it with defined-risk spreads | **Falsified — true premise, unreachable conclusion.** On real option chains the model's own pick returned −43.9% against a modelled +0.7% CAGR. The modelled edge crosses zero at 0.082 index points of friction per leg: the whole result lived inside a spread assumption only real quotes could settle. |
 | [`cases/drift`](cases/drift) | A deployed feature discriminates winning from losing days for a live trading rule | **Decayed, detectable 2.8 years early, cause unproven.** Discrimination fell 0.597 → 0.442 (below chance) and partly recovered. The obvious culprit correlates at −0.72 over the full sample and flips to +0.76 after 2022 — it coincides with the inversion and explains neither the onset nor the recovery. |
 | [`cases/volatility_managed`](cases/volatility_managed) | Moreira–Muir volatility management adds incremental return beyond the unscaled market | **No clear incremental holdout evidence in the bounded public-data test.** Sharpe is modestly higher (0.50 vs 0.48), but the 2000+ HAC alpha is +0.16% per month (t=1.21; 95% interval crosses zero). |
+| [`cases/volatility_realtime`](cases/volatility_realtime) | Cederburg et al.'s real-time allocation challenge to volatility management | **No clear real-time improvement in the bounded public-data test.** The combination's mean increment interval crosses zero and its CER falls below the matched baseline at 10 bps. |
 
 Each case names its evidence mode and reproduction boundary in its README. Some run
 offline from pinned data; some are explicitly read-only replays of source evidence; one
@@ -113,8 +114,9 @@ Three later studies prove that the framework travels beyond its source material:
 [`cases/complexity`](cases/complexity) is the first fresh, end-to-end audit, and
 [`cases/tsmom`](cases/tsmom) is a post-publication commodity momentum extension;
 [`cases/volatility_managed`](cases/volatility_managed) is a bounded public-data market
-reconstruction. None is allowed to become a foundational source merely because it is newer
-or more executable.
+reconstruction; and [`cases/volatility_realtime`](cases/volatility_realtime) is its bounded
+real-time portfolio-choice counterpart. None is allowed to become a foundational source merely
+because it is newer or more executable.
 
 A further claim is recorded as **not adjudicable here**: the protocol is written and
 pre-registered, and the corpus needed to execute it has not been built. That state exists
