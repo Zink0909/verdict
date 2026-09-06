@@ -1,4 +1,5 @@
 {
+  "schema_version": 2,
   "generated": [
     ".nojekyll",
     "agent.html",
@@ -8,5 +9,32 @@
     "cases/tsmom.html",
     "cases/vol_harvest.html",
     "index.html"
-  ]
+  ],
+  "inputs": {
+    "registry/buy-the-dip-long-calls.json": "2518542b7b1f9ae7c7874cda95ec241a7f0f3e39a214a13c4cf92c18ff07f96b",
+    "registry/complexity-voc.json": "575bc4dc792e0ebe013170340ea1c10ec5654df353ee303293821eb1f52a1dd9",
+    "registry/gamma-signal-drift.json": "4ad3282c5ffb3cd270ea2871a1066fbd2a57ff045faac2ee23520551aacbac0e",
+    "registry/lazy-prices-10k-changes.json": "cbd6256a6684f20b54dfab424ad854324b54f77337536e8be985720248608498",
+    "registry/retail-short-volatility.json": "0a4e49d3730094860bc9491d02cfabc6466fcd9ff23c21011b462bb74eea88c7",
+    "registry/time-series-momentum.json": "563a160146ac3d382a845f78c0836e1ad72dd8d609205be6acd6beb0e8188501",
+    "cases/buy_the_dip/report.md": "84d51dcadb14e211325fbfb1e6f8a1bbed8c1adca90a357c0cf58dcdef476c68",
+    "cases/complexity/report.md": "bc83c7a3defe4703bbfd9219c8ea54e41269b83a15912a99fd0982fddecc891d",
+    "cases/drift/report.md": "43f79f5b3830c62134f921b1b88e72e73a88e7807427a8801276d800b18925b1",
+    "cases/tsmom/report.md": "ed0ec0d2ef2569e9acf4e512eeb9e9140d3ea05ad2964526af25c70d88d7ca6a",
+    "cases/vol_harvest/report.md": "f2206be7fddbabf713c0660bbe1c7f54cc55ec97807ceecd78ae2c53f83b15a5",
+    "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
+    "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
+    "scripts/build_site.py": "75cdeda960d6b3f3ead6be491060506a28c628ada7e2a77ec8dee378a0e8f0b6",
+    "verdict/catalog.py": "dcbcb67e6d903c615d0986d221efa6ea3b1a8b9f22e738e8cb94698db60f7ead"
+  },
+  "outputs": {
+    ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent.html": "b12738e538840168129fa8572e9c44f54b7a2425140439b8b68741c48b9954e5",
+    "cases/buy_the_dip.html": "35a56559e212a0a6772bd809827b7efb6f35c6257fd24dbd6ae676c138a91f88",
+    "cases/complexity.html": "9adaa18fb8f52002c78733d842653f39f41dcc5b9c13c4ecee9b8c806612527c",
+    "cases/drift.html": "cac324e58feac17caac4a57d41d92639f685b2d730f129afc3a057465433e28d",
+    "cases/tsmom.html": "259d42565b601ff3de7d471f9db088e80625d4e0283687a91e1839a08c52b4b6",
+    "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
+    "index.html": "25397656cd069d2dbd2d4ae3d08a0650afb5915f467f7102b773b8cf6ee6b7c5"
+  }
 }

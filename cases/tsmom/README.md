@@ -60,10 +60,14 @@ The sealed block is opened through `verdict.splits.SealedHoldout`, so the openin
 is written to `results/holdout_ledger.json` and a second opening under a changed
 configuration raises rather than quietly re-running.
 
-The run evaluates all four kill criteria. It does **not** claim that every
-pre-registered perturbation is complete: longer holding periods, dropping the
-most correlated individual markets, and integer-contract sizing with contract
-multipliers remain unexecuted and are stated as limitations in the report.
+The run evaluates all four kill criteria, longer holding periods, and removal
+of each member (and both members) of the most-correlated market pair. Account-space
+position granularity remains deliberately data-gated on the current export: its
+BackwardsRatio continuous levels preserve returns but are not valid contract
+notionals. `qc_export.py` now also exports unadjusted mapped-contract
+`*_trade_close` prices; after that panel is re-exported, the same run executes
+nearest-integer sizing at $250k, $1m and $5m with exchange contract point values.
+It will not substitute adjusted levels and pretend this step was completed.
 
 ## Known-answer controls
 

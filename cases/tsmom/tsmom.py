@@ -28,6 +28,19 @@ SIGMA_EACH = 0.15      # per-market ex-ante volatility budget
 MAX_POS = 4.0          # position cap, as in the source construction
 VOL_FLOOR = 0.05       # keeps a quiet market from demanding an enormous position
 
+# Dollar P&L for a one-unit price move in the standard contract. The energy and
+# metals series are quoted in dollars per physical unit; the grain execution
+# series exported by QuantConnect is also expressed in dollars per bushel.
+CONTRACT_POINT_VALUE = {
+    "CL": 1_000.0,     # 1,000 barrels
+    "NG": 10_000.0,    # 10,000 MMBtu
+    "GC": 100.0,       # 100 troy ounces
+    "HG": 25_000.0,    # 25,000 pounds
+    "ZC": 5_000.0,     # 5,000 bushels
+    "ZS": 5_000.0,
+    "ZW": 5_000.0,
+}
+
 
 def load_panel(path, today=None) -> tuple[pd.DataFrame, dict[int, pd.DataFrame]]:
     """Read the exported month-end panel into closes and per-window volatilities.
@@ -46,7 +59,9 @@ def load_panel(path, today=None) -> tuple[pd.DataFrame, dict[int, pd.DataFrame]]
     cutoff = pd.Timestamp(today or pd.Timestamp.today().normalize())
     raw = raw[raw.index <= cutoff]
 
-    closes = raw[[c for c in raw.columns if c.endswith("_close")]]
+    close_columns = [c for c in raw.columns
+                     if c.endswith("_close") and not c.endswith("_trade_close")]
+    closes = raw[close_columns]
     closes.columns = [c[:-6] for c in closes.columns]
 
     vols: dict[int, pd.DataFrame] = {}
@@ -56,6 +71,31 @@ def load_panel(path, today=None) -> tuple[pd.DataFrame, dict[int, pd.DataFrame]]
         v.columns = list(closes.columns)
         vols[w] = v.clip(lower=VOL_FLOOR)
     return closes, vols
+
+
+def load_execution_prices(path, markets, today=None) -> pd.DataFrame | None:
+    """Load unadjusted mapped-contract prices needed for integer contract sizing.
+
+    Backwards-ratio continuous levels are valid for percentage returns but not
+    for contract notionals: their historical scale has been changed at every
+    roll. The account-space calculation therefore refuses to substitute them.
+    Older exports without ``*_trade_close`` return ``None`` and keep this part
+    of the protocol explicitly data-gated.
+    """
+    raw = pd.read_csv(path, index_col=0, comment="#", parse_dates=True)
+    raw.index = pd.DatetimeIndex(raw.index).normalize()
+    raw = raw.sort_index()
+    cutoff = pd.Timestamp(today or pd.Timestamp.today().normalize())
+    raw = raw[raw.index <= cutoff]
+    names = list(markets)
+    columns = [f"{name}_trade_close" for name in names]
+    if not all(column in raw for column in columns):
+        return None
+    prices = raw[columns].copy()
+    prices.columns = names
+    if (prices.dropna() <= 0).any().any():
+        raise ValueError("mapped-contract execution prices must be positive")
+    return prices
 
 
 def market_returns(closes: pd.DataFrame) -> pd.DataFrame:
@@ -71,6 +111,91 @@ def _size(signal: pd.DataFrame, vol: pd.DataFrame) -> pd.DataFrame:
 def tsmom_positions(closes: pd.DataFrame, vol: pd.DataFrame, lookback: int = 12) -> pd.DataFrame:
     """The claim: position sign is the sign of this market's own trailing return."""
     return _size(np.sign(closes.pct_change(lookback, fill_method=None)), vol)
+
+
+def holding_period_positions(positions: pd.DataFrame, months: int) -> pd.DataFrame:
+    """Equal-weight overlapping formation vintages held for ``months`` months.
+
+    A one-month holding period is the registered baseline. Longer periods keep
+    each monthly signal alive and average the active vintages, without adding
+    leverage. The eventual one-period lag remains owned by ``portfolio_returns``.
+    """
+    if not isinstance(months, int) or months <= 0:
+        raise ValueError("holding period must be a positive integer")
+    return positions.rolling(months, min_periods=months).mean()
+
+
+def most_correlated_pair(rets: pd.DataFrame) -> tuple[str, str, float]:
+    """Return the pair with the largest absolute contemporaneous correlation."""
+    corr = rets.corr(min_periods=24)
+    if corr.shape[0] < 2:
+        raise ValueError("at least two markets are required")
+    mask = np.triu(np.ones(corr.shape, dtype=bool), k=1)
+    pairs = corr.where(mask).stack()
+    if pairs.empty:
+        raise ValueError("no market pair has 24 overlapping returns")
+    left, right = pairs.abs().idxmax()
+    return str(left), str(right), float(corr.loc[left, right])
+
+
+def integer_contract_positions(desired: pd.DataFrame, execution_prices: pd.DataFrame,
+                               capital: float, point_values=None) -> pd.DataFrame:
+    """Round desired equal-sleeve exposure to tradable standard contracts."""
+    if not np.isfinite(capital) or capital <= 0:
+        raise ValueError("capital must be positive and finite")
+    prices = execution_prices.reindex(index=desired.index, columns=desired.columns)
+    values = CONTRACT_POINT_VALUE if point_values is None else point_values
+    missing = [column for column in desired if column not in values]
+    if missing:
+        raise ValueError(f"missing contract point value(s): {', '.join(missing)}")
+    if (prices.dropna() <= 0).any().any():
+        raise ValueError("execution prices must be positive")
+    active = desired.notna() & prices.notna()
+    n_active = active.sum(axis=1).replace(0, np.nan)
+    target_dollars = desired.mul(capital / n_active, axis=0)
+    notionals = prices.mul(pd.Series(values), axis=1)
+    contracts = (target_dollars / notionals).round().where(active)
+    return contracts
+
+
+def integer_contract_returns(contracts: pd.DataFrame, execution_prices: pd.DataFrame,
+                             adjusted_returns: pd.DataFrame, capital: float,
+                             point_values=None) -> pd.Series:
+    """Account return from lagged lots, actual notionals and roll-clean returns.
+
+    A raw continuous price difference crosses different contracts at a mapping
+    event and contains the calendar-spread gap. Dollar P&L is therefore the
+    prior mapped contract notional times the validated BackwardsRatio return,
+    never the difference of two raw continuous levels.
+    """
+    if not np.isfinite(capital) or capital <= 0:
+        raise ValueError("capital must be positive and finite")
+    prices = execution_prices.reindex(index=contracts.index, columns=contracts.columns)
+    values = CONTRACT_POINT_VALUE if point_values is None else point_values
+    missing = [column for column in contracts if column not in values]
+    if missing:
+        raise ValueError(f"missing contract point value(s): {', '.join(missing)}")
+    returns = adjusted_returns.reindex(index=contracts.index, columns=contracts.columns)
+    pnl = contracts.shift(1) * prices.shift(1) * returns * pd.Series(values)
+    return (pnl.sum(axis=1, min_count=1) / capital).dropna()
+
+
+def integer_contract_turnover(contracts: pd.DataFrame, execution_prices: pd.DataFrame,
+                              capital: float, point_values=None) -> pd.Series:
+    """Conservative monthly roll + rebalance notional divided by capital.
+
+    Every monthly decision is treated as closing the prior mapped contract and
+    opening the new one. This can overcharge quarterly contracts, but cannot
+    hide roll turnover when the current export lacks historical mapping IDs.
+    """
+    if not np.isfinite(capital) or capital <= 0:
+        raise ValueError("capital must be positive and finite")
+    prices = execution_prices.reindex(index=contracts.index, columns=contracts.columns)
+    values = CONTRACT_POINT_VALUE if point_values is None else point_values
+    previous = contracts.shift(1).fillna(0.0).abs()
+    current = contracts.fillna(0.0).abs()
+    traded = (previous + current) * prices * pd.Series(values)
+    return (traded.sum(axis=1, min_count=1) / capital).dropna()
 
 
 def passive_positions(closes: pd.DataFrame, vol: pd.DataFrame, lookback: int = 12) -> pd.DataFrame:

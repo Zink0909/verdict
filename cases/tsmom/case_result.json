@@ -7,8 +7,6 @@
   "protocol_coverage": {
     "complete": false,
     "gaps": [
-      "holding periods beyond one month",
-      "drop the most correlated markets",
       "integer-contract and multiplier-aware sizing"
     ]
   },
@@ -16,13 +14,13 @@
   "artifacts": [
     {
       "path": "registry/time-series-momentum.json",
-      "sha256": "678ecd03b0278dbe6bf75691812b82caa11d2af465c6422abce67cc4fe70a177",
-      "bytes": 8562
+      "sha256": "563a160146ac3d382a845f78c0836e1ad72dd8d609205be6acd6beb0e8188501",
+      "bytes": 8767
     },
     {
       "path": "cases/tsmom/results.json",
-      "sha256": "9255a7f3b0405b4e3941555071e796b40e4c98bbb2315124ea00cb2d86e5bf92",
-      "bytes": 8682
+      "sha256": "dc55581d872338b8ea2108162f3679d0a337a845f360fcc8e890db199d6dd8b4",
+      "bytes": 11136
     },
     {
       "path": "cases/tsmom/results_series.csv",
@@ -31,18 +29,18 @@
     },
     {
       "path": "cases/tsmom/results/holdout_ledger.json",
-      "sha256": "10db917d84aec932d50eb5068ef94981cdbd7bc556dbf034386fdba5a13d4cb5",
-      "bytes": 907
+      "sha256": "f3f60225139964c0d43b3fe413377776cceee82d07d214dcc277418c8ae7acf8",
+      "bytes": 1585
     },
     {
       "path": "cases/tsmom/report.md",
-      "sha256": "da77717cdc9be29ee70f4d58d7508ff017782d6dcc5cae1f90408b9cf8c3b5f8",
-      "bytes": 11902
+      "sha256": "ed0ec0d2ef2569e9acf4e512eeb9e9140d3ea05ad2964526af25c70d88d7ca6a",
+      "bytes": 13084
     },
     {
       "path": "cases/tsmom/report.html",
-      "sha256": "1c4c692bb84c78e50ef49eef8dad2fb155e84b4f67dbb9a23838aa76ee345e9a",
-      "bytes": 402517
+      "sha256": "5047bb06caa13dbcde4e2709f3f944dac1a375944002fcfbcfb99f1e615eec25",
+      "bytes": 447279
     }
   ]
 }

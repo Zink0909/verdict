@@ -7,7 +7,7 @@
 # sleeve series cannot produce any of them.
 #
 # What it prints, at month-end only (small enough to paste):
-#     date, <SYM>_close, <SYM>_v20, <SYM>_v60, <SYM>_v120   for the 7 core markets
+#     date, <SYM>_close, <SYM>_trade_close, <SYM>_v20, ...  for the 7 core markets
 #
 # The three volatility windows are here so the protocol's robustness clause
 # ("the volatility estimation window") is executable rather than aspirational.
@@ -35,24 +35,40 @@ MAP, NORM = DataMappingMode.OpenInterest, DataNormalizationMode.BackwardsRatio
 VOL_WINDOWS = [20, 60, 120]
 
 
-def continuous_close(sym):
+def continuous_closes(sym):
     try:
         fut = qb.add_future(sym, Resolution.DAILY, data_mapping_mode=MAP,
                             data_normalization_mode=NORM, contract_depth_offset=0)
         h = qb.history(fut.symbol, START, END, Resolution.DAILY)
         if h is None or len(h) == 0:
-            return None
+            return None, None
         c = h["close"].copy()
         c.index = pd.DatetimeIndex(c.index.get_level_values(-1)).normalize()
-        return c[~c.index.duplicated(keep="last")].sort_index()
+        adjusted = c[~c.index.duplicated(keep="last")].sort_index()
+
+        # Integer-contract sizing needs the mapped contract's actual price.
+        # BackwardsRatio levels have an arbitrary historical scale and may not
+        # be multiplied by the contract unit. Keep the same mapping rule but
+        # request Raw normalization for the execution-price series.
+        fut.set_data_normalization_mode(DataNormalizationMode.Raw)
+        h_raw = qb.history(fut.symbol, START, END, Resolution.DAILY)
+        if h_raw is None or len(h_raw) == 0:
+            return adjusted, None
+        raw = h_raw["close"].copy()
+        raw.index = pd.DatetimeIndex(raw.index.get_level_values(-1)).normalize()
+        execution = raw[~raw.index.duplicated(keep="last")].sort_index()
+        return adjusted, execution
     except Exception as e:
         print(f"  {sym}: skip ({type(e).__name__})")
-        return None
+        return None, None
 
 
-closes = {s: continuous_close(s) for s in ALL}
-closes = {s: c for s, c in closes.items() if c is not None and len(c) > 300}
+served = {s: continuous_closes(s) for s in ALL}
+closes = {s: pair[0] for s, pair in served.items()
+          if pair[0] is not None and pair[1] is not None and len(pair[0]) > 300}
+trade_closes = {s: served[s][1] for s in closes}
 panel = pd.DataFrame(closes).sort_index()
+trade_panel = pd.DataFrame(trade_closes).sort_index()
 print("markets served:", list(panel.columns))
 print("daily bars:", {c: int(panel[c].notna().sum()) for c in panel.columns})
 
@@ -61,6 +77,7 @@ daily_ret = panel.pct_change(fill_method=None).clip(-0.5, 0.5)
 out = {}
 for sym in panel.columns:
     out[f"{sym}_close"] = panel[sym]
+    out[f"{sym}_trade_close"] = trade_panel[sym]
     for w in VOL_WINDOWS:
         out[f"{sym}_v{w}"] = daily_ret[sym].rolling(w).std() * np.sqrt(TD)
 
@@ -73,6 +90,7 @@ monthly = monthly[monthly.index >= "2009-06-30"]
 
 body = monthly.round(6).to_csv(float_format="%.6f")
 header = (f"# roll: mapping=OpenInterest normalization=BackwardsRatio depth=0\n"
+          f"# execution_prices: mapping=OpenInterest normalization=Raw depth=0\n"
           f"# source: QuantConnect native continuous futures\n"
           f"# markets: {','.join(panel.columns)}\n"
           f"# vol_windows_days: {','.join(str(w) for w in VOL_WINDOWS)}\n"

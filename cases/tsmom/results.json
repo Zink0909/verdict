@@ -196,6 +196,40 @@
     ],
     "mean_ci_excludes_zero": false
   },
+  "correlation_robustness": {
+    "selection_rule": "largest absolute pairwise monthly-return correlation",
+    "pair": [
+      "ZC",
+      "ZW"
+    ],
+    "correlation": 0.6867379495571182,
+    "runs": [
+      {
+        "axis": "drop_correlated_markets",
+        "value": "ZC",
+        "n_markets": 6,
+        "sharpe": 0.15168011413422988
+      },
+      {
+        "axis": "drop_correlated_markets",
+        "value": "ZW",
+        "n_markets": 6,
+        "sharpe": 0.2346582423510153
+      },
+      {
+        "axis": "drop_correlated_markets",
+        "value": "ZC+ZW",
+        "n_markets": 5,
+        "sharpe": 0.16535941200132126
+      }
+    ]
+  },
+  "integer_contract_sizing": {
+    "status": "data-gated",
+    "blocker": "panel lacks unadjusted mapped-contract *_trade_close prices",
+    "why_adjusted_close_is_invalid": "BackwardsRatio levels preserve returns but change historical price scale; multiplying them by a contract unit would produce false notionals",
+    "required_export": "rerun cases/tsmom/qc_export.py and decode the new panel"
+  },
   "robustness": [
     {
       "axis": "lookback_months",
@@ -288,6 +322,68 @@
       "sharpe": 0.41293273043706386
     },
     {
+      "axis": "holding_period_months",
+      "value": 1,
+      "n_months": 193,
+      "sharpe": 0.2152948872782983,
+      "sharpe_ci": [
+        -0.17232916455376815,
+        0.5940832926362075
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "holding_period_months",
+      "value": 3,
+      "n_months": 189,
+      "sharpe": -0.07926696978368288,
+      "sharpe_ci": [
+        -0.5247431952984747,
+        0.34214321532627157
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "holding_period_months",
+      "value": 6,
+      "n_months": 183,
+      "sharpe": -0.03781391146744532,
+      "sharpe_ci": [
+        -0.5314068503879558,
+        0.4472245516554097
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "holding_period_months",
+      "value": 12,
+      "n_months": 171,
+      "sharpe": -0.10854663857028862,
+      "sharpe_ci": [
+        -0.6771428015525351,
+        0.43697604016345737
+      ],
+      "ci_excludes_zero": false
+    },
+    {
+      "axis": "drop_correlated_markets",
+      "value": "ZC",
+      "n_markets": 6,
+      "sharpe": 0.15168011413422988
+    },
+    {
+      "axis": "drop_correlated_markets",
+      "value": "ZW",
+      "n_markets": 6,
+      "sharpe": 0.2346582423510153
+    },
+    {
+      "axis": "drop_correlated_markets",
+      "value": "ZC+ZW",
+      "n_markets": 5,
+      "sharpe": 0.16535941200132126
+    },
+    {
       "axis": "sample",
       "value": "drop_last_12m",
       "n_months": 181,
@@ -303,12 +399,12 @@
   "protocol_coverage": {
     "executed": [
       "lookback horizons",
+      "holding periods beyond one month",
       "volatility estimation window",
-      "drop sectors"
+      "drop sectors",
+      "drop the most correlated markets"
     ],
     "not_executed": [
-      "holding periods beyond one month",
-      "drop the most correlated markets",
       "integer-contract and multiplier-aware sizing"
     ],
     "complete": false

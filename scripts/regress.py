@@ -972,6 +972,58 @@ def t_tsmom_controls():
                 assert fn(res), f"{kind} seed {seed}: {name}"
 
 
+def t_tsmom_implementation_robustness():
+    """Holding, correlation and integer-contract plumbing have known answers."""
+    sys.path.insert(0, os.path.join(ROOT, "cases", "tsmom"))
+    import tsmom as T
+
+    idx = pd.date_range("2020-01-31", periods=30, freq="ME")
+    positions = pd.DataFrame({"A": np.arange(30, dtype=float)}, index=idx)
+    held = T.holding_period_positions(positions, 3)
+    assert np.isnan(held.iloc[1, 0]) and held.iloc[2, 0] == 1.0
+    assert T.holding_period_positions(positions, 1).equals(positions)
+
+    x = np.arange(30, dtype=float)
+    pair = T.most_correlated_pair(pd.DataFrame({"A": x, "B": 2 * x, "C": (-1) ** x},
+                                               index=idx))
+    assert set(pair[:2]) == {"A", "B"} and np.isclose(pair[2], 1.0)
+
+    small_idx = pd.date_range("2024-01-31", periods=3, freq="ME")
+    desired = pd.DataFrame({"A": [1.0, 1.0, 1.0]}, index=small_idx)
+    prices = pd.DataFrame({"A": [100.0, 110.0, 99.0]}, index=small_idx)
+    adjusted_returns = pd.DataFrame({"A": [np.nan, 0.10, -0.10]}, index=small_idx)
+    contracts = T.integer_contract_positions(
+        desired, prices, capital=1_000.0, point_values={"A": 10.0})
+    assert contracts["A"].tolist() == [1.0, 1.0, 1.0]
+    account = T.integer_contract_returns(
+        contracts, prices, adjusted_returns, capital=1_000.0,
+        point_values={"A": 10.0})
+    assert np.allclose(account.to_numpy(), [0.10, -0.11])
+    turnover = T.integer_contract_turnover(
+        contracts, prices, capital=1_000.0, point_values={"A": 10.0})
+    assert np.allclose(turnover.to_numpy(), [1.0, 2.2, 1.98])
+
+    with tempfile.TemporaryDirectory() as tmp:
+        panel_path = RP.Path(tmp, "panel.csv")
+        panel_path.write_text(
+            "date,A_close,A_trade_close,A_v20\n"
+            "2024-01-31,100,101,0.2\n"
+            "2024-02-29,110,111,0.2\n")
+        panel_closes, _ = T.load_panel(panel_path, today="2024-12-31")
+        trade_closes = T.load_execution_prices(
+            panel_path, panel_closes.columns, today="2024-12-31")
+        assert panel_closes.columns.tolist() == ["A"]
+        assert trade_closes is not None and trade_closes.columns.tolist() == ["A"]
+        assert trade_closes.iloc[-1, 0] == 111.0
+
+    result = json.loads(RP.Path(ROOT, "cases", "tsmom", "results.json").read_text())
+    axes = {row["axis"] for row in result["robustness"]}
+    assert {"holding_period_months", "drop_correlated_markets"}.issubset(axes)
+    assert result["integer_contract_sizing"]["status"] == "data-gated"
+    assert result["protocol_coverage"]["not_executed"] == [
+        "integer-contract and multiplier-aware sizing"]
+
+
 GATES = [
     ("compile", t_compile),
     ("ridge-vs-sklearn", t_ridge_vs_sklearn),
@@ -1029,6 +1081,7 @@ GATES = [
     ("app-form-validation", t_app_form_validation),
     ("app-pages-render", t_app_pages_render),
     ("tsmom-controls", t_tsmom_controls),
+    ("tsmom-implementation-robustness", t_tsmom_implementation_robustness),
 ]
 
 for nm, fn in GATES:

@@ -25,6 +25,8 @@ K1, K2, K3, K4 = R["K1_spanning"], R["K2_sealed_block"], R["K3_costs"], R["K4_si
 DEC, PM = R["diagnostic_tilt_vs_timing"], R["diagnostic_per_market_ann"]
 ROB = R["robustness"]
 CFG = R["config"]
+CORR = R["correlation_robustness"]
+INTEGER = R["integer_contract_sizing"]
 A, B = R["span"]
 
 
@@ -58,6 +60,8 @@ worst_lb = min(LB, key=LB.get)
 BEST = next(r for r in LBR if r["value"] == best_lb)
 CLEAR = [r for r in LBR if r["ci_excludes_zero"]]
 sectors = {r["value"]: r["sharpe"] for r in ROB if r["axis"] == "drop_sector"}
+holding = {r["value"]: r for r in ROB if r["axis"] == "holding_period_months"}
+corr_runs = {r["value"]: r["sharpe"] for r in CORR["runs"]}
 losers = {k: v for k, v in PM.items() if v < 0}
 
 report = VerdictReport(
@@ -167,7 +171,12 @@ report = VerdictReport(
          f"{K3['breakeven_cost_bps']:.1f} bps means friction is nowhere near the binding "
          f"constraint. Unlike a retail options strategy that dies on the spread, this claim "
          f"is not killed by costs. There is simply not enough gross edge for the interval to "
-         f"clear zero at any plausible cost, including zero cost."),
+         f"clear zero at any plausible cost, including zero cost.\n\n"
+         f"The registered account-space check is still data-gated, not silently approximated. "
+         f"The current panel contains BackwardsRatio levels, which preserve returns but are "
+         f"invalid contract notionals. `{INTEGER['blocker']}`. The upgraded exporter requests "
+         f"mapped-contract raw prices; until that panel is re-exported, integer lots are not "
+         f"reported."),
 
         ("Robustness, and the number you would have reported",
          f"The protocol pre-registered the perturbations, which is the only reason the "
@@ -195,11 +204,20 @@ report = VerdictReport(
            f"{sr(max(sectors.values()))} depending on which one goes — removing the grains "
            f"raises it to {sr(sectors['grains'])}, removing energy takes it to "
            f"{sr(sectors['energy'])}. Seven correlated markets are not seven independent "
-           f"tests.\n\n"
+           f"tests. The most-correlated pair is {CORR['pair'][0]}/{CORR['pair'][1]} at "
+           f"{CORR['correlation']:+.2f}. Dropping {CORR['pair'][0]} gives "
+           f"{sr(corr_runs[CORR['pair'][0]])}, dropping {CORR['pair'][1]} gives "
+           f"{sr(corr_runs[CORR['pair'][1]])}, and dropping both gives "
+           f"{sr(corr_runs['+'.join(CORR['pair'])])}. The conclusion does not depend on that "
+           f"pair.\n\n"
+           f"Longer holding periods weaken the result: 3, 6 and 12 months give Sharpes of "
+           f"{sr(holding[3]['sharpe'])}, {sr(holding[6]['sharpe'])} and "
+           f"{sr(holding[12]['sharpe'])}; every interval contains zero. These are overlapping "
+           f"signal vintages with unchanged leverage, not separately tuned strategies.\n\n"
            f"![Executed perturbations](results/fig3_robustness.png)\n\n"
-           f"This is not every pre-registered perturbation. Holding periods beyond one "
-           f"month and dropping the most correlated individual markets were not executed; "
-           f"the figure and verdict are explicitly scoped to the perturbations above."),
+           f"The return-space robustness protocol is now complete. The remaining protocol "
+           f"gap is account-space integer sizing, gated on mapped-contract raw prices as "
+           f"described above."),
 
         ("Cross-check against an independent implementation",
          f"An earlier, separately written backtest of the same construction — single "
@@ -239,18 +257,20 @@ report = VerdictReport(
         f"than the rule it is being compared with. Charging both would widen the gap in the "
         f"strategy's favour — but the gap being tested is against the *gross* distribution, "
         f"and the strategy sits inside it there.",
-        f"**Return space, not account space.** No contract granularity, no margin, no "
-        f"capacity. A real book trades integer contracts with multipliers, which introduces "
-        f"lumpiness this run does not model. That matters for sizing a sleeve; it does not "
-        f"rescue an edge that is absent gross.",
+        f"**Account-space sizing remains data-gated, for a falsifiable reason.** The current "
+        f"export has ratio-adjusted signal prices but not the mapped contract's unadjusted "
+        f"price. Using the adjusted level with exchange multipliers would create false "
+        f"notionals. The exporter and sizing code are ready, but the vendor panel must be "
+        f"re-exported before integer lots at $250k, $1m and $5m can be reported. Margin, "
+        f"capacity and time-varying exchange fees would remain outside that calculation.",
         f"**K4's percentile has {K4['draws']}-draw resolution.** The reported "
         f"{K4['strategy_percentile_vs_random']:.0%} is accurate to about half a percent, "
         f"which is far finer than the margin by which the criterion is decided, but the "
         f"number should not be read as more precise than that.",
-        "**The pre-registered robustness and implementation protocol is incomplete.** "
-        "Holding periods beyond one month, dropping the most correlated individual markets, "
-        "and integer-contract sizing with multipliers were not executed. The four kill "
-        "criteria were evaluated, but this is not a claim of full protocol completion.",
+        "**One implementation clause remains incomplete.** Longer holding periods and the "
+        "most-correlated-pair exclusions are now executed. Integer-contract sizing with "
+        "multipliers remains blocked only by the missing unadjusted mapped-contract prices; "
+        "the result therefore remains a return-space verdict, not a capacity claim.",
     ],
     what_would_have_changed=(
         f"Three things together, all fixed in advance: an alpha in the spanning regression "
@@ -275,6 +295,10 @@ report = VerdictReport(
         "`scripts/regress.py`.",
         f"Sealed block opened once at fingerprint `{K2['opening']['fingerprint']}`, recorded "
         f"in `cases/tsmom/results/holdout_ledger.json`.",
+        "Contract units prepared for the gated account-space run use CME standard contracts: "
+        "CL 1,000 barrels; NG 10,000 MMBtu; GC 100 troy ounces; HG 25,000 pounds; "
+        "ZC/ZS/ZW 5,000 bushels. No multiplier is applied until raw mapped-contract prices "
+        "are present.",
     ],
 )
 

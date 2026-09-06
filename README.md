@@ -23,7 +23,7 @@ micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
 
 micromamba run -n verdict streamlit run app.py          # the working surface
-micromamba run -n verdict python scripts/regress.py     # 56 known-answer gates, seconds
+micromamba run -n verdict python scripts/regress.py     # 57 known-answer gates, seconds
 micromamba run -n verdict python scripts/run_case.py --all --verify
 micromamba run -n verdict python scripts/audit_integrity.py
 ```
@@ -149,7 +149,7 @@ reach.
 ## Status
 
 Built: the framework, the working surface, the multi-case Agent provider layer, the
-claim-registry site, 56 passing gates, four foundational cases, and the TSMOM extension.
+claim-registry site, 57 passing gates, four foundational cases, and the TSMOM extension.
 Each completed case ends in a registry card and a normalized, content-addressed result
 envelope; the integrity audit rejects drift between results, reports, cards, providers
 and site output.

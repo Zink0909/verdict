@@ -15,6 +15,7 @@ assets directory, and nothing to fetch at load time.
 from __future__ import annotations
 
 import html
+import hashlib
 import json
 import subprocess
 import sys
@@ -104,6 +105,10 @@ footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line
 .nav { font-family: var(--mono); font-size: .78rem; margin-bottom: 2.5rem; }
 .nav a { margin-right: 1.2rem; }
 """
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def page(title: str, body: str, description: str = "") -> str:
@@ -380,8 +385,22 @@ def main() -> int:
     (SITE / "index.html").write_text(build_index(cards, links))
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = ["index.html", "agent.html", ".nojekyll", *links.values()]
-    manifest_path.write_text(json.dumps({"generated": sorted(generated)}, indent=2) + "\n")
+    generated = sorted(["index.html", "agent.html", ".nojekyll", *links.values()])
+    source_paths = [*sorted(REGISTRY.glob("*.json")),
+                    *sorted(CASES.glob("*/report.md")),
+                    ROOT / "cases/complexity/agent_run/run.json",
+                    ROOT / "cases/complexity/agent_eval/report.md",
+                    ROOT / "scripts/build_site.py", ROOT / "verdict/catalog.py"]
+    source_paths = [path for path in source_paths if path.is_file()]
+    manifest = {
+        "schema_version": 2,
+        "generated": generated,
+        "inputs": {str(path.relative_to(ROOT)): _sha256(path) for path in source_paths},
+        "outputs": {rel: _sha256(SITE / rel) for rel in generated},
+    }
+    tmp = manifest_path.with_name(f".{manifest_path.name}.tmp")
+    tmp.write_text(json.dumps(manifest, indent=2) + "\n")
+    tmp.replace(manifest_path)
 
     total = sum(p.stat().st_size for p in SITE.rglob("*") if p.is_file())
     print(f"built {SITE}/  ({total/1e6:.1f} MB, {len(list(SITE.rglob('*.html')))} pages)")

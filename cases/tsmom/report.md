@@ -54,6 +54,8 @@ Average turnover is 0.26 units of position per market per rebalance, and the gro
 
 But it fires for the wrong-sounding reason, and the distinction matters. Liquid futures cost a few basis points a round turn; a breakeven of 60.8 bps means friction is nowhere near the binding constraint. Unlike a retail options strategy that dies on the spread, this claim is not killed by costs. There is simply not enough gross edge for the interval to clear zero at any plausible cost, including zero cost.
 
+The registered account-space check is still data-gated, not silently approximated. The current panel contains BackwardsRatio levels, which preserve returns but are invalid contract notionals. `panel lacks unadjusted mapped-contract *_trade_close prices`. The upgraded exporter requests mapped-contract raw prices; until that panel is re-exported, integer lots are not reported.
+
 ## Robustness, and the number you would have reported
 
 The protocol pre-registered the perturbations, which is the only reason the following is reportable rather than embarrassing. Sweeping the lookback:
@@ -69,11 +71,13 @@ The protocol pre-registered the perturbations, which is the only reason the foll
 
 The registered 12 months is not the peak. 18 months returns +0.45; 6 months returns -0.12. Had the lookback been chosen after seeing the data, the honest-looking thing to report would have been +0.45 at 18 months — roughly double the registered configuration. Its interval is [+0.00, +0.83]. 1 of the 6 lookbacks has an unadjusted interval that excludes zero (18 months); this is reported as sensitivity, not promoted into a replacement specification. The sign is not stable across the pre-registered perturbations (`conclusion_stable_across_perturbations` = False), which is itself evidence against the claim rather than a nuisance.
 
-Dropping a sector moves the result from -0.02 to +0.41 depending on which one goes — removing the grains raises it to +0.41, removing energy takes it to -0.02. Seven correlated markets are not seven independent tests.
+Dropping a sector moves the result from -0.02 to +0.41 depending on which one goes — removing the grains raises it to +0.41, removing energy takes it to -0.02. Seven correlated markets are not seven independent tests. The most-correlated pair is ZC/ZW at +0.69. Dropping ZC gives +0.15, dropping ZW gives +0.23, and dropping both gives +0.17. The conclusion does not depend on that pair.
+
+Longer holding periods weaken the result: 3, 6 and 12 months give Sharpes of -0.08, -0.04 and -0.11; every interval contains zero. These are overlapping signal vintages with unchanged leverage, not separately tuned strategies.
 
 ![Executed perturbations](results/fig3_robustness.png)
 
-This is not every pre-registered perturbation. Holding periods beyond one month and dropping the most correlated individual markets were not executed; the figure and verdict are explicitly scoped to the perturbations above.
+The return-space robustness protocol is now complete. The remaining protocol gap is account-space integer sizing, gated on mapped-contract raw prices as described above.
 
 ## Cross-check against an independent implementation
 
@@ -88,9 +92,9 @@ The gap is accounted for by two known differences rather than left unexplained: 
 - **The panel is unbalanced early.** Only five markets are available until 2011-03 and six until 2012-10; gold's history begins 2012-11. Months before then average over fewer markets. Restricting to the balanced period gives +0.29, so this does not change the conclusion, but the early years are thinner than the market count suggests.
 - **One large move could not be corroborated.** Crude in March 2026 moves +54% in a month in this panel. Three other outliers in the sample (crude in March and May 2020, natural gas in July 2022) match known events; this one was not checked against a second data source. Dropping the last twelve months gives +0.11, so the conclusion does not rest on it.
 - **The coin-flip comparison is gross only.** Independent monthly sign draws turn over far more than the strategy does, so the random book would pay more in costs than the rule it is being compared with. Charging both would widen the gap in the strategy's favour — but the gap being tested is against the *gross* distribution, and the strategy sits inside it there.
-- **Return space, not account space.** No contract granularity, no margin, no capacity. A real book trades integer contracts with multipliers, which introduces lumpiness this run does not model. That matters for sizing a sleeve; it does not rescue an edge that is absent gross.
+- **Account-space sizing remains data-gated, for a falsifiable reason.** The current export has ratio-adjusted signal prices but not the mapped contract's unadjusted price. Using the adjusted level with exchange multipliers would create false notionals. The exporter and sizing code are ready, but the vendor panel must be re-exported before integer lots at $250k, $1m and $5m can be reported. Margin, capacity and time-varying exchange fees would remain outside that calculation.
 - **K4's percentile has 200-draw resolution.** The reported 76% is accurate to about half a percent, which is far finer than the margin by which the criterion is decided, but the number should not be read as more precise than that.
-- **The pre-registered robustness and implementation protocol is incomplete.** Holding periods beyond one month, dropping the most correlated individual markets, and integer-contract sizing with multipliers were not executed. The four kill criteria were evaluated, but this is not a claim of full protocol completion.
+- **One implementation clause remains incomplete.** Longer holding periods and the most-correlated-pair exclusions are now executed. Integer-contract sizing with multipliers remains blocked only by the missing unadjusted mapped-contract prices; the result therefore remains a return-space verdict, not a capacity claim.
 
 ## What would have changed the verdict
 
@@ -103,3 +107,4 @@ Three things together, all fixed in advance: an alpha in the spanning regression
 - Execution: `cases/tsmom/run.py`. Figures: `cases/tsmom/make_figures.py`. This document: `cases/tsmom/make_report.py`, every number interpolated from `results.json`.
 - Known-answer controls: `cases/tsmom/validate.py`, four synthetic worlds including a positive control the apparatus must pass; also gate `tsmom-controls` in `scripts/regress.py`.
 - Sealed block opened once at fingerprint `06c0a7fb49b4`, recorded in `cases/tsmom/results/holdout_ledger.json`.
+- Contract units prepared for the gated account-space run use CME standard contracts: CL 1,000 barrels; NG 10,000 MMBtu; GC 100 troy ounces; HG 25,000 pounds; ZC/ZS/ZW 5,000 bushels. No multiplier is applied until raw mapped-contract prices are present.

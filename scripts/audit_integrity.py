@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -50,7 +51,9 @@ def audit(root: Path = ROOT) -> dict:
     site_manifest_path = root / "docs" / ".verdict-site-manifest.json"
     site_files = set()
     if site_manifest_path.is_file():
-        site_files = set(json.loads(site_manifest_path.read_text()).get("generated", []))
+        site_manifest = json.loads(site_manifest_path.read_text())
+        site_files = set(site_manifest.get("generated", []))
+        check("site-manifest", lambda: _site_manifest(site_manifest, root))
     else:
         check("site-manifest", lambda: _require(
             False, "docs/.verdict-site-manifest.json is missing"))
@@ -128,6 +131,33 @@ def _coverage(coverage: dict, complete: bool, gaps: tuple[str, ...]) -> str:
     if actual_gaps != set(gaps):
         raise ValueError(f"result protocol gaps differ from catalog: {sorted(actual_gaps ^ set(gaps))}")
     return "complete" if complete else f"{len(gaps)} declared gap(s)"
+
+
+def _digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _site_manifest(manifest: dict, root: Path) -> str:
+    if manifest.get("schema_version") != 2:
+        raise ValueError("site manifest schema must be 2; rebuild with scripts/build_site.py")
+    expected_inputs = [*sorted((root / "registry").glob("*.json")),
+                       *sorted((root / "cases").glob("*/report.md")),
+                       root / "cases/complexity/agent_run/run.json",
+                       root / "cases/complexity/agent_eval/report.md",
+                       root / "scripts/build_site.py", root / "verdict/catalog.py"]
+    expected_inputs = {str(path.relative_to(root)): _digest(path)
+                       for path in expected_inputs if path.is_file()}
+    if manifest.get("inputs") != expected_inputs:
+        raise ValueError("site source digests are stale; run scripts/build_site.py")
+    generated = set(manifest.get("generated", []))
+    outputs = manifest.get("outputs", {})
+    if set(outputs) != generated:
+        raise ValueError("site output digest keys differ from generated files")
+    for rel in generated:
+        path = root / "docs" / rel
+        if not path.is_file() or outputs[rel] != _digest(path):
+            raise ValueError(f"generated site output is stale or altered: {rel}")
+    return f"{len(expected_inputs)} inputs -> {len(generated)} outputs"
 
 
 def main() -> int:

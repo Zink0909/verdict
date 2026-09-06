@@ -26,5 +26,26 @@
     "fingerprint": "06c0a7fb49b4",
     "utc": "2026-09-05T16:51:32+00:00",
     "kind": "reproduction"
+  },
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-09-06T09:19:05+00:00",
+    "kind": "reproduction"
+  },
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-09-06T09:26:08+00:00",
+    "kind": "reproduction"
+  },
+  {
+    "name": "tsmom-qc-7-market-post-publication",
+    "reason": "final evaluation of the pre-registered protocol",
+    "fingerprint": "06c0a7fb49b4",
+    "utc": "2026-09-06T09:27:43+00:00",
+    "kind": "reproduction"
   }
 ]

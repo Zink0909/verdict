@@ -76,7 +76,9 @@ def fig2_where_the_return_comes_from():
 
 def fig3_robustness():
     rob = D["robustness"]
-    order = ["lookback_months", "vol_window_days", "drop_sector", "sample"]
+    order = ["lookback_months", "holding_period_months", "vol_window_days",
+             "drop_sector", "drop_correlated_markets", "sample",
+             "integer_contract_capital_usd"]
     rows = [r for a in order for r in rob if r["axis"] == a]
     labels = [f"{r['axis'].replace('_', ' ')} = {r['value']}" for r in rows]
     vals = [r["sharpe"] for r in rows]
@@ -90,7 +92,7 @@ def fig3_robustness():
     ax.set_yticks(y)
     ax.set_yticklabels(labels, fontsize=8.6)
     ax.set_xlabel("Sharpe")
-    ax.set_title("Every perturbation the protocol pre-registered\n"
+    ax.set_title("Executed return-space perturbations\n"
                  f"(dashed = the registered configuration, {base:+.2f})", fontsize=10)
     fig.tight_layout()
     fig.savefig(RES / "fig3_robustness.png", bbox_inches="tight")

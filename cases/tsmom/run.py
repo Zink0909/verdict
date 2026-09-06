@@ -47,6 +47,8 @@ SEAL_FROM = "2021-01-01"
 COST_GRID = (0, 5, 10, 20, 40)
 PLAUSIBLE_BPS = 10.0     # generous for liquid futures; a harder bar for K3 to clear
 MONTHS = 12
+HOLDING_PERIODS = (1, 3, 6, 12)
+ACCOUNT_CAPITALS = (250_000.0, 1_000_000.0, 5_000_000.0)
 
 
 def _stats(r: pd.Series) -> dict:
@@ -68,7 +70,8 @@ def _stats(r: pd.Series) -> dict:
 def execute(closes: pd.DataFrame, vols: dict[int, pd.DataFrame], *,
             vol_window: int = VOL_WINDOW, lookback: int = LOOKBACK,
             sign_draws: int = SIGN_DRAWS, seal_from: str | None = SEAL_FROM,
-            ledger: Path | None = None, label: str = "panel") -> dict:
+            ledger: Path | None = None, label: str = "panel",
+            execution_prices: pd.DataFrame | None = None) -> dict:
     rets = T.market_returns(closes)
     vol = vols[vol_window]
 
@@ -189,6 +192,91 @@ def execute(closes: pd.DataFrame, vols: dict[int, pd.DataFrame], *,
                                     rets[keep])
             rob.append({"axis": "drop_sector", "value": sec,
                         "sharpe": float(E.sharpe(r.dropna(), periods_per_year=MONTHS))})
+
+    # A signal held for h months is an equal-weight blend of its h active
+    # formation vintages. The one-month baseline is included so this is a
+    # surface, not a collection of variants without a reference point.
+    for holding in HOLDING_PERIODS:
+        held_pos = T.holding_period_positions(pos, holding)
+        r = T.portfolio_returns(held_pos, rets).dropna()
+        lo, hi = E.block_bootstrap_sharpe_ci(r, periods_per_year=MONTHS)
+        rob.append({"axis": "holding_period_months", "value": holding,
+                    "n_months": int(len(r)),
+                    "sharpe": float(E.sharpe(r, periods_per_year=MONTHS)),
+                    "sharpe_ci": [float(lo), float(hi)],
+                    "ci_excludes_zero": bool(lo > 0 or hi < 0)})
+
+    # Correlation is estimated from the return panel independently of the
+    # strategy. Test both members separately and together so the result cannot
+    # depend on which side of the most-correlated pair happened to be removed.
+    corr_left, corr_right, corr_value = T.most_correlated_pair(rets)
+    correlation_runs = []
+    for dropped in ((corr_left,), (corr_right,), (corr_left, corr_right)):
+        keep = [column for column in closes if column not in dropped]
+        r = T.portfolio_returns(T.tsmom_positions(closes[keep], vol[keep], lookback),
+                                rets[keep]).dropna()
+        row = {"axis": "drop_correlated_markets", "value": "+".join(dropped),
+               "n_markets": len(keep),
+               "sharpe": float(E.sharpe(r, periods_per_year=MONTHS))}
+        rob.append(row)
+        correlation_runs.append(row)
+    out["correlation_robustness"] = {
+        "selection_rule": "largest absolute pairwise monthly-return correlation",
+        "pair": [corr_left, corr_right],
+        "correlation": corr_value,
+        "runs": correlation_runs,
+    }
+
+    # Account-space implementation. It is deliberately conditional: adjusted
+    # continuous levels cannot be used as contract notionals. An older panel
+    # therefore leaves a precise data gate rather than fabricating lot sizes.
+    if execution_prices is None:
+        out["integer_contract_sizing"] = {
+            "status": "data-gated",
+            "blocker": "panel lacks unadjusted mapped-contract *_trade_close prices",
+            "why_adjusted_close_is_invalid": (
+                "BackwardsRatio levels preserve returns but change historical price scale; "
+                "multiplying them by a contract unit would produce false notionals"),
+            "required_export": "rerun cases/tsmom/qc_export.py and decode the new panel",
+        }
+    else:
+        account_runs = []
+        for capital in ACCOUNT_CAPITALS:
+            contracts = T.integer_contract_positions(pos, execution_prices, capital)
+            gross = T.integer_contract_returns(
+                contracts, execution_prices, rets, capital).reindex(idx).dropna()
+            int_turn = T.integer_contract_turnover(
+                contracts, execution_prices, capital).reindex(gross.index).fillna(0.0)
+            net_integer = gross - int_turn * (PLAUSIBLE_BPS / 1e4)
+            reference = strat.reindex(gross.index)
+            nonzero_targets = pos.reindex(contracts.index).notna() & pos.ne(0)
+            zero_contracts = contracts.eq(0) & nonzero_targets
+            row = {
+                "capital_usd": capital,
+                "gross": _stats(gross),
+                "net_at_plausible": _stats(net_integer),
+                "mean_turnover": float(int_turn.mean()),
+                "tracking_error_annualized": float(
+                    (gross - reference).std(ddof=1) * np.sqrt(MONTHS)),
+                "mean_absolute_contracts": float(contracts.abs().stack().mean()),
+                "zero_contract_share": float(
+                    zero_contracts.sum().sum() / nonzero_targets.sum().sum()),
+            }
+            account_runs.append(row)
+            rob.append({"axis": "integer_contract_capital_usd", "value": int(capital),
+                        "sharpe": row["gross"]["sharpe"]})
+        out["integer_contract_sizing"] = {
+            "status": "executed",
+            "rounding": "nearest integer contract",
+            "pnl_convention": (
+                "prior raw mapped-contract notional times BackwardsRatio return; "
+                "raw cross-contract price differences are never treated as P&L"),
+            "turnover_convention": (
+                "conservative full close-and-open roll at each monthly rebalance"),
+            "point_value_usd_per_price_unit": T.CONTRACT_POINT_VALUE,
+            "plausible_cost_bps": PLAUSIBLE_BPS,
+            "runs": account_runs,
+        }
     # Sensitivity to the tail of the sample. One move in the panel — CL in March
     # 2026, +54% in a month — could not be corroborated against a second source,
     # so the conclusion is checked with the last year removed as well as with the
@@ -201,14 +289,16 @@ def execute(closes: pd.DataFrame, vols: dict[int, pd.DataFrame], *,
                         "n_months": int(len(s)),
                         "sharpe": float(E.sharpe(s, periods_per_year=MONTHS))})
     out["robustness"] = rob
+    gaps = ([] if execution_prices is not None else
+            ["integer-contract and multiplier-aware sizing"])
     out["protocol_coverage"] = {
-        "executed": ["lookback horizons", "volatility estimation window", "drop sectors"],
-        "not_executed": [
-            "holding periods beyond one month",
-            "drop the most correlated markets",
-            "integer-contract and multiplier-aware sizing",
-        ],
-        "complete": False,
+        "executed": ["lookback horizons", "holding periods beyond one month",
+                     "volatility estimation window", "drop sectors",
+                     "drop the most correlated markets"]
+                    + (["integer-contract and multiplier-aware sizing"]
+                       if execution_prices is not None else []),
+        "not_executed": gaps,
+        "complete": not gaps,
     }
     signs = {np.sign(r["sharpe"]) for r in rob}
     out["conclusion_stable_across_perturbations"] = bool(len(signs) == 1)
@@ -261,9 +351,10 @@ def main() -> int:
         return 2
 
     closes, vols = T.load_panel(panel)
+    execution_prices = T.load_execution_prices(panel, closes.columns)
     (HERE / "results").mkdir(exist_ok=True)
     res = execute(closes, vols, ledger=HERE / "results" / "holdout_ledger.json",
-                  label="qc-7-market")
+                  label="qc-7-market", execution_prices=execution_prices)
 
     # The series come out separately so the figures are drawn from exactly the
     # numbers the verdict quotes, not from a second computation of them.
