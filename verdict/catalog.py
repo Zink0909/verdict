@@ -79,6 +79,24 @@ FOUNDATIONAL_CASE_IDS = frozenset({
     "retail-short-volatility",
     "gamma-signal-drift",
 })
+FOUNDATION_PLAYBOOKS = {
+    "chart-cnn-spanning": {
+        "source": "sealed holdout / factor spanning",
+        "modules": ("splits", "evaluate", "costs", "diagnose"),
+    },
+    "buy-the-dip-long-calls": {
+        "source": "point-in-time construction / instrument expression",
+        "modules": ("pointintime", "costs", "options", "robust", "diagnose"),
+    },
+    "retail-short-volatility": {
+        "source": "friction / implementability",
+        "modules": ("costs", "robust", "report"),
+    },
+    "gamma-signal-drift": {
+        "source": "deployment / distribution shift",
+        "modules": ("evaluate", "diagnose", "report"),
+    },
+}
 
 
 def validate_catalog() -> None:
@@ -91,6 +109,8 @@ def validate_catalog() -> None:
         raise ValueError("case catalog contains duplicate folders")
     if {case.card_id for case in FOUNDATIONAL_CASES} != FOUNDATIONAL_CASE_IDS:
         raise ValueError("Verdict foundations must remain the four source studies")
+    if set(FOUNDATION_PLAYBOOKS) != FOUNDATIONAL_CASE_IDS:
+        raise ValueError("every foundation must declare its framework contribution")
     if any(case.agent_mode not in {"executable", "evidence-readonly"} for case in CASES):
         raise ValueError("case catalog contains an invalid agent mode")
     if any(case.role != "data-gated" and not case.result_files for case in CASES):

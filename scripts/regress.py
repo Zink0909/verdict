@@ -861,14 +861,20 @@ def t_site_index_covers_registry():
     lede = page.split('<p class="lede">')[1].split("</p>")[0]
     for jargon in ("Sharpe", "alpha", "backtest"):
         assert jargon.lower() not in lede.lower(), f"positioning language uses {jargon!r}"
+    system = build_site.build_system_page(cards, links)
+    assert "one system, not a pile of backtests" in system
+    assert "Chart-CNN stock selection" in system
 
 
 def t_case_catalog_is_complete():
     """One inventory must cover every card and preserve the four source studies."""
-    from verdict.catalog import CASE_BY_ID, FOUNDATIONAL_CASES, FOUNDATIONAL_CASE_IDS
+    from verdict.catalog import (CASE_BY_ID, FOUNDATIONAL_CASES, FOUNDATIONAL_CASE_IDS,
+                                 FOUNDATION_PLAYBOOKS)
     card_ids = {p.stem for p in RP.Path(ROOT, "registry").glob("*.json")}
     assert card_ids == set(CASE_BY_ID), (card_ids ^ set(CASE_BY_ID))
     assert {case.card_id for case in FOUNDATIONAL_CASES} == FOUNDATIONAL_CASE_IDS
+    assert set(FOUNDATION_PLAYBOOKS) == FOUNDATIONAL_CASE_IDS
+    assert all(playbook["modules"] for playbook in FOUNDATION_PLAYBOOKS.values())
     for case in FOUNDATIONAL_CASES:
         assert RP.Path(ROOT, "cases", case.folder).is_dir(), case
 

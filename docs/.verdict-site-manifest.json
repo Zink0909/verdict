@@ -9,7 +9,8 @@
     "cases/drift.html",
     "cases/tsmom.html",
     "cases/vol_harvest.html",
-    "index.html"
+    "index.html",
+    "system.html"
   ],
   "inputs": {
     "registry/buy-the-dip-long-calls.json": "2518542b7b1f9ae7c7874cda95ec241a7f0f3e39a214a13c4cf92c18ff07f96b",
@@ -27,18 +28,19 @@
     "cases/vol_harvest/report.md": "f2206be7fddbabf713c0660bbe1c7f54cc55ec97807ceecd78ae2c53f83b15a5",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "75cdeda960d6b3f3ead6be491060506a28c628ada7e2a77ec8dee378a0e8f0b6",
-    "verdict/catalog.py": "9de3a3ccb7dec3cf84a6ac6304655d0e2b2349912702954b5ea94dc1b5b12650"
+    "scripts/build_site.py": "fd669a59a821df2e1d34e1b4eda80148dbd7a505b3bff76f01c388431ab5fea9",
+    "verdict/catalog.py": "80077d6978b21a4ab7ca2d6fd9200f9916b1c91aa161349eece9bc9e82519b72"
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "agent.html": "ee0023888a876a493215a17fadac8d4037fd968f308d5f364cc8f738b96263d5",
+    "agent.html": "191b590b5524c4e676aaa262c2cc613c996932faabea68bb9c93c342650d69e6",
     "cases/buy_the_dip.html": "35a56559e212a0a6772bd809827b7efb6f35c6257fd24dbd6ae676c138a91f88",
     "cases/chart_cnn.html": "800cf6f253f9db6b1ae26d44b925aa9ab8c1bb4e1eb8e26437015806d022965e",
     "cases/complexity.html": "9adaa18fb8f52002c78733d842653f39f41dcc5b9c13c4ecee9b8c806612527c",
     "cases/drift.html": "cac324e58feac17caac4a57d41d92639f685b2d730f129afc3a057465433e28d",
     "cases/tsmom.html": "aadf65177da0438c71c749e30bd95c4ab4da2819e4c0a4f24fcf59d87cdc9f5e",
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
-    "index.html": "919b23a3d389947d950a9022c516ce46dcce4b3efb161075513c0b5a4f80adff"
+    "index.html": "cdd1bba4d392425793d91c78b7a2ad0f36c4c33bc35c53a17a94430d337fbac2",
+    "system.html": "87eec55052d5d4fb29cc5385db936444cc7cad0606fe1c49ce3ad121e48739a3"
   }
 }

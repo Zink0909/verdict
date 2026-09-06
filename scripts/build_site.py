@@ -29,7 +29,8 @@ SITE = ROOT / "docs"        # GitHub Pages serves main:/docs directly
 REGISTRY = ROOT / "registry"
 CASES = ROOT / "cases"
 
-from verdict.catalog import CASE_DIRS  # noqa: E402
+from verdict.catalog import (CASES as CATALOG_CASES, CASE_DIRS, FOUNDATION_PLAYBOOKS,
+                             FOUNDATIONAL_CASES)  # noqa: E402
 from verdict.report import validate_card  # noqa: E402
 
 MANIFEST = ".verdict-site-manifest.json"
@@ -134,7 +135,8 @@ files that produced them, so this site cannot claim something the code does not.
 
 
 def nav(active: str) -> str:
-    items = [("index.html", "registry"), ("agent.html", "the agent"),
+    items = [("system.html", "the system"), ("index.html", "registry"),
+             ("agent.html", "the agent"),
              ("https://github.com/Zink0909/verdict", "source")]
     out = []
     for href, label in items:
@@ -267,10 +269,11 @@ result, and it is the step that gets skipped.</p>
 
 <h2>Reading a verdict</h2>
 <p>Each case page carries the full write-up: what was audited, what was found, the figures,
-and an honest-limitations section that says what the run cannot settle. Every case is
-reproducible offline from pinned data with the commands in its own README, and the numbers
-in the write-up are interpolated from the results file rather than typed in.</p>
-<p>The <a href="agent.html">agent page</a> shows the loop running end to end on one claim,
+and an honest-limitations section that says what the run cannot settle. Each README names
+whether the evidence is executable, a read-only source replay, or data-gated; a replay is
+never presented as a fresh computation.</p>
+<p>Start with <a href="system.html">the system</a> to see how four prior studies became
+one reusable framework. The <a href="agent.html">agent page</a> shows the loop running end to end on one claim,
 including its evaluation against what human experts actually did — and what it missed.</p>
 <p>The repository also carries the working surface the register is maintained from: four
 screens for browsing the register, pre-registering a protocol on a new claim, running the
@@ -280,6 +283,97 @@ same library the cases use.</p>
 """,
         "A harness for checking predictive claims, and the record of what happened when "
         "claims were put through it.")
+
+
+def build_system_page(cards: list[dict], links: dict[str, str]) -> str:
+    """Explain why the cases are one system, using the catalog as the source of truth."""
+    cards_by_id = {card["id"]: card for card in cards}
+    foundation_rows = []
+    for spec in FOUNDATIONAL_CASES:
+        card = cards_by_id[spec.card_id]
+        playbook = FOUNDATION_PLAYBOOKS[spec.card_id]
+        title = html.escape(card.get("title", spec.card_id))
+        link = links.get(spec.card_id)
+        title = f'<a href="{link}">{title}</a>' if link else title
+        foundation_rows.append(
+            "<tr>"
+            f"<td>{title}</td>"
+            f"<td>{html.escape(playbook['source'])}</td>"
+            f"<td><code>{html.escape(' · '.join(playbook['modules']))}</code></td>"
+            "</tr>")
+
+    role_meaning = {
+        "foundation": "The four source studies from which the A-layer playbooks were extracted.",
+        "fresh-audit": "A new claim audited end to end through the system; it tests generality, not provenance.",
+        "extension": "A later application of the same contract; it must not rewrite the project identity.",
+        "data-gated": "Protocol recorded, but no execution corpus is available; no verdict is issued.",
+    }
+    role_rows = []
+    for role, meaning in role_meaning.items():
+        matching = [cards_by_id[spec.card_id] for spec in CATALOG_CASES if spec.role == role]
+        names = ", ".join(html.escape(card.get("title", card["id"])) for card in matching) or "—"
+        role_rows.append(f"<tr><td><code>{role}</code></td><td>{names}</td>"
+                         f"<td>{html.escape(meaning)}</td></tr>")
+
+    return page(
+        "Verdict — the system",
+        f"""{nav("the system")}
+<p class="kicker">system overview</p>
+<h1>Verdict is one system, not a pile of backtests.</h1>
+<p class="lede">Four completed research studies exposed the same problem: predictive
+claims need repeatable tests that can survive a no. Verdict turns that discipline into a
+tested framework, then puts new and old claims through the same evidence contract.</p>
+
+<div class="flow">
+  four source studies<br>
+  &nbsp;&nbsp;↓ extract the recurring research discipline<br>
+  <b>A · validation framework</b> — deterministic data, split, inference, cost,
+  robustness, and diagnosis tools<br>
+  &nbsp;&nbsp;↓ one case contract and evidence manifest<br>
+  <b>B · research-audit agent</b> — claim → protocol → human approval → tool calls → verdict<br>
+  &nbsp;&nbsp;↓<br>
+  <b>claim register</b> — what was tested, what survived, and what remains unresolved
+</div>
+
+<h2>Where the framework came from</h2>
+<p>The source studies are not decorative portfolio entries. Each left behind a reusable
+playbook. The catalog enforces this exact four-study set, so a later case cannot silently
+replace part of the system's origin story.</p>
+<div class="scroll"><table>
+<tr><th>source study</th><th>question it contributed</th><th>framework modules</th></tr>
+{''.join(foundation_rows)}
+</table></div>
+
+<h2>Two layers, deliberately separated</h2>
+<h3>A · Validation framework</h3>
+<p>The library owns numerical work: point-in-time checks, chronological and sealed
+splits, spanning and bootstrap inference, cost and option accounting, robustness sweeps,
+and mechanism diagnosis. Its known-answer gates have to detect effects planted in
+synthetic controls; a harness that only finds nulls is not evidence.</p>
+<h3>B · Research-audit agent</h3>
+<p>The Agent reads and structures a claim, drafts a falsifiable protocol, waits for a
+person to approve it, calls A-layer tools, then writes a verdict. It never computes a
+number. Its number audit can withhold unsupported figures, while its documented boundary
+is that correct figures can still be interpreted wrongly and need human review.</p>
+
+<h2>Case roles are evidence roles</h2>
+<div class="scroll"><table>
+<tr><th>role</th><th>cases</th><th>meaning</th></tr>
+{''.join(role_rows)}
+</table></div>
+<p>Execution mode is equally explicit. Complexity is executable through its framework
+adapter. Retrospective and extension cases expose pinned evidence read-only, and Lazy
+Prices stops at a pre-registered, data-gated protocol. A replay is never described as a
+fresh recomputation.</p>
+
+<h2>What this demonstrates</h2>
+<p>The point is not to recommend a trade. It is to show the ability to abstract common
+research discipline from different projects, build the shared infrastructure, preserve
+the provenance and limits of each case, and let a conclusion be negative when the evidence
+requires it. Browse the <a href="index.html">claim register</a> or inspect
+<a href="agent.html">the recorded Agent loop</a>.</p>
+""",
+        "A validation framework and research-audit agent extracted from four completed studies.")
 
 
 def build_agent_page() -> str:
@@ -383,9 +477,10 @@ def main() -> int:
     cards = load_cards()
     links = render_case_pages()
     (SITE / "index.html").write_text(build_index(cards, links))
+    (SITE / "system.html").write_text(build_system_page(cards, links))
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = sorted(["index.html", "agent.html", ".nojekyll", *links.values()])
+    generated = sorted(["index.html", "system.html", "agent.html", ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),
                     ROOT / "cases/complexity/agent_run/run.json",
