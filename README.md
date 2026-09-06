@@ -53,6 +53,11 @@ register → one evidence case → recorded Agent loop. For a live demo, run
 through a local protocol draft, the deterministic CSV evaluation battery, and the Agent
 boundary. The interactive surface is research infrastructure, not a trading interface.
 
+For a presentation-ready route, use the public
+[portfolio briefing](https://zink0909.github.io/verdict/portfolio.html). It gives a bounded
+five-minute path: four source studies → reusable constraints → evidence register → local
+interactive proof → explicit research boundaries.
+
 For a paper audit, use **Audit a paper**. The offline Complexity walkthrough works without
 credentials and visibly labels the model turns as a fixture. To process a new paper, install
 the optional Agent dependency (`micromamba run -n verdict pip install anthropic`) and configure

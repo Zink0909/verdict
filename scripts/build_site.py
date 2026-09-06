@@ -136,7 +136,7 @@ files that produced them, so this site cannot claim something the code does not.
 
 def nav(active: str) -> str:
     items = [("index.html", "the system"), ("registry.html", "registry"),
-             ("demo.html", "demo"), ("agent.html", "the agent"),
+             ("demo.html", "demo"), ("portfolio.html", "portfolio"), ("agent.html", "the agent"),
              ("https://github.com/Zink0909/verdict", "source")]
     out = []
     for href, label in items:
@@ -431,6 +431,75 @@ testable, then used a common evidence contract to retain both results and their 
         "A guided tour of Verdict's system, evidence register, and interactive local working surface.")
 
 
+def build_portfolio_page(cards: list[dict], links: dict[str, str]) -> str:
+    """A bounded five-minute presentation route grounded in repository artifacts."""
+    titles = {card["id"]: card.get("title") or card["id"] for card in cards}
+    foundation_links = []
+    for case in FOUNDATIONAL_CASES:
+        href = links.get(case.card_id)
+        label = html.escape(titles[case.card_id])
+        foundation_links.append(f'<a href="{href}">{label}</a>' if href else label)
+    delivered = sum(card["state"] == "verdict-delivered" for card in cards)
+    return page(
+        "Verdict — portfolio briefing",
+        f"""{nav("portfolio")}
+<p class="kicker">presentation route</p>
+<h1>One system, assembled from four research studies.</h1>
+<p class="lede">Verdict is a research-validation system for predictive claims. It does not
+recommend trades. It makes a claim, its test, the data boundary, the calculation, and the
+limitation inspectable in one place.</p>
+
+<h2>The opening — 30 seconds</h2>
+<blockquote>I took repeated research discipline from distinct studies and turned it into a
+single, testable evidence system. The deliverable is not a collection of strategies: it is a
+way to make predictive claims falsifiable and reviewable.</blockquote>
+
+<h2>What the four source studies contributed</h2>
+<div class="scroll"><table>
+<tr><th>source study</th><th>reusable research constraint</th></tr>
+<tr><td>{foundation_links[0]}</td><td>sealed holdout and spanning: a result must add information beyond the existing book.</td></tr>
+<tr><td>{foundation_links[1]}</td><td>point-in-time construction and expression diagnosis: a signal and the instrument used to express it are different claims.</td></tr>
+<tr><td>{foundation_links[2]}</td><td>friction and implementability: a gross result is incomplete until costs and real quoting assumptions are exposed.</td></tr>
+<tr><td>{foundation_links[3]}</td><td>distribution-shift diagnosis: a declining feature is observed before its cause is claimed.</td></tr>
+</table></div>
+
+<h2>The system — 90 seconds</h2>
+<div class="flow"><b>paper or claim</b> → Claim Card → pre-registered Protocol → <span class="you">human approval</span>
+→ deterministic tools → number audit → bounded outcome → evidence package / public case</div>
+<p>The separation is deliberate. A language model may structure a claim, select from closed
+tools, and write prose; it never computes the figures. A result may be executable, a labelled
+read-only evidence replay, or data-gated. Those are different states, never interchangeable.</p>
+
+<h2>The evidence — 90 seconds</h2>
+<p>Open the <a href="registry.html">claim register</a>. It contains {delivered} adjudicated
+cases and a data-gated case whose honest outcome is an approved protocol without a verdict.
+Then open one case page: it carries the claim, the protocol, the outcome, limitations, artifacts,
+and its execution mode.</p>
+
+<h2>The interactive proof — 90 seconds</h2>
+<p>Run the local working surface and follow <em>Start here</em>. The offline Complexity walkthrough
+demonstrates the full Agent loop. For a new paper, the paper route turns text into a Claim Card
+and protocol, waits for approval, and either runs a matching provider, evaluates a user-supplied
+dated return CSV with explicit boundaries, or stops data-gated. The Evidence Vault then hashes,
+reviews, compares, and exports the local audit package.</p>
+<pre>micromamba run -n verdict streamlit run app.py</pre>
+
+<h2>What this project demonstrates</h2>
+<ul>
+<li>abstraction: extracting common research constraints from different projects;</li>
+<li>implementation: turning those constraints into reusable, tested code and a coherent interface;</li>
+<li>judgment: keeping provenance, data availability, and negative results visible rather than smoothing them away;</li>
+<li>evaluation: checking both numerical outputs and the Agent's protocol omissions against an expert checklist.</li>
+</ul>
+
+<h2>The boundary to state plainly</h2>
+<p>Verdict is an evidence and research-method system. A supplied return CSV is not proof that a
+paper strategy was reproduced; a read-only result replay is not a new computation; and a
+data-gated protocol is not a failed implementation. These distinctions are part of the result.</p>
+""",
+        "A five-minute, evidence-grounded presentation route through the Verdict research-validation system.")
+
+
 def build_agent_page() -> str:
     run_path = ROOT / "cases/complexity/agent_run/run.json"
     eval_path = ROOT / "cases/complexity/agent_eval/report.md"
@@ -536,9 +605,10 @@ def main() -> int:
     (SITE / "registry.html").write_text(build_index(cards, links))
     (SITE / "system.html").write_text(system_page)
     (SITE / "demo.html").write_text(build_demo_page())
+    (SITE / "portfolio.html").write_text(build_portfolio_page(cards, links))
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = sorted(["index.html", "registry.html", "system.html", "demo.html", "agent.html",
+    generated = sorted(["index.html", "registry.html", "system.html", "demo.html", "portfolio.html", "agent.html",
                         ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),

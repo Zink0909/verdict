@@ -984,6 +984,9 @@ def t_site_index_covers_registry():
     demo = build_site.build_demo_page()
     assert "See the system in three minutes" in demo
     assert "streamlit run app.py" in demo
+    portfolio = build_site.build_portfolio_page(cards, links)
+    assert "One system, assembled from four research studies" in portfolio
+    assert "Evidence Vault" in portfolio and "does not recommend trades" in portfolio
 
 
 def t_case_catalog_is_complete():

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verdict — a three-minute demo</title>
-<meta name="description" content="A guided tour of Verdict&#x27;s system, evidence register, and interactive local working surface.">
+<title>Verdict — portfolio briefing</title>
+<meta name="description" content="A five-minute, evidence-grounded presentation route through the Verdict research-validation system.">
 <style>
 :root {
   --bg: #fbfaf8; --surface: #ffffff; --ink: #1a1a1a; --muted: #5f5f5f;
@@ -78,52 +78,60 @@ footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line
 </style>
 </head>
 <body><div class="wrap">
-<div class="nav"><a href="index.html">the system</a><a href="registry.html">registry</a><b>demo</b><a href="portfolio.html">portfolio</a><a href="agent.html">the agent</a><a href="https://github.com/Zink0909/verdict">source</a></div>
-<p class="kicker">guided tour</p>
-<h1>See the system in three minutes.</h1>
-<p class="lede">This is a research-validation workflow: define what would falsify a claim,
-run deterministic checks, preserve evidence, and publish a bounded verdict. It is not a
-trading terminal or an automated investment adviser.</p>
+<div class="nav"><a href="index.html">the system</a><a href="registry.html">registry</a><a href="demo.html">demo</a><b>portfolio</b><a href="agent.html">the agent</a><a href="https://github.com/Zink0909/verdict">source</a></div>
+<p class="kicker">presentation route</p>
+<h1>One system, assembled from four research studies.</h1>
+<p class="lede">Verdict is a research-validation system for predictive claims. It does not
+recommend trades. It makes a claim, its test, the data boundary, the calculation, and the
+limitation inspectable in one place.</p>
 
-<h2>Minute 1 · Start with the system, not a strategy</h2>
-<p>Open <a href="index.html">the system overview</a>. The table shows how four prior studies
-became reusable playbooks: sealed holdouts and spanning; point-in-time construction and
-instrument expression; real friction; and distribution-shift diagnosis. Later cases exercise
-that shared infrastructure without rewriting its provenance.</p>
+<h2>The opening — 30 seconds</h2>
+<blockquote>I took repeated research discipline from distinct studies and turned it into a
+single, testable evidence system. The deliverable is not a collection of strategies: it is a
+way to make predictive claims falsifiable and reviewable.</blockquote>
 
-<h2>Minute 2 · Follow one claim to its evidence</h2>
-<p>Open the <a href="registry.html">claim register</a>, then choose a case. Each case links a
-claim, a pre-registered protocol, an outcome, limitations, and its evidence mode. A case is
-either executable, a labelled read-only replay of pinned evidence, or data-gated. No mode is
-silently promoted to another.</p>
+<h2>What the four source studies contributed</h2>
+<div class="scroll"><table>
+<tr><th>source study</th><th>reusable research constraint</th></tr>
+<tr><td><a href="cases/chart_cnn.html">Chart-CNN stock selection in a large-cap book</a></td><td>sealed holdout and spanning: a result must add information beyond the existing book.</td></tr>
+<tr><td><a href="cases/buy_the_dip.html">Buying dips with call options</a></td><td>point-in-time construction and expression diagnosis: a signal and the instrument used to express it are different claims.</td></tr>
+<tr><td><a href="cases/vol_harvest.html">Harvesting the volatility premium at retail scale</a></td><td>friction and implementability: a gross result is incomplete until costs and real quoting assumptions are exposed.</td></tr>
+<tr><td><a href="cases/drift.html">A live signal that stopped working</a></td><td>distribution-shift diagnosis: a declining feature is observed before its cause is claimed.</td></tr>
+</table></div>
 
-<h2>Minute 3 · Watch the workflow run</h2>
-<p>Open <a href="agent.html">the Agent</a>. It turns a paper into a structured claim, drafts a
-falsifiable protocol, waits for human approval, calls deterministic tools, and writes a
-verdict whose figures are checked against tool output. The demo also exposes what its
-evaluation did <em>not</em> measure.</p>
+<h2>The system — 90 seconds</h2>
+<div class="flow"><b>paper or claim</b> → Claim Card → pre-registered Protocol → <span class="you">human approval</span>
+→ deterministic tools → number audit → bounded outcome → evidence package / public case</div>
+<p>The separation is deliberate. A language model may structure a claim, select from closed
+tools, and write prose; it never computes the figures. A result may be executable, a labelled
+read-only evidence replay, or data-gated. Those are different states, never interchangeable.</p>
 
-<h2>Interactive companion: run locally</h2>
-<p>The GitHub Pages site is intentionally static: it is the shareable evidence layer. The
-interactive working surface runs locally and has a guided <em>Start here</em> screen:</p>
-<pre>micromamba env create -f environment.yml
-micromamba run -n verdict pip install -e .
-micromamba run -n verdict streamlit run app.py</pre>
-<p>From there, create a local protocol draft, upload a dated return CSV or use the synthetic
-control, run the validation battery, and inspect the recorded Agent loop. The local
-<em>Audit a paper</em> page also accepts pasted text or `.txt` / `.md` / `.pdf` uploads:
-it extracts a Claim Card and protocol, then either uses a genuinely matching provider, evaluates
-a supplied dated return/benchmark CSV with clearly bounded deterministic tools, or stops at
-data-gated. CSV evaluation does not reproduce the paper's strategy or prove its source data is
-point-in-time. Each approved paper audit is saved locally as a hashed evidence package, outside
-the public register. New-paper extraction needs the optional live-model dependency and
-credentials; the Complexity walkthrough is available offline. Local drafts are kept outside the
-public register until a case contract, evidence artifacts, report, and integrity audit exist.</p>
+<h2>The evidence — 90 seconds</h2>
+<p>Open the <a href="registry.html">claim register</a>. It contains 6 adjudicated
+cases and a data-gated case whose honest outcome is an approved protocol without a verdict.
+Then open one case page: it carries the claim, the protocol, the outcome, limitations, artifacts,
+and its execution mode.</p>
 
-<h2>What to say while presenting it</h2>
-<blockquote>I did not combine internship projects by putting their reports in one folder. I
-looked for the repeated research discipline behind them, made that discipline reusable and
-testable, then used a common evidence contract to retain both results and their limits.</blockquote>
+<h2>The interactive proof — 90 seconds</h2>
+<p>Run the local working surface and follow <em>Start here</em>. The offline Complexity walkthrough
+demonstrates the full Agent loop. For a new paper, the paper route turns text into a Claim Card
+and protocol, waits for approval, and either runs a matching provider, evaluates a user-supplied
+dated return CSV with explicit boundaries, or stops data-gated. The Evidence Vault then hashes,
+reviews, compares, and exports the local audit package.</p>
+<pre>micromamba run -n verdict streamlit run app.py</pre>
+
+<h2>What this project demonstrates</h2>
+<ul>
+<li>abstraction: extracting common research constraints from different projects;</li>
+<li>implementation: turning those constraints into reusable, tested code and a coherent interface;</li>
+<li>judgment: keeping provenance, data availability, and negative results visible rather than smoothing them away;</li>
+<li>evaluation: checking both numerical outputs and the Agent's protocol omissions against an expert checklist.</li>
+</ul>
+
+<h2>The boundary to state plainly</h2>
+<p>Verdict is an evidence and research-method system. A supplied return CSV is not proof that a
+paper strategy was reproduced; a read-only result replay is not a new computation; and a
+data-gated protocol is not a failed implementation. These distinctions are part of the result.</p>
 
 <footer>
 Generated from the repository on 2026-09-07 —
