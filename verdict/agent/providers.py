@@ -90,7 +90,10 @@ def return_series_provider(frame: pd.DataFrame, *, periods_per_year: int = 12,
     if not numeric:
         raise ValueError("CSV must include a return column")
     for column in numeric:
-        data[column] = pd.to_numeric(data[column], errors="coerce")
+        original = data[column]
+        data[column] = pd.to_numeric(original, errors="coerce")
+        if (original.notna() & data[column].isna()).any():
+            raise ValueError(f"CSV column {column!r} contains a non-numeric value")
     if data["return"].isna().any() or not np.isfinite(data["return"]).all():
         raise ValueError("CSV return column must contain only finite numeric values")
     if len(data) < 12:

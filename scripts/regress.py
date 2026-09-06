@@ -872,6 +872,13 @@ def t_agent_csv_evidence_provider():
         raise AssertionError("accepted an out-of-order return CSV")
     except ValueError as exc:
         assert "ascending" in str(exc)
+    malformed = frame.copy().astype({"market": object})
+    malformed.loc[0, "market"] = "not-a-number"
+    try:
+        providers.return_series_provider(malformed)
+        raise AssertionError("accepted a non-numeric benchmark cell")
+    except ValueError as exc:
+        assert "non-numeric" in str(exc)
 
 
 def t_agent_archives_approved_run():
@@ -886,13 +893,16 @@ def t_agent_archives_approved_run():
     with tempfile.TemporaryDirectory() as tmp:
         package = archive.save_audit_package(
             Path(tmp) / "audits", paper_text="paper text used for extraction", origin="unit test",
-            run=run, extra_artifacts={"evidence.csv": b"date,return\n2020-01-31,0.01\n"})
+            run=run, extra_artifacts={
+                "evidence.csv": b"date,return\n2020-01-31,0.01\n",
+                "input_metadata.json": b'{"periods_per_year": 12, "turnover": 1.0}\n',
+            })
         manifest = json.loads((package / "manifest.json").read_text())
         assert manifest["state"] == "protocol-ready-data-gated"
         assert manifest["public_registry_status"] == "not-published"
         assert json.loads((package / "number_audit.json").read_text())["unavailable_statistic"] is None
         for name in ("paper.txt", "claim.json", "protocol.json", "approval.json", "tool_trace.json",
-                     "number_audit.json", "run.json", "evidence.csv"):
+                     "number_audit.json", "run.json", "evidence.csv", "input_metadata.json"):
             raw = (package / name).read_bytes()
             assert manifest["artifacts"][name]["bytes"] == len(raw)
             import hashlib

@@ -443,6 +443,9 @@ def page_paper_audit() -> None:
         st.caption("This is a fixed demonstration summary, not a PDF and not a measurement "
                    "of model capability. Its tools compute against the pinned Complexity data.")
     else:
+        st.warning("New-paper extraction uses the configured Anthropic API. Pasted or uploaded "
+                   "paper text is sent to that service; do not upload confidential or restricted "
+                   "material. The offline Complexity walkthrough keeps all model turns local.")
         source = st.radio("Text source", ["Paste text", "Upload a file"], horizontal=True)
         if source == "Paste text":
             paper_text = st.text_area("Paper text", height=240,
@@ -569,6 +572,12 @@ def page_paper_audit() -> None:
                 extra = {}
                 if st.session_state.get("paper_audit_csv") is not None:
                     extra["evidence.csv"] = st.session_state["paper_audit_csv"]
+                    extra["input_metadata.json"] = (json.dumps({
+                        "csv_filename": draft["csv_filename"],
+                        "csv_settings": draft["csv_settings"],
+                        "interpretation": "user-supplied outcome series; not a paper-strategy "
+                                          "reproduction or point-in-time source-data audit",
+                    }, indent=2, sort_keys=True) + "\n").encode("utf-8")
                 package = archive.save_audit_package(
                     ROOT / ".verdict-workspace" / "audits",
                     paper_text=draft["paper_text"], origin=draft["origin"], run=run,
@@ -644,6 +653,12 @@ def page_evidence_vault() -> None:
                 st.text_area("Paper text used for extraction", record.get("paper", ""), height=360,
                              disabled=True, key=f"vault_paper_text_{selected_name}")
             artifacts = manifest["artifacts"]
+            if "input_metadata.json" in artifacts:
+                try:
+                    st.json(json.loads(vault.artifact_bytes(
+                        AUDIT_VAULT, selected["path"], "input_metadata.json")), expanded=False)
+                except json.JSONDecodeError:
+                    st.warning("Saved input metadata is not valid JSON; inspect the package ZIP directly.")
             if "evidence.csv" in artifacts:
                 raw_csv = vault.artifact_bytes(AUDIT_VAULT, selected["path"], "evidence.csv")
                 st.download_button("Download saved CSV", raw_csv, file_name="evidence.csv",

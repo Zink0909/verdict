@@ -70,6 +70,10 @@ claim, protocol, approval, tool trace, outcome, and supplied CSV); it is not sil
 to the public register. A new paper without a matching data/provider adapter ends as
 `protocol-ready-data-gated`, never as an invented verdict.
 
+For privacy, new-paper extraction sends pasted/uploaded text to the configured Anthropic API;
+do not supply confidential or restricted material. The offline Complexity walkthrough does not
+make that external model call.
+
 Open **Evidence vault** after an audit to verify every declared artifact, review the Claim,
 Protocol, Outcome and tool trace, download a portable ZIP, or compare two approved audit
 records. A hash mismatch fails closed: the package stays visible as invalid but cannot be
