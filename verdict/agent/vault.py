@@ -97,6 +97,9 @@ def load_package(root: Path, package: Path) -> dict:
         raise ValueError("cannot load an invalid package: " + "; ".join(check["errors"]))
     package = _safe_package(root, package)
     contents: dict[str, Any] = {"manifest": check["manifest"]}
+    paper = package / "paper.txt"
+    if paper.is_file():
+        contents["paper"] = paper.read_text(encoding="utf-8")
     for name in ("claim.json", "protocol.json", "approval.json", "tool_trace.json",
                  "number_audit.json", "run.json"):
         path = package / name
@@ -106,6 +109,17 @@ def load_package(root: Path, package: Path) -> dict:
     if verdict.is_file():
         contents["verdict"] = verdict.read_text(encoding="utf-8")
     return contents
+
+
+def artifact_bytes(root: Path, package: Path, name: str) -> bytes:
+    """Return one declared artifact only after the entire package verifies."""
+    check = verify_package(root, package)
+    if not check["ok"]:
+        raise ValueError("cannot read an artifact from an invalid package")
+    if name not in check["manifest"]["artifacts"]:
+        raise ValueError(f"artifact is not declared by this package: {name}")
+    package = _safe_package(root, package)
+    return (package / name).read_bytes()
 
 
 def compare_packages(root: Path, left: Path, right: Path) -> dict:

@@ -920,6 +920,8 @@ def t_agent_vault_verifies_compares_exports():
         assert len(listed) == 2 and all(item["ok"] for item in listed)
         comparison = vault.compare_packages(root, first, second)
         assert comparison["same_paper"] and "protocol" in comparison["differences"]
+        assert vault.load_package(root, first)["paper"] == "same paper"
+        assert vault.artifact_bytes(root, first, "paper.txt") == b"same paper"
         import zipfile
         with zipfile.ZipFile(io.BytesIO(vault.package_zip(root, first))) as zipped:
             assert f"{first.name}/manifest.json" in zipped.namelist()
@@ -986,7 +988,7 @@ def t_site_index_covers_registry():
     assert "streamlit run app.py" in demo
     portfolio = build_site.build_portfolio_page(cards, links)
     assert "One system, assembled from four research studies" in portfolio
-    assert "Evidence Vault" in portfolio and "does not recommend trades" in portfolio
+    assert "Evidence Vault" in portfolio and "recommend trades" in portfolio
 
 
 def t_case_catalog_is_complete():

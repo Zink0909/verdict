@@ -636,21 +636,34 @@ def page_evidence_vault() -> None:
         manifest = record["manifest"]
         st.caption(f"Source: {manifest['origin']} · created: {manifest['created_at']} · "
                    f"public status: {manifest['public_registry_status']}")
-        tabs = st.tabs(["Claim", "Protocol", "Outcome", "Trace", "Manifest"])
+        tabs = st.tabs(["Paper & data", "Claim", "Protocol", "Outcome", "Trace", "Manifest"])
         with tabs[0]:
-            st.json(record.get("claim"), expanded=False)
+            st.caption("These inputs remain local. Reveal them only when you intend to review "
+                       "the saved source material on this machine.")
+            if st.checkbox("Reveal saved paper text", key=f"vault_paper_{selected_name}"):
+                st.text_area("Paper text used for extraction", record.get("paper", ""), height=360,
+                             disabled=True, key=f"vault_paper_text_{selected_name}")
+            artifacts = manifest["artifacts"]
+            if "evidence.csv" in artifacts:
+                raw_csv = vault.artifact_bytes(AUDIT_VAULT, selected["path"], "evidence.csv")
+                st.download_button("Download saved CSV", raw_csv, file_name="evidence.csv",
+                                   mime="text/csv", key=f"vault_csv_{selected_name}")
+                if st.checkbox("Preview saved CSV", key=f"vault_preview_{selected_name}"):
+                    st.dataframe(pd.read_csv(BytesIO(raw_csv)).head(25), width="stretch")
         with tabs[1]:
-            st.json(record.get("protocol"), expanded=False)
+            st.json(record.get("claim"), expanded=False)
         with tabs[2]:
+            st.json(record.get("protocol"), expanded=False)
+        with tabs[3]:
             st.write(f"**State:** `{manifest['state']}` · **Mode:** `{manifest['execution_mode']}`")
             if record.get("verdict"):
                 st.markdown(record["verdict"])
             else:
                 st.info("No verdict was issued for this record.")
             st.json(record.get("number_audit", {}), expanded=False)
-        with tabs[3]:
-            st.json(record.get("tool_trace", []), expanded=False)
         with tabs[4]:
+            st.json(record.get("tool_trace", []), expanded=False)
+        with tabs[5]:
             st.json(manifest, expanded=False)
         st.download_button("Download verified evidence package (.zip)",
                            vault.package_zip(AUDIT_VAULT, selected["path"]),
