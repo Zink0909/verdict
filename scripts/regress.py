@@ -864,6 +864,7 @@ def t_site_index_covers_registry():
     system = build_site.build_system_page(cards, links)
     assert "one system, not a pile of backtests" in system
     assert "Chart-CNN stock selection" in system
+    assert 'href="registry.html"' in system
 
 
 def t_case_catalog_is_complete():

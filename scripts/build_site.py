@@ -135,7 +135,7 @@ files that produced them, so this site cannot claim something the code does not.
 
 
 def nav(active: str) -> str:
-    items = [("system.html", "the system"), ("index.html", "registry"),
+    items = [("index.html", "the system"), ("registry.html", "registry"),
              ("agent.html", "the agent"),
              ("https://github.com/Zink0909/verdict", "source")]
     out = []
@@ -272,7 +272,7 @@ result, and it is the step that gets skipped.</p>
 and an honest-limitations section that says what the run cannot settle. Each README names
 whether the evidence is executable, a read-only source replay, or data-gated; a replay is
 never presented as a fresh computation.</p>
-<p>Start with <a href="system.html">the system</a> to see how four prior studies became
+<p>Start with <a href="index.html">the system</a> to see how four prior studies became
 one reusable framework. The <a href="agent.html">agent page</a> shows the loop running end to end on one claim,
 including its evaluation against what human experts actually did — and what it missed.</p>
 <p>The repository also carries the working surface the register is maintained from: four
@@ -370,7 +370,7 @@ fresh recomputation.</p>
 <p>The point is not to recommend a trade. It is to show the ability to abstract common
 research discipline from different projects, build the shared infrastructure, preserve
 the provenance and limits of each case, and let a conclusion be negative when the evidence
-requires it. Browse the <a href="index.html">claim register</a> or inspect
+requires it. Browse the <a href="registry.html">claim register</a> or inspect
 <a href="agent.html">the recorded Agent loop</a>.</p>
 """,
         "A validation framework and research-audit agent extracted from four completed studies.")
@@ -476,11 +476,13 @@ def main() -> int:
 
     cards = load_cards()
     links = render_case_pages()
-    (SITE / "index.html").write_text(build_index(cards, links))
-    (SITE / "system.html").write_text(build_system_page(cards, links))
+    system_page = build_system_page(cards, links)
+    (SITE / "index.html").write_text(system_page)
+    (SITE / "registry.html").write_text(build_index(cards, links))
+    (SITE / "system.html").write_text(system_page)
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = sorted(["index.html", "system.html", "agent.html", ".nojekyll", *links.values()])
+    generated = sorted(["index.html", "registry.html", "system.html", "agent.html", ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),
                     ROOT / "cases/complexity/agent_run/run.json",

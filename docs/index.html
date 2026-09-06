@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verdict — a claim registry</title>
-<meta name="description" content="A harness for checking predictive claims, and the record of what happened when claims were put through it.">
+<title>Verdict — the system</title>
+<meta name="description" content="A validation framework and research-audit agent extracted from four completed studies.">
 <style>
 :root {
   --bg: #fbfaf8; --surface: #ffffff; --ink: #1a1a1a; --muted: #5f5f5f;
@@ -78,76 +78,61 @@ footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line
 </style>
 </head>
 <body><div class="wrap">
-<div class="nav"><a href="system.html">the system</a><b>registry</b><a href="agent.html">the agent</a><a href="https://github.com/Zink0909/verdict">source</a></div>
-<p class="kicker">claim registry</p>
-<h1>Verdict</h1>
-<p class="lede">A harness for checking predictive claims, and the record of what happened
-when claims were put through it. 6 adjudicated so far.</p>
+<div class="nav"><b>the system</b><a href="registry.html">registry</a><a href="agent.html">the agent</a><a href="https://github.com/Zink0909/verdict">source</a></div>
+<p class="kicker">system overview</p>
+<h1>Verdict is one system, not a pile of backtests.</h1>
+<p class="lede">Four completed research studies exposed the same problem: predictive
+claims need repeatable tests that can survive a no. Verdict turns that discipline into a
+tested framework, then puts new and old claims through the same evidence contract.</p>
 
-<p>Predictive claims are cheap to make and expensive to check. Checking one properly means
-the same unglamorous discipline every time: build the data as it stood at the time, split
-only by time, seal a block and open it once, compare against what you already had, price
-the frictions, perturb the definitions, and — when the answer is no — find out <em>which</em>
-mechanism said no. This is that discipline written as code, plus the verdicts it produced.</p>
-
-<h2>The register</h2>
-<a class="card" href="cases/buy_the_dip.html"><h3>Buying dips with call options</h3><p class="src">practitioner thesis (no published paper) · dips in high-quality names can be bought profitably, with a long call as the defined-risk expression</p><p><span class="verdict">NEGATIVE on the expression, not on the thesis</span> — the long call loses $263 mean / $2,428 median per trade (win 0.36) while the same dips in the underlying are roughly flat to positive ($263 mean)</p></a><a class="card" href="cases/chart_cnn.html"><h3>Chart-CNN stock selection in a large-cap book</h3><p class="src">Jiang, Kelly and Xiu (2023) chart-image CNN claim, tested in a SequoAlpha large-cap implementation · the chart-CNN delivers positive, cost-robust incremental return beyond the book&#x27;s existing factors</p><p><span class="verdict">NEGATIVE in the tested large-cap monthly setting</span> — validation spanning alpha of +0.68% per month (t=2.41) became -0.29% (t=-0.62) on the once-opened 2020-2024 holdout; high monthly turnover made the holdout negative at every tested cost level.</p></a><a class="card" href="cases/complexity.html"><h3>Complexity in return prediction</h3><p class="src">Kelly, Malamud, Zhou (2024), &#x27;The Virtue of Complexity in Return Prediction&#x27;, Journal of Finance · out-of-sample market-timing Sharpe rises with model complexity (P), positive even in T=12 rolling windows with ridgeless regressi…</p><p><span class="verdict">MECHANICAL ARTIFACT</span> — Nagel confirmed</p></a><a class="card" href="cases/drift.html"><h3>A live signal that stopped working</h3><p class="src">deployed feature from a separate intraday-momentum study · the gamma reading discriminates winning from losing days</p><p><span class="verdict">DECAYED AND PARTLY RECOVERED</span> — discrimination 0.597 baseline -&gt; 0.442 trough (below chance) -&gt; 0.548; detectable 2.8 years before the trough; the obvious cause is eliminated, the true one remains unknown</p></a><a class="card" href="cases/vol_harvest.html"><h3>Harvesting the volatility premium at retail scale</h3><p class="src">practitioner thesis (no published paper) · a real and persistent volatility risk premium can be harvested at retail scale with capped-loss structures</p><p><span class="verdict">FALSIFIED</span> — true premise, unreachable conclusion. Real chains with conservative fills: -43.9% net (-6.75% CAGR) on the model&#x27;s own pick, -14.5% on the earlier candidate; every tested configuration negative</p></a><a class="card" href="cases/tsmom.html"><h3>Time-series momentum in futures</h3><p class="src">Moskowitz, Ooi and Pedersen (2012), &#x27;Time Series Momentum&#x27;, Journal of Financial Economics · A diversified time-series momentum portfolio earns large abnormal returns: a Sharpe ratio around 1.2 for the diversified 12-month…</p><p><span class="verdict">DOES NOT SURVIVE</span> — all four kill criteria fired (commodity sleeve, post-publication)</p></a><div class="card"><h3>Changes in corporate filing language <span class="tag">data-gated</span></h3><p class="src">Cohen, Malloy and Nguyen (2020), &#x27;Lazy Prices&#x27;, Journal of Finance · firms that materially change their filing language underperform firms that do not, by 34-58 basis points per month (t around 3.6)…</p><p><span class="verdict">not adjudicable with available data</span> <em>Claim extracted and protocol pre-registered; the corpus needed to run it has not been built, so no verdict is issued.</em></p></div>
-
-<h2>How a claim is audited</h2>
 <div class="flow">
-  a claim arrives (a paper, a pitch, an idea)<br>
+  four source studies<br>
+  &nbsp;&nbsp;↓ extract the recurring research discipline<br>
+  <b>A · validation framework</b> — deterministic data, split, inference, cost,
+  robustness, and diagnosis tools<br>
+  &nbsp;&nbsp;↓ one case contract and evidence manifest<br>
+  <b>B · research-audit agent</b> — claim → protocol → human approval → tool calls → verdict<br>
   &nbsp;&nbsp;↓<br>
-  <b>1. extract</b> — signal, universe, frequency, claimed effect, sample, data needed<br>
-  &nbsp;&nbsp;↓<br>
-  <b>2. pre-register</b> — splits, benchmarks, costs, diagnostics,
-  <b>and what result would kill it</b><br>
-  &nbsp;&nbsp;↓<br>
-  <span class="you">3. a person approves the protocol</span> — before any data is touched<br>
-  &nbsp;&nbsp;↓<br>
-  <b>4. execute</b> — deterministic code computes every number<br>
-  &nbsp;&nbsp;↓<br>
-  <b>5. diagnose</b> — if the answer is no, find the mechanism<br>
-  &nbsp;&nbsp;↓<br>
-  <b>6. record</b> — a verdict with mandatory limitations, and a card in this register
+  <b>claim register</b> — what was tested, what survived, and what remains unresolved
 </div>
-<p>Step 2 is the one that matters. Writing down what would falsify a claim
-<em>before</em> seeing the data is what stops the answer from being retrofitted to the
-result, and it is the step that gets skipped.</p>
 
-<h2>Why the numbers can be checked</h2>
-<table>
-<tr><th>guarantee</th><th>how it is enforced</th></tr>
-<tr><td>A sealed block opens once</td>
-    <td>Every opening is written to a ledger with its reason and a fingerprint of the
-    analysis configuration. Re-opening under a <em>changed</em> configuration raises.</td></tr>
-<tr><td>Negative results are publishable</td>
-    <td>The document renderer refuses to produce a verdict whose honest-limitations
-    section is empty.</td></tr>
-<tr><td>Prose does not invent figures</td>
-    <td>Every number in a written verdict is checked against the values the analysis
-    returned; anything unsupported is flagged and the draft is withheld.</td></tr>
-<tr><td>The harness can find a real effect</td>
-    <td>Known-answer controls plant an effect that only a flexible model can see, and
-    require the harness to detect it. A null from a harness that can only find nulls is
-    worth nothing.</td></tr>
-<tr><td>Audits do not vouch for themselves</td>
-    <td>The leakage and membership checks re-derive timestamps independently and never
-    import the code they are checking.</td></tr>
-</table>
+<h2>Where the framework came from</h2>
+<p>The source studies are not decorative portfolio entries. Each left behind a reusable
+playbook. The catalog enforces this exact four-study set, so a later case cannot silently
+replace part of the system's origin story.</p>
+<div class="scroll"><table>
+<tr><th>source study</th><th>question it contributed</th><th>framework modules</th></tr>
+<tr><td><a href="cases/chart_cnn.html">Chart-CNN stock selection in a large-cap book</a></td><td>sealed holdout / factor spanning</td><td><code>splits · evaluate · costs · diagnose</code></td></tr><tr><td><a href="cases/buy_the_dip.html">Buying dips with call options</a></td><td>point-in-time construction / instrument expression</td><td><code>pointintime · costs · options · robust · diagnose</code></td></tr><tr><td><a href="cases/vol_harvest.html">Harvesting the volatility premium at retail scale</a></td><td>friction / implementability</td><td><code>costs · robust · report</code></td></tr><tr><td><a href="cases/drift.html">A live signal that stopped working</a></td><td>deployment / distribution shift</td><td><code>evaluate · diagnose · report</code></td></tr>
+</table></div>
 
-<h2>Reading a verdict</h2>
-<p>Each case page carries the full write-up: what was audited, what was found, the figures,
-and an honest-limitations section that says what the run cannot settle. Each README names
-whether the evidence is executable, a read-only source replay, or data-gated; a replay is
-never presented as a fresh computation.</p>
-<p>Start with <a href="system.html">the system</a> to see how four prior studies became
-one reusable framework. The <a href="agent.html">agent page</a> shows the loop running end to end on one claim,
-including its evaluation against what human experts actually did — and what it missed.</p>
-<p>The repository also carries the working surface the register is maintained from: four
-screens for browsing the register, pre-registering a protocol on a new claim, running the
-evaluation battery over a return series, and watching the agent loop. It runs locally with
-<code>streamlit run app.py</code> and computes nothing itself — every figure comes from the
-same library the cases use.</p>
+<h2>Two layers, deliberately separated</h2>
+<h3>A · Validation framework</h3>
+<p>The library owns numerical work: point-in-time checks, chronological and sealed
+splits, spanning and bootstrap inference, cost and option accounting, robustness sweeps,
+and mechanism diagnosis. Its known-answer gates have to detect effects planted in
+synthetic controls; a harness that only finds nulls is not evidence.</p>
+<h3>B · Research-audit agent</h3>
+<p>The Agent reads and structures a claim, drafts a falsifiable protocol, waits for a
+person to approve it, calls A-layer tools, then writes a verdict. It never computes a
+number. Its number audit can withhold unsupported figures, while its documented boundary
+is that correct figures can still be interpreted wrongly and need human review.</p>
+
+<h2>Case roles are evidence roles</h2>
+<div class="scroll"><table>
+<tr><th>role</th><th>cases</th><th>meaning</th></tr>
+<tr><td><code>foundation</code></td><td>Chart-CNN stock selection in a large-cap book, Buying dips with call options, Harvesting the volatility premium at retail scale, A live signal that stopped working</td><td>The four source studies from which the A-layer playbooks were extracted.</td></tr><tr><td><code>fresh-audit</code></td><td>Complexity in return prediction</td><td>A new claim audited end to end through the system; it tests generality, not provenance.</td></tr><tr><td><code>extension</code></td><td>Time-series momentum in futures</td><td>A later application of the same contract; it must not rewrite the project identity.</td></tr><tr><td><code>data-gated</code></td><td>Changes in corporate filing language</td><td>Protocol recorded, but no execution corpus is available; no verdict is issued.</td></tr>
+</table></div>
+<p>Execution mode is equally explicit. Complexity is executable through its framework
+adapter. Retrospective and extension cases expose pinned evidence read-only, and Lazy
+Prices stops at a pre-registered, data-gated protocol. A replay is never described as a
+fresh recomputation.</p>
+
+<h2>What this demonstrates</h2>
+<p>The point is not to recommend a trade. It is to show the ability to abstract common
+research discipline from different projects, build the shared infrastructure, preserve
+the provenance and limits of each case, and let a conclusion be negative when the evidence
+requires it. Browse the <a href="registry.html">claim register</a> or inspect
+<a href="agent.html">the recorded Agent loop</a>.</p>
 
 <footer>
 Generated from the repository on 2026-09-07 —

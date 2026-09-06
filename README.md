@@ -1,6 +1,6 @@
 # verdict
 
-**[The claim register →](https://zink0909.github.io/verdict/)**
+**[The claim register →](https://zink0909.github.io/verdict/registry.html)**
 
 A validation harness for time-series prediction claims — and a case library of claims
 put through it.
