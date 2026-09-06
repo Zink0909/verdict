@@ -1038,9 +1038,21 @@ def t_tsmom_implementation_robustness():
     result = json.loads(RP.Path(ROOT, "cases", "tsmom", "results.json").read_text())
     axes = {row["axis"] for row in result["robustness"]}
     assert {"holding_period_months", "drop_correlated_markets"}.issubset(axes)
-    assert result["integer_contract_sizing"]["status"] == "data-gated"
-    assert result["protocol_coverage"]["not_executed"] == [
-        "integer-contract and multiplier-aware sizing"]
+    integer = result["integer_contract_sizing"]
+    assert integer["status"] == "executed"
+    assert [row["capital_usd"] for row in integer["runs"]] == [
+        250_000.0, 1_000_000.0, 5_000_000.0]
+    assert all(not row["gross"]["sharpe_ci_excludes_zero"]
+               for row in integer["runs"])
+    assert integer["runs"][0]["zero_contract_share"] > integer["runs"][-1]["zero_contract_share"]
+    assert integer["runs"][0]["tracking_error_annualized"] > integer["runs"][-1]["tracking_error_annualized"]
+    assert result["protocol_coverage"] == {
+        "executed": ["lookback horizons", "holding periods beyond one month",
+                     "volatility estimation window", "drop sectors",
+                     "drop the most correlated markets",
+                     "integer-contract and multiplier-aware sizing"],
+        "not_executed": [], "complete": True,
+    }
 
 
 GATES = [

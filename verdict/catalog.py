@@ -57,7 +57,6 @@ CASES: tuple[CaseSpec, ...] = (
         report_steps=(PYTHON + ("cases/tsmom/make_figures.py",),
                       PYTHON + ("cases/tsmom/make_report.py",)),
         result_files=("results.json", "results_series.csv", "results/holdout_ledger.json"),
-        protocol_gaps=("integer-contract and multiplier-aware sizing",),
     ),
     CaseSpec("lazy-prices-10k-changes", "lazy_prices", "data-gated", "protocol only"),
 )

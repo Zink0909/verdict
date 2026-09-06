@@ -80,7 +80,12 @@ def fig3_robustness():
              "drop_sector", "drop_correlated_markets", "sample",
              "integer_contract_capital_usd"]
     rows = [r for a in order for r in rob if r["axis"] == a]
-    labels = [f"{r['axis'].replace('_', ' ')} = {r['value']}" for r in rows]
+    labels = [
+        (f"integer contract account = ${r['value']/1e6:g}m"
+         if r["axis"] == "integer_contract_capital_usd"
+         else f"{r['axis'].replace('_', ' ')} = {r['value']}")
+        for r in rows
+    ]
     vals = [r["sharpe"] for r in rows]
     base = D["strategy"]["sharpe"]
 
@@ -92,7 +97,7 @@ def fig3_robustness():
     ax.set_yticks(y)
     ax.set_yticklabels(labels, fontsize=8.6)
     ax.set_xlabel("Sharpe")
-    ax.set_title("Executed return-space perturbations\n"
+    ax.set_title("Executed protocol perturbations\n"
                  f"(dashed = the registered configuration, {base:+.2f})", fontsize=10)
     fig.tight_layout()
     fig.savefig(RES / "fig3_robustness.png", bbox_inches="tight")

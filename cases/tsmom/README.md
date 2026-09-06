@@ -62,14 +62,12 @@ The sealed block is opened through `verdict.splits.SealedHoldout`, so the openin
 is written to `results/holdout_ledger.json` and a second opening under a changed
 configuration raises rather than quietly re-running.
 
-The run evaluates all four kill criteria, longer holding periods, and removal
-of each member (and both members) of the most-correlated market pair. Account-space
-position granularity remains deliberately data-gated on the current export: its
-BackwardsRatio continuous levels preserve returns but are not valid contract
-notionals. `qc_export.py` now also exports unadjusted mapped-contract
-`*_trade_close` prices; after that panel is re-exported, the same run executes
+The run evaluates all four kill criteria, longer holding periods, removal of
+each member (and both members) of the most-correlated market pair, and
 nearest-integer sizing at $250k, $1m and $5m with exchange contract point values.
-It will not substitute adjusted levels and pretend this step was completed.
+Raw mapped-contract `*_trade_close` prices determine notionals; BackwardsRatio
+prices determine roll-clean returns. The loader refuses identical streams rather
+than substituting adjusted levels and pretending account-space sizing is complete.
 
 ## Known-answer controls
 

@@ -5,42 +5,40 @@
   "state": "verdict-delivered",
   "evidence_pattern": "benchmark / sealed holdout",
   "protocol_coverage": {
-    "complete": false,
-    "gaps": [
-      "integer-contract and multiplier-aware sizing"
-    ]
+    "complete": true,
+    "gaps": []
   },
   "agent_mode": "evidence-readonly",
   "artifacts": [
     {
       "path": "registry/time-series-momentum.json",
-      "sha256": "563a160146ac3d382a845f78c0836e1ad72dd8d609205be6acd6beb0e8188501",
-      "bytes": 8767
+      "sha256": "cfd998b28c71b389ea0c1c42e2dfa937781e4489ead1c0a1b83f026dea5e1ad9",
+      "bytes": 8514
     },
     {
       "path": "cases/tsmom/results.json",
-      "sha256": "dc55581d872338b8ea2108162f3679d0a337a845f360fcc8e890db199d6dd8b4",
-      "bytes": 11136
+      "sha256": "fdff1c2dede889e477278d13cd932c1adb5212d19f0127391461d4dc77d1b0a6",
+      "bytes": 15672
     },
     {
       "path": "cases/tsmom/results_series.csv",
-      "sha256": "39a21184b67093b888787e7126071003965f0cbed89b4d7a8ede3d46917a7f06",
-      "bytes": 26964
+      "sha256": "2dcc61183596375a31e0066535ff9ef491fda02e041f424b54e76bc231646a0b",
+      "bytes": 26941
     },
     {
       "path": "cases/tsmom/results/holdout_ledger.json",
-      "sha256": "f3f60225139964c0d43b3fe413377776cceee82d07d214dcc277418c8ae7acf8",
-      "bytes": 1585
+      "sha256": "bf62aa8ee1263c7895ad158166a33e9efae449c5e02f48364e020c1e9b7b4a7e",
+      "bytes": 1811
     },
     {
       "path": "cases/tsmom/report.md",
-      "sha256": "ed0ec0d2ef2569e9acf4e512eeb9e9140d3ea05ad2964526af25c70d88d7ca6a",
-      "bytes": 13084
+      "sha256": "6a4e478975a29f1d9ebb96a804e86bf8e8cf350b31e0ebc2c8740db9ff2accd4",
+      "bytes": 13231
     },
     {
       "path": "cases/tsmom/report.html",
-      "sha256": "5047bb06caa13dbcde4e2709f3f944dac1a375944002fcfbcfb99f1e615eec25",
-      "bytes": 447279
+      "sha256": "2a7e3f1d5ae7b50ff62422e73db9bcfee9a2b3d695ef563f9685dc0dd33dd2d9",
+      "bytes": 467806
     }
   ]
 }

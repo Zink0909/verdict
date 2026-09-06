@@ -64,6 +64,75 @@ holding = {r["value"]: r for r in ROB if r["axis"] == "holding_period_months"}
 corr_runs = {r["value"]: r["sharpe"] for r in CORR["runs"]}
 losers = {k: v for k, v in PM.items() if v < 0}
 
+if INTEGER["status"] == "executed":
+    account_rows = INTEGER["runs"]
+    account_table = (
+        "| capital | gross Sharpe | net Sharpe | net annual | tracking error | zero-contract targets |\n"
+        "|---:|---:|---:|---:|---:|---:|\n"
+        + "\n".join(
+            f"| ${row['capital_usd']/1e6:g}m | {sr(row['gross']['sharpe'])} | "
+            f"{sr(row['net_at_plausible']['sharpe'])} | "
+            f"{p(row['net_at_plausible']['ann_return'])} | "
+            f"{row['tracking_error_annualized']:.2%} | {row['zero_contract_share']:.1%} |"
+            for row in account_rows
+        )
+    )
+    account_space_text = (
+        "The registered account-space check is now executed using the unadjusted "
+        "mapped-contract price for sizing, CME contract point values and nearest-integer "
+        "lots. Dollar P&L uses the prior raw notional times the roll-clean adjusted return; "
+        "it never treats a raw cross-contract price gap as profit. At the registered "
+        f"{INTEGER['plausible_cost_bps']:.0f} bps cost assumption:\n\n{account_table}\n\n"
+        "Granularity matters most at $250k: more than half of otherwise non-zero targets "
+        "round to zero. By $5m, no target rounds to zero and tracking error is small. None "
+        "of the gross or net account-space Sharpe intervals excludes zero, so integer "
+        "implementation does not rescue the claim."
+    )
+    protocol_completion = (
+        "The registered robustness and implementation protocol is now complete, including "
+        "integer-contract and multiplier-aware sizing."
+    )
+    account_limitation = (
+        "**Account-space sizing is deliberately conservative.** Without historical mapped "
+        "contract identifiers, turnover assumes a full close and reopen at every monthly "
+        "rebalance. This cannot hide roll costs but may overcharge months with no roll. "
+        "Margin, capacity and time-varying exchange fees remain outside the calculation."
+    )
+    implementation_limitation = (
+        "**Registered implementation completeness is not a capacity claim.** Every listed "
+        "protocol clause is executed, but the result remains a seven-market research "
+        "portfolio rather than a broker- or venue-specific executable book."
+    )
+    contract_provenance = (
+        "Account sizing uses Raw OpenInterest-mapped prices and CME standard contract units: "
+        "CL 1,000 barrels; NG 10,000 MMBtu; GC 100 troy ounces; HG 25,000 pounds; "
+        "ZC/ZS/ZW 5,000 bushels."
+    )
+else:
+    account_space_text = (
+        "The registered account-space check is still data-gated, not silently approximated. "
+        "The current panel contains BackwardsRatio levels, which preserve returns but are "
+        f"invalid contract notionals. `{INTEGER['blocker']}`. The upgraded exporter requests "
+        "mapped-contract raw prices; until that panel is re-exported, integer lots are not "
+        "reported."
+    )
+    protocol_completion = (
+        "The return-space robustness protocol is complete. The remaining protocol gap is "
+        "account-space integer sizing, gated on mapped-contract raw prices."
+    )
+    account_limitation = (
+        "**Account-space sizing remains data-gated.** The current export lacks the mapped "
+        "contract's unadjusted price, so integer lots cannot be calculated honestly."
+    )
+    implementation_limitation = (
+        "**One implementation clause remains incomplete.** Integer-contract sizing with "
+        "multipliers awaits unadjusted mapped-contract prices."
+    )
+    contract_provenance = (
+        "CME standard contract units are encoded but are not applied until raw "
+        "mapped-contract prices are present."
+    )
+
 report = VerdictReport(
     title="Time-series momentum in futures",
     claim=(
@@ -172,11 +241,7 @@ report = VerdictReport(
          f"constraint. Unlike a retail options strategy that dies on the spread, this claim "
          f"is not killed by costs. There is simply not enough gross edge for the interval to "
          f"clear zero at any plausible cost, including zero cost.\n\n"
-         f"The registered account-space check is still data-gated, not silently approximated. "
-         f"The current panel contains BackwardsRatio levels, which preserve returns but are "
-         f"invalid contract notionals. `{INTEGER['blocker']}`. The upgraded exporter requests "
-         f"mapped-contract raw prices; until that panel is re-exported, integer lots are not "
-         f"reported."),
+         f"{account_space_text}"),
 
         ("Robustness, and the number you would have reported",
          f"The protocol pre-registered the perturbations, which is the only reason the "
@@ -215,9 +280,7 @@ report = VerdictReport(
            f"{sr(holding[12]['sharpe'])}; every interval contains zero. These are overlapping "
            f"signal vintages with unchanged leverage, not separately tuned strategies.\n\n"
            f"![Executed perturbations](results/fig3_robustness.png)\n\n"
-           f"The return-space robustness protocol is now complete. The remaining protocol "
-           f"gap is account-space integer sizing, gated on mapped-contract raw prices as "
-           f"described above."),
+           f"{protocol_completion}"),
 
         ("Cross-check against an independent implementation",
          f"An earlier, separately written backtest of the same construction — single "
@@ -257,20 +320,12 @@ report = VerdictReport(
         f"than the rule it is being compared with. Charging both would widen the gap in the "
         f"strategy's favour — but the gap being tested is against the *gross* distribution, "
         f"and the strategy sits inside it there.",
-        f"**Account-space sizing remains data-gated, for a falsifiable reason.** The current "
-        f"export has ratio-adjusted signal prices but not the mapped contract's unadjusted "
-        f"price. Using the adjusted level with exchange multipliers would create false "
-        f"notionals. The exporter and sizing code are ready, but the vendor panel must be "
-        f"re-exported before integer lots at $250k, $1m and $5m can be reported. Margin, "
-        f"capacity and time-varying exchange fees would remain outside that calculation.",
+        account_limitation,
         f"**K4's percentile has {K4['draws']}-draw resolution.** The reported "
         f"{K4['strategy_percentile_vs_random']:.0%} is accurate to about half a percent, "
         f"which is far finer than the margin by which the criterion is decided, but the "
         f"number should not be read as more precise than that.",
-        "**One implementation clause remains incomplete.** Longer holding periods and the "
-        "most-correlated-pair exclusions are now executed. Integer-contract sizing with "
-        "multipliers remains blocked only by the missing unadjusted mapped-contract prices; "
-        "the result therefore remains a return-space verdict, not a capacity claim.",
+        implementation_limitation,
     ],
     what_would_have_changed=(
         f"Three things together, all fixed in advance: an alpha in the spanning regression "
@@ -295,10 +350,7 @@ report = VerdictReport(
         "`scripts/regress.py`.",
         f"Sealed block opened once at fingerprint `{K2['opening']['fingerprint']}`, recorded "
         f"in `cases/tsmom/results/holdout_ledger.json`.",
-        "Contract units prepared for the gated account-space run use CME standard contracts: "
-        "CL 1,000 barrels; NG 10,000 MMBtu; GC 100 troy ounces; HG 25,000 pounds; "
-        "ZC/ZS/ZW 5,000 bushels. No multiplier is applied until raw mapped-contract prices "
-        "are present.",
+        contract_provenance,
     ],
 )
 
