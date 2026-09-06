@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "case_id": "chart-cnn-spanning",
+  "role": "foundation",
+  "state": "verdict-delivered",
+  "evidence_pattern": "sealed holdout / spanning",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "the point-in-time QuantConnect dataset, trained model outputs, and portfolio series are not stored in this repository for a fresh recomputation",
+      "the original sealed-holdout opening predates Verdict and has no machine-readable Verdict ledger; this case preserves the source report rather than claiming a new physical seal",
+      "the source report's figures and headline numbers are pinned as imported evidence, not regenerated from raw inputs"
+    ]
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/chart-cnn-spanning.json",
+      "sha256": "59ad5fca7f1d945a9e9b6f90a1be9d679e0f6623cc36bd85c6374edb1a612258",
+      "bytes": 3670
+    },
+    {
+      "path": "cases/chart_cnn/results.json",
+      "sha256": "b9aa88a8f8c5f8c018187e6c8b211da78af822bfe057cc1817a9792115b2c2f6",
+      "bytes": 2267
+    },
+    {
+      "path": "cases/chart_cnn/report.md",
+      "sha256": "4659b4ee6f407edecd154a16a053ef3d13f01bb2c5bbc83cc638e76e37c28c66",
+      "bytes": 4044
+    },
+    {
+      "path": "cases/chart_cnn/report.html",
+      "sha256": "310a5c9dd8b17cf3e353950119a4e6a127a04ba83fa3adcb051de96b432d16fc",
+      "bytes": 8645
+    }
+  ]
+}

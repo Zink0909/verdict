@@ -1,0 +1,42 @@
+{
+  "id": "chart-cnn-spanning",
+  "title": "Chart-CNN stock selection in a large-cap book",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "a convolutional neural network trained on price-chart images selects stocks with information incremental to momentum, short-term reversal, size, value, and volatility",
+    "universe": "point-in-time S&P 500 constituents; value-weighted long-short portfolio",
+    "frequency": "monthly",
+    "claimed_effect": "the chart-CNN delivers positive, cost-robust incremental return beyond the book's existing factors",
+    "sample": "training 2010-2016; validation 2017-2019; sealed holdout 2020-2024 (59 months)",
+    "source": "Jiang, Kelly and Xiu (2023) chart-image CNN claim, tested in a SequoAlpha large-cap implementation",
+    "data_needs": "point-in-time S&P 500 membership, daily OHLCV, factor legs built in the same universe, and trained-model predictions"
+  },
+  "protocol": {
+    "replication_anchor": "recreate the original QuantConnect Research pipeline with the point-in-time large-cap universe; keep the chronological split and evaluate the already-specified factor-spanning regression",
+    "kill_criteria_for_the_claim": "the sealed 2020-2024 holdout has non-positive or statistically indistinguishable spanning alpha after the five in-universe factor controls, or realistic turnover costs remove the gross result",
+    "diagnostics": [
+      "validation-versus-sealed-holdout comparison",
+      "HAC factor-spanning regression",
+      "turnover and one-way-cost sensitivity",
+      "cross-sectional relationship with momentum"
+    ],
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "NEGATIVE in the tested large-cap monthly setting — validation spanning alpha of +0.68% per month (t=2.41) became -0.29% (t=-0.62) on the once-opened 2020-2024 holdout; high monthly turnover made the holdout negative at every tested cost level.",
+    "replication": "evidence-only retrofit: the original source report, source regression suite, split logic, and evaluation logic are fingerprinted here; this repository does not claim a new numerical recomputation.",
+    "diagnostics": {
+      "sealed_holdout": "the same construction that looked promising in validation reversed sign and lost significance on the untouched holdout",
+      "spanning": "the holdout alpha is statistically indistinguishable from zero after momentum, short-term reversal, size, value, and volatility controls",
+      "costs": "validation long-short Sharpe fell from 1.10 gross to 0.53 at 10 bps one-way and about zero at 20 bps with 184% monthly turnover; the holdout was negative from gross through 20 bps",
+      "interpretation": "the source study attributes the validation result to early-stopping optimism and a favourable short sample; this is an evidence-backed diagnosis, not a new causal estimate"
+    },
+    "honest_limitations": [
+      "this is a source-evidence retrofit: raw point-in-time QuantConnect data, trained-model outputs, and portfolio return files are unavailable here, so Verdict cannot freshly recompute the reported numbers",
+      "the original holdout was sealed and opened once in the source project, but that event predates Verdict's machine-readable ledger; this repository must not present the import as a newly enforced physical seal",
+      "the negative result applies to the tested value-weighted, large-cap, monthly configuration and does not refute the source paper's broader, equal-weighted and weekly settings",
+      "the source report describes high turnover and a simple one-way-cost sensitivity; it is not a full execution or market-impact study"
+    ]
+  },
+  "date": "2026-07-29"
+}

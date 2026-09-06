@@ -14,7 +14,16 @@ PYTHON = ("python",)
 
 CASES: tuple[CaseSpec, ...] = (
     CaseSpec(
-        "complexity-voc", "complexity", "foundation", "mechanism / counterfactual",
+        "chart-cnn-spanning", "chart_cnn", "foundation", "sealed holdout / spanning",
+        result_files=("results.json",),
+        protocol_gaps=(
+            "the point-in-time QuantConnect dataset, trained model outputs, and portfolio series are not stored in this repository for a fresh recomputation",
+            "the original sealed-holdout opening predates Verdict and has no machine-readable Verdict ledger; this case preserves the source report rather than claiming a new physical seal",
+            "the source report's figures and headline numbers are pinned as imported evidence, not regenerated from raw inputs",
+        ),
+    ),
+    CaseSpec(
+        "complexity-voc", "complexity", "fresh-audit", "mechanism / counterfactual",
         run_steps=(
             PYTHON + ("cases/complexity/preprocess.py",),
             PYTHON + ("cases/complexity/run_kmz.py",),
@@ -64,6 +73,12 @@ CASES: tuple[CaseSpec, ...] = (
 CASE_BY_ID = {case.card_id: case for case in CASES}
 CASE_DIRS = {case.card_id: case.folder for case in CASES}
 FOUNDATIONAL_CASES = tuple(case for case in CASES if case.role == "foundation")
+FOUNDATIONAL_CASE_IDS = frozenset({
+    "chart-cnn-spanning",
+    "buy-the-dip-long-calls",
+    "retail-short-volatility",
+    "gamma-signal-drift",
+})
 
 
 def validate_catalog() -> None:
@@ -74,8 +89,8 @@ def validate_catalog() -> None:
         raise ValueError("case catalog contains duplicate registry ids")
     if len(folders) != len(set(folders)):
         raise ValueError("case catalog contains duplicate folders")
-    if len(FOUNDATIONAL_CASES) != 4:
-        raise ValueError("Verdict must identify exactly four foundational studies")
+    if {case.card_id for case in FOUNDATIONAL_CASES} != FOUNDATIONAL_CASE_IDS:
+        raise ValueError("Verdict foundations must remain the four source studies")
     if any(case.agent_mode not in {"executable", "evidence-readonly"} for case in CASES):
         raise ValueError("case catalog contains an invalid agent mode")
     if any(case.role != "data-gated" and not case.result_files for case in CASES):

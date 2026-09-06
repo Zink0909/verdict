@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "evidence_mode": "source-report-import",
+  "case_role": "retrospective foundation",
+  "protocol_coverage": {
+    "complete": false,
+    "not_executed": [
+      "the point-in-time QuantConnect dataset, trained model outputs, and portfolio series are not stored in this repository for a fresh recomputation",
+      "the original sealed-holdout opening predates Verdict and has no machine-readable Verdict ledger; this case preserves the source report rather than claiming a new physical seal",
+      "the source report's figures and headline numbers are pinned as imported evidence, not regenerated from raw inputs"
+    ]
+  },
+  "source_artifacts": [
+    {
+      "path": "/Users/mmmm/projects/SequoAlpha/chart_cnn/reports/cnn_report.md",
+      "sha256": "30391f48f6f95d862f0e4babb781ffdf88d52e58e243ee1af763c27829d9430e",
+      "role": "primary source report"
+    },
+    {
+      "path": "/Users/mmmm/projects/SequoAlpha/chart_cnn/scripts/regress.py",
+      "sha256": "99e05288ceb659fc007875b8a3f4ac0e6b7ff53393a796dc65d6e7964bbc9f21",
+      "role": "source known-answer regression suite"
+    },
+    {
+      "path": "/Users/mmmm/projects/SequoAlpha/chart_cnn/chartcnn/splits.py",
+      "sha256": "139b0a593c27a91e0aee08ea361d697931615c71619e05c9bbad8eaac6126b12",
+      "role": "source chronological-split logic"
+    },
+    {
+      "path": "/Users/mmmm/projects/SequoAlpha/chart_cnn/chartcnn/evaluate.py",
+      "sha256": "6606bf1f2588c1046cf0e29a3ab012fec45f7c8a89736986d231e1f4698ae0a2",
+      "role": "source spanning and bootstrap logic"
+    }
+  ],
+  "split": {
+    "train": "2010-2016",
+    "validation": "2017-2019",
+    "holdout": "2020-2024",
+    "holdout_months": 59
+  },
+  "validation": {
+    "spanning_alpha_monthly": 0.0068,
+    "spanning_alpha_t": 2.41,
+    "gross_annualized_sharpe": 1.1,
+    "sharpe_at_10bps_one_way": 0.53,
+    "sharpe_at_20bps_one_way": 0.0
+  },
+  "holdout": {
+    "spanning_alpha_monthly": -0.0029,
+    "spanning_alpha_t": -0.62,
+    "gross_annualized_sharpe": -0.23,
+    "sharpe_at_20bps_one_way": -0.8,
+    "turnover_monthly": 1.84
+  },
+  "conclusion": "The imported source evidence supports a clean negative for this specific large-cap, monthly implementation. It is not a fresh Verdict recomputation."
+}

@@ -46,15 +46,16 @@ back — so there is one source of truth, and it is the part with the tests.
 
 | Case | Claim under audit | Verdict |
 |---|---|---|
-| [`cases/complexity`](cases/complexity) | Kelly–Malamud–Zhou (2024, *JF*): a 12,000-feature ridgeless model times the market out of sample, better as it grows more complex | **Mechanical artifact.** The model is numerically a kernel smoother (forecast correlation 0.997) whose weights are recency and inverse volatility — a volatility-timed momentum rule. It loses when reversal is injected and is unchanged when the predictors' information is destroyed. |
+| [`cases/chart_cnn`](cases/chart_cnn) | Jiang–Kelly–Xiu chart-image CNN: price-chart features add information beyond the large-cap book's existing factors | **Negative in the tested setting.** Validation spanning alpha of +0.68% per month (t=2.41) became -0.29% (t=-0.62) on the sealed 2020-2024 holdout; high turnover then made the holdout negative at every tested cost level. This is a fingerprinted source-evidence retrofit, not a new recomputation. |
 | [`cases/buy_the_dip`](cases/buy_the_dip) | Practitioner thesis: dips in wide-moat names can be bought profitably, expressed as long calls | **Negative on the instrument, not the thesis.** The calls lose $263 per trade on average, $2,428 at the median; the same dips in the underlying are roughly flat to positive. The killer is the expiry clock, not the volatility headwind everyone expects — implied volatility *rose* on recovering trades. |
 | [`cases/vol_harvest`](cases/vol_harvest) | Practitioner thesis: the volatility risk premium is real, so a small account can harvest it with defined-risk spreads | **Falsified — true premise, unreachable conclusion.** On real option chains the model's own pick returned −43.9% against a modelled +0.7% CAGR. The modelled edge crosses zero at 0.082 index points of friction per leg: the whole result lived inside a spread assumption only real quotes could settle. |
 | [`cases/drift`](cases/drift) | A deployed feature discriminates winning from losing days for a live trading rule | **Decayed, detectable 2.8 years early, cause unproven.** Discrimination fell 0.597 → 0.442 (below chance) and partly recovered. The obvious culprit correlates at −0.72 over the full sample and flips to +0.76 after 2022 — it coincides with the inversion and explains neither the onset nor the recovery. |
 
-Each case is reproducible offline from pinned data with the commands in its README, and
-each ends in a registry card ([`registry/`](registry)) recording the claim, the
-pre-registered protocol, the verdict, and its honest limitations. The registry index is
-regenerated from the cards, so it cannot drift.
+Each case names its evidence mode and reproduction boundary in its README. Some run
+offline from pinned data; some are explicitly read-only replays of source evidence; one
+is data-gated. Every case ends in a registry card ([`registry/`](registry)) recording the
+claim, protocol, verdict, and honest limitations. The registry index is regenerated from
+the cards, so it cannot drift.
 
 All delivered cases also implement one platform contract. `verdict.case_contract`
 defines their commands, reports, known protocol gaps and normalized `case_result.json`;
@@ -64,11 +65,16 @@ the latter hashes every declared evidence artifact. Use `scripts/run_case.py CAS
 `scripts/audit_integrity.py` then closes the chain across catalog, registry cards,
 artifact hashes, protocol coverage, Agent providers and generated site pages.
 
-These four are the **foundational studies**: they are the provenance of the reusable
-mechanism, point-in-time, friction and deployment-drift playbooks. A later extension,
-[`cases/tsmom`](cases/tsmom), applies the same contracts to post-publication commodity
-time-series momentum. It is kept separate in the canonical case catalog so adding a case
-cannot rewrite the system's four-project origin story.
+These four are the **foundational studies**: Chart-CNN contributed the sealed-holdout and
+spanning playbook; Buy the Dip contributed point-in-time construction and expression
+diagnosis; Vol Harvest contributed friction and implementability; Distribution Shift
+contributed deployment-drift diagnosis. Their exact catalog IDs are an executable
+invariant, so adding a case cannot rewrite the system's origin story.
+
+Two later studies prove that the framework travels beyond its source material:
+[`cases/complexity`](cases/complexity) is the first fresh, end-to-end audit, and
+[`cases/tsmom`](cases/tsmom) is a post-publication commodity momentum extension. Neither
+is allowed to become a foundational source merely because it is newer or more executable.
 
 A further claim is recorded as **not adjudicable here**: the protocol is written and
 pre-registered, and the corpus needed to execute it has not been built. That state exists
@@ -123,7 +129,7 @@ Two properties are structural rather than promised:
 
 The agent chooses which tools to call and writes the prose. It never computes. A
 case-scoped provider supplies the numbers: `complexity-voc` has an executable framework
-adapter, while the other four delivered cases have explicitly labelled read-only
+adapter, while the retrospective and extension cases have explicitly labelled read-only
 providers over pinned result documents. Evidence replay is never presented as a fresh
 recomputation. The model is a swappable dependency (`llm.py`), so the whole layer —
 schema validation, provider routing, the tool loop and both guardrails — is tested
@@ -149,16 +155,16 @@ reach.
 ## Status
 
 Built: the framework, the working surface, the multi-case Agent provider layer, the
-claim-registry site, 57 passing gates, four foundational cases, and the TSMOM extension.
-Each completed case ends in a registry card and a normalized, content-addressed result
-envelope; the integrity audit rejects drift between results, reports, cards, providers
-and site output.
+claim-registry site, four provenance-preserving foundational cases, a fresh Complexity
+audit, and the TSMOM extension. Each completed case ends in a registry card and a
+normalized, content-addressed result envelope; the integrity audit rejects drift between
+results, reports, cards, providers and site output.
 
-Not built yet: the retrofit of one further completed study — a chart-pattern CNN
-whose validation alpha at t = 2.4 collapsed to t = −0.6 on a sealed block — and a
-live agent run, which needs the paper itself, `pip install anthropic`, and
-credentials. The offline path exercises every part of the loop except the model's
-own judgment.
+Not built yet: a fresh Chart-CNN recomputation from the original point-in-time platform
+inputs, and a live agent run, which needs the paper itself, `pip install anthropic`, and
+credentials. The offline path exercises every part of the loop except the model's own
+judgment. The Chart-CNN case therefore labels its imported result as evidence replay
+rather than presenting it as a new run.
 
 Provenance: the components were extracted from completed research projects rather
 than designed in the abstract, which is why the playbooks are specific — they are the

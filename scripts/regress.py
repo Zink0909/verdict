@@ -864,11 +864,11 @@ def t_site_index_covers_registry():
 
 
 def t_case_catalog_is_complete():
-    """One inventory must cover every card and keep four foundations explicit."""
-    from verdict.catalog import CASE_BY_ID, FOUNDATIONAL_CASES
+    """One inventory must cover every card and preserve the four source studies."""
+    from verdict.catalog import CASE_BY_ID, FOUNDATIONAL_CASES, FOUNDATIONAL_CASE_IDS
     card_ids = {p.stem for p in RP.Path(ROOT, "registry").glob("*.json")}
     assert card_ids == set(CASE_BY_ID), (card_ids ^ set(CASE_BY_ID))
-    assert len(FOUNDATIONAL_CASES) == 4
+    assert {case.card_id for case in FOUNDATIONAL_CASES} == FOUNDATIONAL_CASE_IDS
     for case in FOUNDATIONAL_CASES:
         assert RP.Path(ROOT, "cases", case.folder).is_dir(), case
 

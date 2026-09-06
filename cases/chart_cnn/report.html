@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>report</title>
+  <style>
+
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+border: none;
+border-top: 1px solid #1a1a1a;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">report</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#chart-cnn-stock-selection-in-a-large-cap-book" id="toc-chart-cnn-stock-selection-in-a-large-cap-book">Chart-CNN Stock
+Selection in a Large-Cap Book</a>
+<ul>
+<li><a href="#scope-of-this-verdict-case" id="toc-scope-of-this-verdict-case">Scope of this Verdict case</a></li>
+<li><a href="#evidence-imported" id="toc-evidence-imported">Evidence
+imported</a></li>
+<li><a href="#how-it-contributes-to-the-shared-framework" id="toc-how-it-contributes-to-the-shared-framework">How it contributes
+to the shared framework</a></li>
+<li><a href="#honest-limitations" id="toc-honest-limitations">Honest
+limitations</a></li>
+<li><a href="#provenance-and-reproduction" id="toc-provenance-and-reproduction">Provenance and
+reproduction</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="chart-cnn-stock-selection-in-a-large-cap-book">Chart-CNN Stock
+Selection in a Large-Cap Book</h1>
+<p><strong>Claim audited.</strong> A convolutional neural network
+trained on price-chart images selects stocks with predictive information
+incremental to momentum, short-term reversal, size, value, and
+volatility in a point-in-time large-cap universe.</p>
+<p><strong>Verdict.</strong> <strong>NEGATIVE in the tested
+setting.</strong> The 2017-2019 validation block had factor-spanning
+alpha of +0.68% per month (t=2.41). Under the unchanged construction,
+the once-opened 2020-2024 holdout had alpha of -0.29% per month
+(t=-0.62). At 184% monthly turnover, the holdout long-short was negative
+from gross returns through the tested 20 bps one-way cost level.</p>
+<h2 id="scope-of-this-verdict-case">Scope of this Verdict case</h2>
+<p>This is a retrospective, source-evidence import from the SequoAlpha
+Chart-CNN study. It occupies a different evidence mode from an
+executable case: Verdict fingerprints the source report and the original
+split/evaluation/regression code, exposes the reported figures through
+the same case contract, and labels the Agent provider as read-only
+evidence replay. It does not rerun the original CNN or re-create its
+data.</p>
+<p>The distinction matters. A source report is evidence of what the
+original project concluded; it is not a substitute for the original
+point-in-time data, model outputs, or an independently executed
+computation.</p>
+<h2 id="evidence-imported">Evidence imported</h2>
+<table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 28%" />
+<col style="width: 28%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Block</th>
+<th style="text-align: right;">Spanning alpha</th>
+<th style="text-align: right;">t-statistic</th>
+<th>Cost result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Validation, 2017-2019</td>
+<td style="text-align: right;">+0.68% per month</td>
+<td style="text-align: right;">+2.41</td>
+<td>Long-short annualized Sharpe: 1.10 gross, 0.53 at 10 bps one-way,
+approximately zero at 20 bps</td>
+</tr>
+<tr>
+<td>Sealed holdout, 2020-2024</td>
+<td style="text-align: right;">-0.29% per month</td>
+<td style="text-align: right;">-0.62</td>
+<td>Long-short annualized Sharpe: -0.23 gross, -0.80 at 20 bps
+one-way</td>
+</tr>
+</tbody>
+</table>
+<p>The source report attributes the validation result to early-stopping
+optimism and a favourable short sample. The holdout reverses both the
+sign and the significance under the same construction. That is exactly
+the kind of false positive an untouched time block is intended to
+expose.</p>
+<p>The factor comparison is the central test, not the gross Sharpe: a
+signal that does not survive momentum, short-term reversal, size, value,
+and volatility is not incremental information for the book. High
+turnover then makes the weaker economic conclusion more restrictive,
+rather than rescuing it.</p>
+<h2 id="how-it-contributes-to-the-shared-framework">How it contributes
+to the shared framework</h2>
+<ul>
+<li><code>verdict.splits</code>: chronological train/validation/holdout
+partitioning and an explicit once-opened-holdout concept.</li>
+<li><code>verdict.evaluate</code>: HAC factor-spanning regression and
+block-bootstrap performance intervals.</li>
+<li><code>verdict.costs</code>: turnover identity and one-way
+transaction-cost sensitivity.</li>
+<li><code>verdict.diagnose</code>: the validation-positive /
+holdout-null false-positive playbook.</li>
+</ul>
+<h2 id="honest-limitations">Honest limitations</h2>
+<ul>
+<li>This is a source-evidence retrofit. Raw point-in-time QuantConnect
+data, trained-model outputs, and portfolio return files are not
+available in this repository, so no fresh numerical recomputation is
+claimed.</li>
+<li>The original holdout opening predates Verdict’s machine-readable
+ledger. The source report says it was opened once; Verdict preserves
+that provenance but cannot recast it as a newly enforced physical
+seal.</li>
+<li>The result concerns a value-weighted, large-cap, monthly
+implementation. It does not refute the paper’s broader
+weekly/equal-weighted settings.</li>
+<li>The source uses a simple one-way-cost sensitivity. It is not a
+complete execution, liquidity, or market-impact study.</li>
+</ul>
+<h2 id="provenance-and-reproduction">Provenance and reproduction</h2>
+<ul>
+<li>Source report:
+<code>/Users/mmmm/projects/SequoAlpha/chart_cnn/reports/cnn_report.md</code>,
+SHA-256
+<code>30391f48f6f95d862f0e4babb781ffdf88d52e58e243ee1af763c27829d9430e</code>.</li>
+<li>Source known-answer suite:
+<code>/Users/mmmm/projects/SequoAlpha/chart_cnn/scripts/regress.py</code>,
+SHA-256
+<code>99e05288ceb659fc007875b8a3f4ac0e6b7ff53393a796dc65d6e7964bbc9f21</code>.</li>
+<li>The source regression suite was rerun during this integration audit
+and passed 6/6 offline checks. Its command is recorded in
+<code>README.md</code>.</li>
+<li><code>results.json</code> stores the full source-artifact
+fingerprint list and the imported numerical evidence.</li>
+</ul>
+</body>
+</html>

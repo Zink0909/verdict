@@ -4,6 +4,7 @@
     ".nojekyll",
     "agent.html",
     "cases/buy_the_dip.html",
+    "cases/chart_cnn.html",
     "cases/complexity.html",
     "cases/drift.html",
     "cases/tsmom.html",
@@ -12,12 +13,14 @@
   ],
   "inputs": {
     "registry/buy-the-dip-long-calls.json": "2518542b7b1f9ae7c7874cda95ec241a7f0f3e39a214a13c4cf92c18ff07f96b",
+    "registry/chart-cnn-spanning.json": "59ad5fca7f1d945a9e9b6f90a1be9d679e0f6623cc36bd85c6374edb1a612258",
     "registry/complexity-voc.json": "575bc4dc792e0ebe013170340ea1c10ec5654df353ee303293821eb1f52a1dd9",
     "registry/gamma-signal-drift.json": "4ad3282c5ffb3cd270ea2871a1066fbd2a57ff045faac2ee23520551aacbac0e",
     "registry/lazy-prices-10k-changes.json": "cbd6256a6684f20b54dfab424ad854324b54f77337536e8be985720248608498",
     "registry/retail-short-volatility.json": "0a4e49d3730094860bc9491d02cfabc6466fcd9ff23c21011b462bb74eea88c7",
     "registry/time-series-momentum.json": "cfd998b28c71b389ea0c1c42e2dfa937781e4489ead1c0a1b83f026dea5e1ad9",
     "cases/buy_the_dip/report.md": "84d51dcadb14e211325fbfb1e6f8a1bbed8c1adca90a357c0cf58dcdef476c68",
+    "cases/chart_cnn/report.md": "4659b4ee6f407edecd154a16a053ef3d13f01bb2c5bbc83cc638e76e37c28c66",
     "cases/complexity/report.md": "bc83c7a3defe4703bbfd9219c8ea54e41269b83a15912a99fd0982fddecc891d",
     "cases/drift/report.md": "43f79f5b3830c62134f921b1b88e72e73a88e7807427a8801276d800b18925b1",
     "cases/tsmom/report.md": "6a4e478975a29f1d9ebb96a804e86bf8e8cf350b31e0ebc2c8740db9ff2accd4",
@@ -25,16 +28,17 @@
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
     "scripts/build_site.py": "75cdeda960d6b3f3ead6be491060506a28c628ada7e2a77ec8dee378a0e8f0b6",
-    "verdict/catalog.py": "8efc899dd2f73231dfb4bd8a932cc0243c247909d9a478f164d6dd294d42405f"
+    "verdict/catalog.py": "9de3a3ccb7dec3cf84a6ac6304655d0e2b2349912702954b5ea94dc1b5b12650"
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "agent.html": "b12738e538840168129fa8572e9c44f54b7a2425140439b8b68741c48b9954e5",
+    "agent.html": "ee0023888a876a493215a17fadac8d4037fd968f308d5f364cc8f738b96263d5",
     "cases/buy_the_dip.html": "35a56559e212a0a6772bd809827b7efb6f35c6257fd24dbd6ae676c138a91f88",
+    "cases/chart_cnn.html": "800cf6f253f9db6b1ae26d44b925aa9ab8c1bb4e1eb8e26437015806d022965e",
     "cases/complexity.html": "9adaa18fb8f52002c78733d842653f39f41dcc5b9c13c4ecee9b8c806612527c",
     "cases/drift.html": "cac324e58feac17caac4a57d41d92639f685b2d730f129afc3a057465433e28d",
     "cases/tsmom.html": "aadf65177da0438c71c749e30bd95c4ab4da2819e4c0a4f24fcf59d87cdc9f5e",
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
-    "index.html": "25397656cd069d2dbd2d4ae3d08a0650afb5915f467f7102b773b8cf6ee6b7c5"
+    "index.html": "919b23a3d389947d950a9022c516ce46dcce4b3efb161075513c0b5a4f80adff"
   }
 }
