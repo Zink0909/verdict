@@ -35,7 +35,9 @@ prevent.
 The export is month-end only and carries closes plus trailing volatility at three
 windows, which is a few thousand numbers rather than a few hundred thousand. The
 three windows are there so the protocol's robustness clause is executable rather
-than aspirational.
+than aspirational. The dual-price exporter sets mapping and normalization on each
+history request. Both the notebook and decoder fail closed if QuantConnect returns
+the adjusted stream again under the Raw label.
 
 ## Running the protocol
 

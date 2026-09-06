@@ -93,6 +93,19 @@ def load_execution_prices(path, markets, today=None) -> pd.DataFrame | None:
         return None
     prices = raw[columns].copy()
     prices.columns = names
+    identical = []
+    for name in names:
+        signal = raw[f"{name}_close"]
+        execution = prices[name]
+        overlap = signal.notna() & execution.notna()
+        if overlap.sum() >= 24 and np.allclose(signal[overlap], execution[overlap],
+                                               rtol=1e-10, atol=1e-10):
+            identical.append(name)
+    if identical:
+        raise ValueError(
+            "execution prices are identical to BackwardsRatio closes for: "
+            + ", ".join(identical)
+            + "; rerun qc_export.py with per-request Raw normalization")
     if (prices.dropna() <= 0).any().any():
         raise ValueError("mapped-contract execution prices must be positive")
     return prices

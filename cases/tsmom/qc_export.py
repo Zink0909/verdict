@@ -39,7 +39,13 @@ def continuous_closes(sym):
     try:
         fut = qb.add_future(sym, Resolution.DAILY, data_mapping_mode=MAP,
                             data_normalization_mode=NORM, contract_depth_offset=0)
-        h = qb.history(fut.symbol, START, END, Resolution.DAILY)
+        request = dict(start=START, end=END, resolution=Resolution.DAILY,
+                       fill_forward=True, extended_market_hours=False,
+                       data_mapping_mode=MAP, contract_depth_offset=0)
+        # The History overload owns these settings per request. Mutating the
+        # subscription after a first request does not retroactively create a
+        # second normalization stream and can return the cached adjusted data.
+        h = qb.history(fut.symbol, data_normalization_mode=NORM, **request)
         if h is None or len(h) == 0:
             return None, None
         c = h["close"].copy()
@@ -50,8 +56,9 @@ def continuous_closes(sym):
         # BackwardsRatio levels have an arbitrary historical scale and may not
         # be multiplied by the contract unit. Keep the same mapping rule but
         # request Raw normalization for the execution-price series.
-        fut.set_data_normalization_mode(DataNormalizationMode.Raw)
-        h_raw = qb.history(fut.symbol, START, END, Resolution.DAILY)
+        h_raw = qb.history(fut.symbol,
+                           data_normalization_mode=DataNormalizationMode.Raw,
+                           **request)
         if h_raw is None or len(h_raw) == 0:
             return adjusted, None
         raw = h_raw["close"].copy()
@@ -59,7 +66,7 @@ def continuous_closes(sym):
         execution = raw[~raw.index.duplicated(keep="last")].sort_index()
         return adjusted, execution
     except Exception as e:
-        print(f"  {sym}: skip ({type(e).__name__})")
+        print(f"  {sym}: skip ({type(e).__name__}: {e})")
         return None, None
 
 
@@ -71,6 +78,22 @@ panel = pd.DataFrame(closes).sort_index()
 trade_panel = pd.DataFrame(trade_closes).sort_index()
 print("markets served:", list(panel.columns))
 print("daily bars:", {c: int(panel[c].notna().sum()) for c in panel.columns})
+
+# Fail before printing a plausibly labelled but unusable blob. Every market in
+# this long sample rolls many times, so Raw and BackwardsRatio history must
+# differ somewhere. The first dual-price exporter used a mutable subscription
+# setting and QuantBook returned the same adjusted stream twice; this invariant
+# makes that failure impossible to mistake for account-space evidence again.
+identical = []
+for sym in panel.columns:
+    overlap = panel[sym].notna() & trade_panel[sym].notna()
+    if overlap.sum() < 24 or np.allclose(panel.loc[overlap, sym],
+                                        trade_panel.loc[overlap, sym],
+                                        rtol=1e-10, atol=1e-10):
+        identical.append(sym)
+if identical:
+    raise RuntimeError("Raw execution history is missing or identical to the "
+                       "adjusted stream for: " + ", ".join(identical))
 
 daily_ret = panel.pct_change(fill_method=None).clip(-0.5, 0.5)
 

@@ -8,17 +8,20 @@ the surrounding chatter and the line breaks inside the blob are all tolerated,
 so paste generously rather than carefully.
 
 If the notebook printed an md5, pass it with --md5 and the decode is checked
-against it. That check is the whole reason the md5 is printed: a silently
-truncated paste produces a shorter panel that still parses, and a case that
-silently ran on nine years instead of sixteen would be worse than one that
-failed loudly.
+against it. A silently truncated paste produces a shorter panel that still
+parses, and a case that silently ran on nine years instead of sixteen would be
+worse than one that failed loudly. New dual-price exports are also rejected if
+the alleged Raw execution columns are really copies of the adjusted columns.
 """
 from __future__ import annotations
 
 import argparse
 import base64
+import csv
 import gzip
 import hashlib
+import io
+import math
 import re
 import sys
 from pathlib import Path
@@ -31,6 +34,44 @@ def extract(text: str) -> str:
     if BEGIN in text and END in text:
         text = text.split(BEGIN, 1)[1].split(END, 1)[0]
     return re.sub(r"[^A-Za-z0-9+/=]", "", text)
+
+
+def validate_execution_columns(payload: str) -> None:
+    """Reject a dual-price export whose alleged Raw stream is adjusted data."""
+    data = "\n".join(line for line in payload.splitlines()
+                     if line and not line.startswith("#"))
+    reader = csv.DictReader(io.StringIO(data))
+    fields = reader.fieldnames or []
+    signals = {field[:-6] for field in fields
+               if field.endswith("_close") and not field.endswith("_trade_close")}
+    trades = {field[:-12] for field in fields if field.endswith("_trade_close")}
+    if not trades:
+        return
+    if trades != signals:
+        raise ValueError("trade-close markets do not match signal-close markets")
+    rows = list(reader)
+    identical = []
+    for symbol in sorted(signals):
+        different = False
+        overlap = 0
+        for row in rows:
+            try:
+                signal = float(row[f"{symbol}_close"])
+                trade = float(row[f"{symbol}_trade_close"])
+            except (TypeError, ValueError):
+                continue
+            if not (math.isfinite(signal) and math.isfinite(trade)):
+                continue
+            overlap += 1
+            if not math.isclose(signal, trade, rel_tol=1e-10, abs_tol=1e-10):
+                different = True
+                break
+        if overlap >= 24 and not different:
+            identical.append(symbol)
+    if identical:
+        raise ValueError(
+            "Raw execution columns are identical to adjusted closes for: "
+            + ", ".join(identical))
 
 
 def main() -> int:
@@ -55,6 +96,12 @@ def main() -> int:
     if args.md5 and got != args.md5:
         print(f"md5 mismatch: notebook said {args.md5}, decoded {got}.\n"
               f"The paste is incomplete or altered. Nothing written.")
+        return 2
+
+    try:
+        validate_execution_columns(payload)
+    except ValueError as exc:
+        print(f"Invalid execution-price export ({exc}). Nothing written.")
         return 2
 
     out = Path(args.out)

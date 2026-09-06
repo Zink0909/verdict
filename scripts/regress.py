@@ -975,6 +975,7 @@ def t_tsmom_controls():
 def t_tsmom_implementation_robustness():
     """Holding, correlation and integer-contract plumbing have known answers."""
     sys.path.insert(0, os.path.join(ROOT, "cases", "tsmom"))
+    import decode_panel as DP
     import tsmom as T
 
     idx = pd.date_range("2020-01-31", periods=30, freq="ME")
@@ -1015,6 +1016,24 @@ def t_tsmom_implementation_robustness():
         assert panel_closes.columns.tolist() == ["A"]
         assert trade_closes is not None and trade_closes.columns.tolist() == ["A"]
         assert trade_closes.iloc[-1, 0] == 111.0
+
+        bad_path = RP.Path(tmp, "bad-panel.csv")
+        bad_rows = ["date,A_close,A_trade_close,A_v20"]
+        for date in pd.date_range("2020-01-31", periods=30, freq="ME"):
+            bad_rows.append(f"{date.date()},100,100,0.2")
+        bad_payload = "\n".join(bad_rows) + "\n"
+        bad_path.write_text(bad_payload)
+        for check in (
+            lambda: DP.validate_execution_columns(bad_payload),
+            lambda: T.load_execution_prices(
+                bad_path, ["A"], today="2024-12-31"),
+        ):
+            try:
+                check()
+            except ValueError as exc:
+                assert "identical" in str(exc)
+            else:
+                raise AssertionError("adjusted data labelled Raw was accepted")
 
     result = json.loads(RP.Path(ROOT, "cases", "tsmom", "results.json").read_text())
     axes = {row["axis"] for row in result["robustness"]}
