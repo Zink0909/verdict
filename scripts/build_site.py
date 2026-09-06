@@ -413,9 +413,13 @@ interactive working surface runs locally and has a guided <em>Start here</em> sc
 micromamba run -n verdict pip install -e .
 micromamba run -n verdict streamlit run app.py</pre>
 <p>From there, create a local protocol draft, upload a dated return CSV or use the synthetic
-control, run the validation battery, and inspect the recorded Agent loop. Local drafts are
-kept outside the public register until a case contract, evidence artifacts, report, and
-integrity audit exist.</p>
+control, run the validation battery, and inspect the recorded Agent loop. The local
+<em>Audit a paper</em> page also accepts pasted text or `.txt` / `.md` / `.pdf` uploads:
+it extracts a Claim Card and protocol, then either uses a genuinely matching provider or
+stops at data-gated. New-paper extraction needs the optional live-model dependency and
+credentials; the Complexity walkthrough is available offline. Local drafts are kept outside
+the public register until a case contract, evidence artifacts, report, and integrity audit
+exist.</p>
 
 <h2>What to say while presenting it</h2>
 <blockquote>I did not combine internship projects by putting their reports in one folder. I

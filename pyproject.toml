@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-app = ["streamlit"]
+app = ["streamlit", "pypdf"]
 agent = ["anthropic"]
 research = ["matplotlib", "pyarrow", "pyyaml"]
 

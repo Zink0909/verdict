@@ -182,6 +182,66 @@ def draft_verdict(model: Model, claim: ClaimCard, protocol: Protocol,
                           messages=[{"role": "user", "content": ask}], effort="high").text
 
 
+def data_gated_audit(claim: ClaimCard, protocol: Protocol, blocker: str,
+                     case_id: str = "") -> AuditRun:
+    """Record an approved protocol when Verdict has no honest execution adapter."""
+    if not blocker.strip():
+        raise ValueError("a data-gated audit must name the missing data or execution adapter")
+    return AuditRun(
+        case_id=case_id,
+        execution_mode="data-gated",
+        claim=claim,
+        protocol=protocol,
+        approved=True,
+        state="protocol-ready-data-gated",
+        notes=["claim extracted and protocol pre-registered; no deterministic provider was "
+               f"available, so no verdict was issued: {blocker.strip()}"],
+    )
+
+
+def execute_approved_protocol(model: Model, claim: ClaimCard, protocol: Protocol,
+                              case_id: str, max_steps: int = MAX_TOOL_STEPS,
+                              request: str | None = None) -> AuditRun:
+    """Run an already displayed and human-approved protocol without re-drafting it."""
+    if request:
+        guardrails.check_request(request)
+    provider = providers.get_provider(case_id)
+    run = AuditRun(case_id=case_id, execution_mode=provider.mode, claim=claim,
+                   protocol=protocol, approved=True)
+    if provider.mode == "evidence-readonly":
+        run.notes.append(
+            "provider replays pinned case evidence read-only; this run does not recompute "
+            "the underlying study")
+
+    run.tool_trace = execute_protocol(model, claim, protocol, provider, max_steps=max_steps)
+    errors = [step for step in run.tool_trace if "error" in step]
+    completed = any(step.get("status") == "execution-complete" for step in run.tool_trace)
+    results = [step for step in run.tool_trace if "result" in step]
+    if errors or not completed or not results:
+        run.state = "in-progress"
+        if errors:
+            run.notes.append(f"execution failed closed after {len(errors)} tool error(s)")
+        if not completed:
+            run.notes.append("execution did not complete before the step limit")
+        if not results:
+            run.notes.append("execution produced no computed results")
+        return run
+
+    run.verdict_text = draft_verdict(model, claim, protocol, run.tool_trace)
+    run.number_audit = guardrails.audit_numbers(
+        run.verdict_text, provider.collect_numbers(run.results),
+        context=json.dumps(claim.to_dict()) + json.dumps(protocol.to_dict()))
+    if not run.number_audit["clean"]:
+        run.state = "draft-withheld"
+        run.notes.append(
+            "number audit found unsupported figures in the draft: "
+            f"{run.number_audit['unsupported']} — the draft is retained with this flag "
+            "rather than published")
+    else:
+        run.state = "verdict-delivered"
+    return run
+
+
 def run_audit(model: Model, paper_text: str, data_available: bool = True,
               approve: Callable[[ClaimCard, Protocol], bool] | None = None,
               max_steps: int = MAX_TOOL_STEPS, request: str | None = None,

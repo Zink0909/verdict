@@ -37,7 +37,7 @@ from verdict import costs as C          # noqa: E402
 from verdict import diagnose as D       # noqa: E402
 from verdict import evaluate as E       # noqa: E402
 from verdict import synthetic as S      # noqa: E402
-from verdict.catalog import CASE_DIRS    # noqa: E402
+from verdict.catalog import CASE_BY_ID, CASE_DIRS    # noqa: E402
 from verdict.report import VerdictReport, validate_card, write_card  # noqa: E402
 from verdict.schema_help import CLAIM_FIELDS, PROTOCOL_FIELDS      # noqa: E402
 from verdict.splits import HoldoutAlreadyUnsealed, SealedHoldout   # noqa: E402
@@ -119,6 +119,13 @@ def page_start_here() -> None:
     st.info("Verdict asks a narrow question: what evidence would make a predictive claim fail, "
             "and can the result be checked afterwards? The interface is a working surface for "
             "that question; it does not recommend trades or connect to a broker.")
+
+    st.subheader("0 · Give the system a paper")
+    st.write("Paste paper text or upload a `.txt`, `.md`, or `.pdf` paper. The system extracts "
+             "a claim and drafts a protocol before it is allowed to access any provider.")
+    if st.button("Open Audit a paper", type="primary"):
+        st.session_state["section"] = "Audit a paper"
+        st.rerun()
 
     st.subheader("1 · Start with a claim, before touching data")
     st.write("Draft a claim card and a protocol with explicit kill criteria. It saves as a "
@@ -394,7 +401,145 @@ def page_agent() -> None:
             st.markdown(rep.read_text())
 
 
-PAGES = {"Start here": page_start_here, "The register": page_register, "New claim": page_new_claim,
+def _paper_provider_options() -> dict[str, str | None]:
+    options = {"No matching Verdict adapter — protocol only": None}
+    for case_id, spec in CASE_BY_ID.items():
+        if spec.role == "data-gated":
+            continue
+        mode = "executable" if spec.agent_mode == "executable" else "read-only evidence"
+        options[f"{case_id} ({mode})"] = case_id
+    return options
+
+
+def page_paper_audit() -> None:
+    """The visible B-layer entry: paper text → protocol → approval → bounded outcome."""
+    st.title("Audit a paper")
+    st.caption("Paper text → claim card → pre-registered protocol → human approval → "
+               "deterministic provider or honest data-gated stop.")
+    st.info("A paper alone never creates a verdict. Select a Verdict adapter only when it "
+            "actually matches the paper and its data. Otherwise the correct outcome is an "
+            "approved, data-gated protocol — not an invented replication.")
+
+    mode = st.radio("Paper input", ["Paste or upload a paper", "Offline Complexity walkthrough"],
+                    horizontal=True)
+    paper_text = ""
+    origin = ""
+    if mode == "Offline Complexity walkthrough":
+        from verdict.agent import demo
+        paper_text, origin = demo.PAPER_STAND_IN, "offline Complexity fixture summary"
+        st.caption("This is a fixed demonstration summary, not a PDF and not a measurement "
+                   "of model capability. Its tools compute against the pinned Complexity data.")
+    else:
+        source = st.radio("Text source", ["Paste text", "Upload a file"], horizontal=True)
+        if source == "Paste text":
+            paper_text = st.text_area("Paper text", height=240,
+                                      placeholder="Paste the abstract, methods, and main results here.")
+            origin = "pasted text"
+        else:
+            uploaded = st.file_uploader("Paper file", type=["txt", "md", "markdown", "pdf"])
+            if uploaded is not None:
+                from verdict.agent.paper import paper_text as decode_paper
+                try:
+                    paper_text = decode_paper(uploaded.getvalue(), uploaded.name)
+                    origin = uploaded.name
+                    st.caption(f"Extracted {len(paper_text):,} characters from `{uploaded.name}`.")
+                except (ValueError, ModuleNotFoundError) as exc:
+                    st.error(str(exc))
+
+    choices = _paper_provider_options()
+    chosen_label = st.selectbox("Execution route", list(choices), index=0,
+                                help="Choose a route only when its claim and data match the paper.")
+    chosen_case = choices[chosen_label]
+    if mode == "Offline Complexity walkthrough":
+        chosen_case = "complexity-voc"
+        st.caption("Execution route fixed to `complexity-voc` for the offline walkthrough.")
+
+    if st.button("Extract claim and draft protocol", type="primary"):
+        if not paper_text.strip():
+            st.error("Paste or upload paper text first.")
+        else:
+            try:
+                if mode == "Offline Complexity walkthrough":
+                    from verdict.agent import demo
+                    model = demo.scripted_model()
+                else:
+                    from verdict.agent.llm import AnthropicModel
+                    model = AnthropicModel()
+                from verdict.agent import pipeline, providers
+                available_tools = (providers.get_provider(chosen_case).definitions()
+                                   if chosen_case else [])
+                claim = pipeline.extract_claim(model, paper_text)
+                protocol = pipeline.draft_protocol(
+                    model, claim, available_tools=[tool["name"] for tool in available_tools])
+                st.session_state["paper_audit"] = {
+                    "origin": origin,
+                    "case_id": chosen_case,
+                    "claim": claim.to_dict(),
+                    "protocol": protocol.to_dict(),
+                }
+                st.session_state["paper_audit_model"] = model
+                st.session_state.pop("paper_audit_run", None)
+            except Exception as exc:
+                st.error(f"Could not draft a protocol: {type(exc).__name__}: {exc}")
+
+    draft = st.session_state.get("paper_audit")
+    if not draft:
+        return
+    st.divider()
+    st.subheader("1 · Claim extracted from the paper")
+    st.caption(f"Source: {draft['origin']}")
+    st.json(draft["claim"], expanded=False)
+    st.subheader("2 · Protocol fixed before execution")
+    st.json(draft["protocol"], expanded=False)
+
+    approved = st.checkbox("I approve this protocol exactly as written.", key="paper_audit_approved")
+    action = ("Execute through the selected provider" if draft["case_id"]
+              else "Record protocol-ready, data-gated outcome")
+    if st.button(action, type="primary"):
+        if not approved:
+            st.warning("Nothing executed: approve the displayed protocol first.")
+        else:
+            try:
+                from verdict.agent import pipeline
+                from verdict.agent.schema import ClaimCard, Protocol
+                claim = ClaimCard.from_dict(draft["claim"])
+                protocol = Protocol.from_dict(draft["protocol"])
+                if draft["case_id"]:
+                    with st.spinner("running deterministic tools under the approved protocol…"):
+                        run = pipeline.execute_approved_protocol(
+                            st.session_state["paper_audit_model"], claim, protocol,
+                            draft["case_id"])
+                else:
+                    run = pipeline.data_gated_audit(
+                        claim, protocol,
+                        "no matching Verdict data/provider adapter was selected for this paper")
+                st.session_state["paper_audit_run"] = run.to_dict()
+            except Exception as exc:
+                st.error(f"Audit stopped: {type(exc).__name__}: {exc}")
+
+    run = st.session_state.get("paper_audit_run")
+    if not run:
+        return
+    st.subheader("3 · Audit outcome")
+    st.write(f"**State:** `{run['state']}` · **Mode:** `{run['execution_mode']}`")
+    for note in run.get("notes", []):
+        st.caption(note)
+    if run["state"] == "protocol-ready-data-gated":
+        st.info("No verdict was issued. The paper now has a fixed, reviewable protocol; "
+                "execution starts only after a matching data and provider adapter exists.")
+    if run.get("tool_trace"):
+        st.json(run["tool_trace"], expanded=False)
+    if run.get("verdict_text"):
+        st.markdown(run["verdict_text"])
+        audit = run.get("number_audit") or {}
+        if audit.get("clean"):
+            st.success("Every written figure traces to the selected provider's tool output.")
+        else:
+            st.error(f"Draft withheld: unsupported figures {audit.get('unsupported', [])}.")
+
+
+PAGES = {"Start here": page_start_here, "Audit a paper": page_paper_audit,
+         "The register": page_register, "New claim": page_new_claim,
          "Evaluate a result": page_evaluate, "The agent": page_agent}
 
 with st.sidebar:

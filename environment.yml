@@ -16,5 +16,6 @@ dependencies:
   - requests
   - ipykernel
   - streamlit      # the working surface (app.py)
+  - pypdf          # optional PDF → text boundary for the paper-audit UI
   - pip
 # Recreate: micromamba env create -f environment.yml

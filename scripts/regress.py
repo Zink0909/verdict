@@ -812,6 +812,23 @@ def t_agent_data_gated_state():
     assert run.protocol is not None and run.tool_trace == [] and run.verdict_text == ""
 
 
+def t_agent_execute_approved_protocol():
+    """The UI may display/approve a protocol before executing it, without redrafting."""
+    from verdict.agent import pipeline
+    from verdict.agent.demo import PAPER_STAND_IN, scripted_model
+    from verdict.agent.providers import get_provider
+
+    model = scripted_model()
+    claim = pipeline.extract_claim(model, PAPER_STAND_IN)
+    protocol = pipeline.draft_protocol(
+        model, claim, available_tools=[tool["name"] for tool in get_provider("complexity-voc").definitions()])
+    run = pipeline.execute_approved_protocol(model, claim, protocol, "complexity-voc")
+    assert run.approved and run.state == "verdict-delivered"
+    assert run.number_audit["clean"] and run.tool_trace
+    gated = pipeline.data_gated_audit(claim, protocol, "no matching adapter")
+    assert gated.state == "protocol-ready-data-gated" and not gated.tool_trace
+
+
 def t_agent_eval_scoring():
     """Coverage, and — the point — the omissions listed individually."""
     from verdict.agent import evals
@@ -954,7 +971,7 @@ def t_app_pages_render():
     at = AppTest.from_file(os.path.join(ROOT, "app.py"), default_timeout=120)
     at.run()
     assert not at.exception, [e.value for e in at.exception]
-    for page in ("Start here", "The register", "New claim", "Evaluate a result", "The agent"):
+    for page in ("Start here", "Audit a paper", "The register", "New claim", "Evaluate a result", "The agent"):
         at.sidebar.radio[0].set_value(page).run()
         assert not at.exception, (page, [e.value for e in at.exception])
     # the evaluate screen must actually compute when given a series
@@ -1117,6 +1134,7 @@ GATES = [
     ("agent-rejects-data-gated-case", t_agent_rejects_data_gated_case),
     ("agent-providers-cover-delivered-cases", t_agent_providers_cover_delivered_cases),
     ("agent-data-gated-state", t_agent_data_gated_state),
+    ("agent-execute-approved-protocol", t_agent_execute_approved_protocol),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("case-catalog-is-complete", t_case_catalog_is_complete),
