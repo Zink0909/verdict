@@ -12,7 +12,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
+import numpy as np
+import pandas as pd
+
 from ..catalog import CASE_BY_ID
+from .. import costs, evaluate
 from . import tools as complexity_tools
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,6 +61,109 @@ def _complexity_provider() -> ToolProvider:
         definitions_fn=complexity_tools.definitions,
         run_fn=complexity_tools.run_tool,
     )
+
+
+def return_series_provider(frame: pd.DataFrame, *, periods_per_year: int = 12,
+                           turnover: float = 1.0) -> ToolProvider:
+    """Create a deterministic provider over a user-supplied return CSV.
+
+    This evaluates already-produced outcome series.  It intentionally does not
+    claim to reconstruct the paper's signal, verify point-in-time inputs, or
+    prove that the series came from the described strategy.
+    """
+    required = {"date", "return"}
+    missing = required - set(frame.columns)
+    if missing:
+        raise ValueError("CSV must contain columns: " + ", ".join(sorted(required)))
+    if not isinstance(periods_per_year, int) or not 1 <= periods_per_year <= 365:
+        raise ValueError("periods_per_year must be an integer from 1 to 365")
+    if not np.isfinite(turnover) or turnover < 0:
+        raise ValueError("turnover must be finite and non-negative")
+
+    data = frame.copy()
+    data["date"] = pd.to_datetime(data["date"], errors="coerce")
+    if data["date"].isna().any():
+        raise ValueError("CSV date column contains an unreadable date")
+    if data["date"].duplicated().any() or not data["date"].is_monotonic_increasing:
+        raise ValueError("CSV dates must be unique and ascending")
+    numeric = [column for column in data.columns if column != "date"]
+    if not numeric:
+        raise ValueError("CSV must include a return column")
+    for column in numeric:
+        data[column] = pd.to_numeric(data[column], errors="coerce")
+    if data["return"].isna().any() or not np.isfinite(data["return"]).all():
+        raise ValueError("CSV return column must contain only finite numeric values")
+    if len(data) < 12:
+        raise ValueError("CSV needs at least 12 dated return observations")
+    benchmarks = [column for column in numeric if column != "return"
+                  and data[column].notna().any()]
+    for column in benchmarks:
+        if not np.isfinite(data.loc[data[column].notna(), column]).all():
+            raise ValueError(f"CSV benchmark {column!r} contains a non-finite value")
+
+    def definitions() -> list[dict]:
+        tools = [
+            _tool(
+                "describe_return_series",
+                "Describe the user-supplied dated outcome series. It is not a reproduction "
+                "of a paper strategy and this adapter cannot audit point-in-time inputs, "
+                "signal construction, or the provenance of the supplied returns.", {}, []),
+            _tool(
+                "evaluate_return_series",
+                "Compute the locked descriptive battery for the user-supplied return series: "
+                "mean, annualized Sharpe, and fixed moving-block bootstrap intervals. "
+                "These are deterministic calculations, not a strategy reconstruction.", {}, []),
+            _tool(
+                "cost_sensitivity",
+                "Charge the declared constant turnover through a locked 0/5/10/20 bps grid "
+                "and report net return, Sharpe, and the linear breakeven cost. This is an "
+                "assumption sensitivity, not a market-execution simulation.", {}, []),
+        ]
+        if benchmarks:
+            tools.append(_tool(
+                "test_spanning",
+                "Regress the supplied return series on every supplied benchmark using HAC "
+                "standard errors. This asks whether the outcome series retains incremental "
+                "alpha beyond those benchmarks, not whether a paper's signal was reproduced.",
+                {}, []))
+        return tools
+
+    def run(name: str, arguments: dict) -> dict:
+        allowed = {definition["name"] for definition in definitions()}
+        if name not in allowed:
+            raise KeyError(f"unknown tool {name!r}; available: {', '.join(sorted(allowed))}")
+        if arguments:
+            raise TypeError(f"{name} takes no arguments")
+        returns = data["return"]
+        boundary = ("user-supplied outcome series only; not a reproduction of the paper "
+                    "strategy, and no point-in-time audit or source-data provenance check")
+        if name == "describe_return_series":
+            return {"execution_mode": "csv-evidence", "n_observations": int(len(data)),
+                    "start": data["date"].iloc[0].date().isoformat(),
+                    "end": data["date"].iloc[-1].date().isoformat(),
+                    "periods_per_year": periods_per_year, "benchmarks": benchmarks,
+                    "boundary": boundary}
+        if name == "evaluate_return_series":
+            mean_ci = evaluate.block_bootstrap_mean_ci(returns, n_boot=500, block=6, seed=0)
+            sharpe_ci = evaluate.block_bootstrap_sharpe_ci(
+                returns, n_boot=500, block=6, seed=0, periods_per_year=periods_per_year)
+            return {"mean_per_period": float(returns.mean()),
+                    "mean_annualized": float(returns.mean() * periods_per_year),
+                    "sharpe_annualized": evaluate.sharpe(returns, periods_per_year),
+                    "mean_ci_95": list(mean_ci), "sharpe_ci_95": list(sharpe_ci),
+                    "bootstrap": {"method": "moving-block", "draws": 500, "block": 6,
+                                  "seed": 0}, "boundary": boundary}
+        if name == "cost_sensitivity":
+            grid = costs.cost_sensitivity(returns, turnover, periods_per_year=periods_per_year)
+            return {"turnover_assumption": float(turnover),
+                    "cost_grid": grid.reset_index().to_dict(orient="records"),
+                    "breakeven_cost_bps": costs.breakeven_cost_bps(float(returns.mean()), turnover),
+                    "boundary": boundary}
+        return {"benchmarks": benchmarks,
+                "spanning": evaluate.spanning(returns, data[benchmarks], hac_lags=3),
+                "boundary": boundary}
+
+    return ToolProvider("uploaded-return-series", "csv-evidence", definitions, run)
 
 
 def _evidence_documents(case_id: str) -> dict[str, Path]:

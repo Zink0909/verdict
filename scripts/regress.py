@@ -32,6 +32,7 @@ import py_compile
 import sys
 import tempfile
 import traceback
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -829,6 +830,74 @@ def t_agent_execute_approved_protocol():
     assert gated.state == "protocol-ready-data-gated" and not gated.tool_trace
 
 
+def t_agent_csv_evidence_provider():
+    """A supplied outcome CSV is evaluable, but its reproduction boundary is structural."""
+    from verdict.agent import providers
+    dates = pd.date_range("2020-01-31", periods=24, freq="ME")
+    returns = np.linspace(-0.01, 0.02, len(dates))
+    frame = pd.DataFrame({"date": dates, "return": returns, "market": returns * 0.4})
+    provider = providers.return_series_provider(frame, periods_per_year=12, turnover=0.7)
+    assert provider.case_id == "uploaded-return-series" and provider.mode == "csv-evidence"
+    assert {tool["name"] for tool in provider.definitions()} == {
+        "describe_return_series", "evaluate_return_series", "cost_sensitivity", "test_spanning"}
+    described = provider.run_tool("describe_return_series", {})
+    evaluated = provider.run_tool("evaluate_return_series", {})
+    costed = provider.run_tool("cost_sensitivity", {})
+    spanned = provider.run_tool("test_spanning", {})
+    assert described["n_observations"] == 24 and "not a reproduction" in described["boundary"]
+    assert np.isfinite(evaluated["sharpe_annualized"])
+    assert len(costed["cost_grid"]) == 4 and "spanning" in spanned
+    from verdict.agent import pipeline
+    from verdict.agent.llm import Reply, ScriptedModel
+    from verdict.agent.schema import ClaimCard, Protocol
+    claim = ClaimCard("published signal", "stated universe", "monthly", "claimed return",
+                      "supplied sample", "paper", ["dated outcome returns"])
+    protocol = Protocol(["dated outcome returns"], "already supplied series", ["market"],
+                        "locked grid", ["spanning"], ["none available"],
+                        ["interval includes zero"], "bounded CSV check")
+    model = ScriptedModel([
+        ScriptedModel.tool_reply("describe_return_series", {}),
+        ScriptedModel.tool_reply("evaluate_return_series", {}),
+        ScriptedModel.tool_reply("cost_sensitivity", {}),
+        Reply(text="Done."),
+        Reply(text="Bounded result only. Limitations: supplied outcomes do not reproduce the paper strategy."),
+    ])
+    run = pipeline.execute_approved_protocol(model, claim, protocol, provider.case_id,
+                                              provider=provider)
+    assert run.state == "verdict-delivered" and run.number_audit["clean"]
+    assert any("does not reproduce" in note for note in run.notes)
+    try:
+        providers.return_series_provider(frame.iloc[::-1])
+        raise AssertionError("accepted an out-of-order return CSV")
+    except ValueError as exc:
+        assert "ascending" in str(exc)
+
+
+def t_agent_archives_approved_run():
+    """Every approved paper outcome has a hashed local package, never a public card."""
+    from verdict.agent import archive, pipeline
+    from verdict.agent.schema import ClaimCard, Protocol
+    claim = ClaimCard("signal", "universe", "monthly", "effect", "sample", "source", ["returns"])
+    protocol = Protocol(["returns"], "chronological", ["market"], "10 bps", ["spanning"],
+                        ["windows"], ["alpha is not positive"], "test it")
+    run = pipeline.data_gated_audit(claim, protocol, "source returns have not been supplied")
+    run.number_audit = {"unavailable_statistic": float("nan")}
+    with tempfile.TemporaryDirectory() as tmp:
+        package = archive.save_audit_package(
+            Path(tmp) / "audits", paper_text="paper text used for extraction", origin="unit test",
+            run=run, extra_artifacts={"evidence.csv": b"date,return\n2020-01-31,0.01\n"})
+        manifest = json.loads((package / "manifest.json").read_text())
+        assert manifest["state"] == "protocol-ready-data-gated"
+        assert manifest["public_registry_status"] == "not-published"
+        assert json.loads((package / "number_audit.json").read_text())["unavailable_statistic"] is None
+        for name in ("paper.txt", "claim.json", "protocol.json", "approval.json", "tool_trace.json",
+                     "number_audit.json", "run.json", "evidence.csv"):
+            raw = (package / name).read_bytes()
+            assert manifest["artifacts"][name]["bytes"] == len(raw)
+            import hashlib
+            assert manifest["artifacts"][name]["sha256"] == hashlib.sha256(raw).hexdigest()
+
+
 def t_agent_eval_scoring():
     """Coverage, and — the point — the omissions listed individually."""
     from verdict.agent import evals
@@ -1135,6 +1204,8 @@ GATES = [
     ("agent-providers-cover-delivered-cases", t_agent_providers_cover_delivered_cases),
     ("agent-data-gated-state", t_agent_data_gated_state),
     ("agent-execute-approved-protocol", t_agent_execute_approved_protocol),
+    ("agent-csv-evidence-provider", t_agent_csv_evidence_provider),
+    ("agent-archives-approved-run", t_agent_archives_approved_run),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("case-catalog-is-complete", t_case_catalog_is_complete),

@@ -30,7 +30,7 @@
     "cases/vol_harvest/report.md": "f2206be7fddbabf713c0660bbe1c7f54cc55ec97807ceecd78ae2c53f83b15a5",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "887aa0b77811ba2b733cf541445ab772e0bc3926aa2121a29bac07395ba8b13f",
+    "scripts/build_site.py": "0fc4f82d03fc87d0b798a3ead400d87885eaa4450505f5b42860c575557fc805",
     "verdict/catalog.py": "80077d6978b21a4ab7ca2d6fd9200f9916b1c91aa161349eece9bc9e82519b72"
   },
   "outputs": {
@@ -42,7 +42,7 @@
     "cases/drift.html": "cac324e58feac17caac4a57d41d92639f685b2d730f129afc3a057465433e28d",
     "cases/tsmom.html": "aadf65177da0438c71c749e30bd95c4ab4da2819e4c0a4f24fcf59d87cdc9f5e",
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
-    "demo.html": "ff441ee2a34a70b6c015b7a76ba72626066e2f7a0ad682e1c9e95423ab2f7cb4",
+    "demo.html": "f3dbfb705bec8477a4948915a8acefcaf4a896d1105a218879c8f9f0c0a852c3",
     "index.html": "927583cb2692a4e9cbc15b9075ef68c8ff1263540c6bfeb4a7f55ca7cd7448a4",
     "registry.html": "7420ad035acb119569f6ec509b853bab26659231b29fe181796fbb65a82bdb22",
     "system.html": "927583cb2692a4e9cbc15b9075ef68c8ff1263540c6bfeb4a7f55ca7cd7448a4"

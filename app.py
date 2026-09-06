@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import sys
+from io import BytesIO
 from datetime import date
 from pathlib import Path
 
@@ -402,7 +403,10 @@ def page_agent() -> None:
 
 
 def _paper_provider_options() -> dict[str, str | None]:
-    options = {"No matching Verdict adapter — protocol only": None}
+    options = {
+        "No matching Verdict adapter — protocol only": None,
+        "Uploaded return/benchmark CSV (deterministic evaluation)": "__csv__",
+    }
     for case_id, spec in CASE_BY_ID.items():
         if spec.role == "data-gated":
             continue
@@ -454,6 +458,24 @@ def page_paper_audit() -> None:
         chosen_case = "complexity-voc"
         st.caption("Execution route fixed to `complexity-voc` for the offline walkthrough.")
 
+    csv_upload = None
+    csv_periods = 12
+    csv_turnover = 1.0
+    if chosen_case == "__csv__":
+        st.caption("CSV contract: required `date` and `return` columns; optional numeric "
+                   "columns are treated as benchmarks. Dates must be ascending and unique. "
+                   "This evaluates supplied outcomes only — it cannot reproduce the paper's "
+                   "strategy or audit its point-in-time inputs.")
+        csv_upload = st.file_uploader("Return / benchmark CSV", type=["csv"], key="paper_csv")
+        columns = st.columns(2)
+        csv_periods = int(columns[0].number_input("Periods per year", min_value=1,
+                                                    max_value=365, value=12, step=1,
+                                                    key="paper_csv_periods"))
+        csv_turnover = float(columns[1].number_input(
+            "Constant one-way turnover", min_value=0.0, value=1.0, step=0.1,
+            key="paper_csv_turnover",
+            help="A declared sensitivity assumption used only for the cost grid."))
+
     if st.button("Extract claim and draft protocol", type="primary"):
         if not paper_text.strip():
             st.error("Paste or upload paper text first.")
@@ -466,19 +488,39 @@ def page_paper_audit() -> None:
                     from verdict.agent.llm import AnthropicModel
                     model = AnthropicModel()
                 from verdict.agent import pipeline, providers
-                available_tools = (providers.get_provider(chosen_case).definitions()
-                                   if chosen_case else [])
+                provider = None
+                csv_bytes = None
+                if chosen_case == "__csv__":
+                    if csv_upload is None:
+                        raise ValueError("upload a CSV before selecting the CSV evaluation route")
+                    csv_bytes = csv_upload.getvalue()
+                    provider = providers.return_series_provider(
+                        pd.read_csv(BytesIO(csv_bytes)), periods_per_year=csv_periods,
+                        turnover=csv_turnover)
+                    selected_case = provider.case_id
+                else:
+                    selected_case = chosen_case
+                    provider = providers.get_provider(selected_case) if selected_case else None
+                available_tools = provider.definitions() if provider else []
                 claim = pipeline.extract_claim(model, paper_text)
                 protocol = pipeline.draft_protocol(
                     model, claim, available_tools=[tool["name"] for tool in available_tools])
                 st.session_state["paper_audit"] = {
                     "origin": origin,
-                    "case_id": chosen_case,
+                    "paper_text": paper_text,
+                    "case_id": selected_case,
                     "claim": claim.to_dict(),
                     "protocol": protocol.to_dict(),
+                    "csv_filename": csv_upload.name if csv_upload else None,
+                    "csv_settings": ({"periods_per_year": csv_periods, "turnover": csv_turnover}
+                                     if csv_upload else None),
                 }
                 st.session_state["paper_audit_model"] = model
+                st.session_state["paper_audit_provider"] = provider
+                st.session_state["paper_audit_csv"] = csv_bytes
                 st.session_state.pop("paper_audit_run", None)
+                st.session_state.pop("paper_audit_archive", None)
+                st.session_state.pop("paper_audit_approved", None)
             except Exception as exc:
                 st.error(f"Could not draft a protocol: {type(exc).__name__}: {exc}")
 
@@ -508,12 +550,22 @@ def page_paper_audit() -> None:
                     with st.spinner("running deterministic tools under the approved protocol…"):
                         run = pipeline.execute_approved_protocol(
                             st.session_state["paper_audit_model"], claim, protocol,
-                            draft["case_id"])
+                            draft["case_id"],
+                            provider=st.session_state.get("paper_audit_provider"))
                 else:
                     run = pipeline.data_gated_audit(
                         claim, protocol,
                         "no matching Verdict data/provider adapter was selected for this paper")
+                from verdict.agent import archive
+                extra = {}
+                if st.session_state.get("paper_audit_csv") is not None:
+                    extra["evidence.csv"] = st.session_state["paper_audit_csv"]
+                package = archive.save_audit_package(
+                    ROOT / ".verdict-workspace" / "audits",
+                    paper_text=draft["paper_text"], origin=draft["origin"], run=run,
+                    extra_artifacts=extra)
                 st.session_state["paper_audit_run"] = run.to_dict()
+                st.session_state["paper_audit_archive"] = str(package)
             except Exception as exc:
                 st.error(f"Audit stopped: {type(exc).__name__}: {exc}")
 
@@ -522,6 +574,9 @@ def page_paper_audit() -> None:
         return
     st.subheader("3 · Audit outcome")
     st.write(f"**State:** `{run['state']}` · **Mode:** `{run['execution_mode']}`")
+    if st.session_state.get("paper_audit_archive"):
+        st.caption("Saved local evidence package (not published to the public register):")
+        st.code(st.session_state["paper_audit_archive"], language="text")
     for note in run.get("notes", []):
         st.caption(note)
     if run["state"] == "protocol-ready-data-gated":

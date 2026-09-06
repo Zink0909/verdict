@@ -201,17 +201,24 @@ def data_gated_audit(claim: ClaimCard, protocol: Protocol, blocker: str,
 
 def execute_approved_protocol(model: Model, claim: ClaimCard, protocol: Protocol,
                               case_id: str, max_steps: int = MAX_TOOL_STEPS,
-                              request: str | None = None) -> AuditRun:
+                              request: str | None = None,
+                              provider: providers.ToolProvider | None = None) -> AuditRun:
     """Run an already displayed and human-approved protocol without re-drafting it."""
     if request:
         guardrails.check_request(request)
-    provider = providers.get_provider(case_id)
+    provider = provider or providers.get_provider(case_id)
+    if provider.case_id != case_id:
+        raise ValueError("provider case_id does not match the approved execution route")
     run = AuditRun(case_id=case_id, execution_mode=provider.mode, claim=claim,
                    protocol=protocol, approved=True)
     if provider.mode == "evidence-readonly":
         run.notes.append(
             "provider replays pinned case evidence read-only; this run does not recompute "
             "the underlying study")
+    elif provider.mode == "csv-evidence":
+        run.notes.append(
+            "provider evaluates user-supplied outcome returns only; it does not reproduce "
+            "the paper strategy or audit point-in-time data construction")
 
     run.tool_trace = execute_protocol(model, claim, protocol, provider, max_steps=max_steps)
     errors = [step for step in run.tool_trace if "error" in step]

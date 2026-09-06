@@ -23,7 +23,7 @@ micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
 
 micromamba run -n verdict streamlit run app.py          # the working surface
-micromamba run -n verdict python scripts/regress.py     # 58 known-answer gates, seconds
+micromamba run -n verdict python scripts/regress.py     # 60 known-answer gates, seconds
 micromamba run -n verdict python scripts/run_case.py --all --verify
 micromamba run -n verdict python scripts/audit_integrity.py
 ```
@@ -35,7 +35,7 @@ micromamba run -n verdict python scripts/audit_integrity.py
 | | |
 |---|---|
 | **The register** | every claim that has been adjudicated, its protocol, its verdict, its limitations |
-| **Audit a paper** | paste or upload a `.txt`, `.md`, or `.pdf` paper; extract a Claim Card, pre-register a protocol, approve it, then execute only through a matching provider or stop honestly at data-gated |
+| **Audit a paper** | paste or upload a `.txt`, `.md`, or `.pdf` paper; extract a Claim Card, pre-register a protocol, approve it, then execute through a matching provider, a clearly bounded return/benchmark CSV evaluation, or stop honestly at data-gated |
 | **New claim** | fill in a claim card and pre-register a local protocol draft. The cheapest thing the system does: if you cannot write a result that would falsify the claim, the claim is not testable and you have saved yourself the weeks you were about to spend. A draft is not silently published into the evidence register |
 | **Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, the diagnosis playbooks, the sealed-holdout ledger, and a verdict document that will not render without limitations |
 | **The agent** | watch the loop run end to end |
@@ -55,9 +55,14 @@ boundary. The interactive surface is research infrastructure, not a trading inte
 For a paper audit, use **Audit a paper**. The offline Complexity walkthrough works without
 credentials and visibly labels the model turns as a fixture. To process a new paper, install
 the optional Agent dependency (`micromamba run -n verdict pip install anthropic`) and configure
-its API credentials; PDF-to-text support is included in `environment.yml`. A new paper without
-a matching data/provider adapter ends as `protocol-ready-data-gated`, never as an invented
-verdict.
+its API credentials; PDF-to-text support is included in `environment.yml`. If you have a dated
+CSV with `date`, `return`, and optional numeric benchmark columns, the CSV route calculates
+descriptive return, bootstrap, spanning, and cost-sensitivity outputs — but explicitly does
+not reproduce the paper's strategy or validate its source/PIT data. Every approved audit is
+saved locally under `.verdict-workspace/audits/` as a hashed evidence package (paper text,
+claim, protocol, approval, tool trace, outcome, and supplied CSV); it is not silently published
+to the public register. A new paper without a matching data/provider adapter ends as
+`protocol-ready-data-gated`, never as an invented verdict.
 
 ## The case library
 
