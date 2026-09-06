@@ -1,0 +1,38 @@
+{
+  "id": "volatility-managed-market",
+  "title": "Volatility-managed U.S. market",
+  "state": "verdict-delivered",
+  "claim": {
+    "signal": "monthly U.S. market excess return scaled by inverse prior-month realized variance",
+    "universe": "public Fama/French U.S. market excess return (Mkt-RF)",
+    "frequency": "monthly, with realized variance measured from the previous month's daily returns",
+    "claimed_effect": "inverse-variance volatility management adds risk-adjusted, incremental performance beyond the unscaled market",
+    "sample": "public daily Fama/French archive, July 1963 through July 2026; scale calibrated through 1999-12 and evaluated from 2000-01 onward",
+    "source": "Moreira and Muir (2017), 'Volatility-Managed Portfolios', Journal of Finance",
+    "data_needs": "daily market excess returns and a prior-month realized-variance construction"
+  },
+  "protocol": {
+    "replication_anchor": "reconstruct only the public-data market transformation; do not call it a full nine-factor or currency-carry replication",
+    "splits": "normalization scale fixed through 1999-12; 2000-01 onward is the sealed evaluation block",
+    "benchmarks": "unscaled market excess return; HAC(3) spanning regression of managed on unscaled market",
+    "cost_model": "one-way turnover is the absolute monthly change in the risky weight; report 0, 5, 10 and 20 bps sensitivity",
+    "diagnostics": [
+      "moving-block bootstrap intervals on mean and annualized Sharpe",
+      "spanning alpha rather than a standalone-Sharpe comparison alone",
+      "record the market-only and current-data-vintage boundary"
+    ],
+    "kill_criteria_for_the_claim": "if the sealed-holdout HAC alpha interval of managed returns on unscaled market includes zero, the bounded incremental claim is not supported",
+    "preregistered": true
+  },
+  "verdict": {
+    "outcome": "NO CLEAR INCREMENTAL HOLDOUT EVIDENCE",
+    "summary": "On the 2000-01 to 2026-07 holdout, managed Sharpe is 0.50 versus 0.48 for the unscaled market, but HAC spanning alpha is +0.16% per month (t=1.21; 95% interval -0.10% to +0.42%).",
+    "honest_limitations": [
+      "The current public French archive is not the paper's historical data vintage.",
+      "Only the market transformation is executed; the paper's other factors and currency carry trade are outside this case.",
+      "The exact published sample and normalization are not reproduced byte-for-byte.",
+      "The 0/5/10/20 bps table is a linear friction sensitivity, not broker-level execution modelling."
+    ]
+  },
+  "date": "2026-09-07"
+}

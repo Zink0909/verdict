@@ -961,6 +961,24 @@ def t_agent_eval_scoring():
         assert expected in report, expected
 
 
+def t_volatility_managed_public_data_audit():
+    """The new paper case is deterministic and does not promote a Sharpe comparison to alpha."""
+    import importlib.util
+    path = RP.Path(ROOT, "cases", "volatility_managed", "run.py")
+    spec = importlib.util.spec_from_file_location("volatility_managed_case", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    result = module.execute()
+    holdout = result["holdout"]
+    assert result["source"]["input_sha256"] == "478350b8d60831351fbf754bc593fc0112b013552c24639c10902e1f26d7f306"
+    assert holdout["managed"]["n_months"] > 300
+    assert holdout["spanning_managed_on_market"]["alpha_ci"][0] < 0 < \
+        holdout["spanning_managed_on_market"]["alpha_ci"][1]
+    assert len(holdout["cost_sensitivity"]) == 4
+    assert not result["protocol_coverage"]["complete"]
+
+
 # ------------------------------------------------------------------ site ----
 
 def t_site_index_covers_registry():
@@ -1254,6 +1272,7 @@ GATES = [
     ("agent-archives-approved-run", t_agent_archives_approved_run),
     ("agent-vault-verifies-compares-exports", t_agent_vault_verifies_compares_exports),
     ("agent-eval-scoring", t_agent_eval_scoring),
+    ("volatility-managed-public-data-audit", t_volatility_managed_public_data_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("case-catalog-is-complete", t_case_catalog_is_complete),
     ("case-result-manifests", t_case_result_manifests),

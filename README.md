@@ -87,6 +87,7 @@ opened as verified evidence.
 | [`cases/buy_the_dip`](cases/buy_the_dip) | Practitioner thesis: dips in wide-moat names can be bought profitably, expressed as long calls | **Negative on the instrument, not the thesis.** The calls lose $263 per trade on average, $2,428 at the median; the same dips in the underlying are roughly flat to positive. The killer is the expiry clock, not the volatility headwind everyone expects — implied volatility *rose* on recovering trades. |
 | [`cases/vol_harvest`](cases/vol_harvest) | Practitioner thesis: the volatility risk premium is real, so a small account can harvest it with defined-risk spreads | **Falsified — true premise, unreachable conclusion.** On real option chains the model's own pick returned −43.9% against a modelled +0.7% CAGR. The modelled edge crosses zero at 0.082 index points of friction per leg: the whole result lived inside a spread assumption only real quotes could settle. |
 | [`cases/drift`](cases/drift) | A deployed feature discriminates winning from losing days for a live trading rule | **Decayed, detectable 2.8 years early, cause unproven.** Discrimination fell 0.597 → 0.442 (below chance) and partly recovered. The obvious culprit correlates at −0.72 over the full sample and flips to +0.76 after 2022 — it coincides with the inversion and explains neither the onset nor the recovery. |
+| [`cases/volatility_managed`](cases/volatility_managed) | Moreira–Muir volatility management adds incremental return beyond the unscaled market | **No clear incremental holdout evidence in the bounded public-data test.** Sharpe is modestly higher (0.50 vs 0.48), but the 2000+ HAC alpha is +0.16% per month (t=1.21; 95% interval crosses zero). |
 
 Each case names its evidence mode and reproduction boundary in its README. Some run
 offline from pinned data; some are explicitly read-only replays of source evidence; one
@@ -108,10 +109,12 @@ diagnosis; Vol Harvest contributed friction and implementability; Distribution S
 contributed deployment-drift diagnosis. Their exact catalog IDs are an executable
 invariant, so adding a case cannot rewrite the system's origin story.
 
-Two later studies prove that the framework travels beyond its source material:
+Three later studies prove that the framework travels beyond its source material:
 [`cases/complexity`](cases/complexity) is the first fresh, end-to-end audit, and
-[`cases/tsmom`](cases/tsmom) is a post-publication commodity momentum extension. Neither
-is allowed to become a foundational source merely because it is newer or more executable.
+[`cases/tsmom`](cases/tsmom) is a post-publication commodity momentum extension;
+[`cases/volatility_managed`](cases/volatility_managed) is a bounded public-data market
+reconstruction. None is allowed to become a foundational source merely because it is newer
+or more executable.
 
 A further claim is recorded as **not adjudicable here**: the protocol is written and
 pre-registered, and the corpus needed to execute it has not been built. That state exists

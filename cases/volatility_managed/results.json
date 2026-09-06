@@ -1,0 +1,131 @@
+{
+  "case": "volatility-managed-market",
+  "source": {
+    "paper": "Moreira and Muir (2017), Volatility-Managed Portfolios, DOI 10.1111/jofi.12513",
+    "public_input": "Kenneth French daily five-factor archive; Mkt-RF only",
+    "input_sha256": "478350b8d60831351fbf754bc593fc0112b013552c24639c10902e1f26d7f306",
+    "daily_start": "1963-07-01",
+    "daily_end": "2026-07-31"
+  },
+  "protocol": {
+    "transformation": "monthly market excess return multiplied by c / prior-month realized variance",
+    "calibration": "c fixes managed and unmanaged variance using months through 1999-12 only",
+    "sealed_holdout": "2000-01 through the final available public-data month",
+    "inference": "monthly moving-block bootstrap, 2,000 draws, six-month blocks; HAC(3) spanning",
+    "costs": "one-way turnover equals absolute change in the risky-asset weight; 0/5/10/20 bps grid"
+  },
+  "normalization_scale": 0.0007671804672210803,
+  "calibration": {
+    "managed": {
+      "n_months": 437,
+      "mean_per_month": 0.005958477174582146,
+      "mean_annualized": 0.07150172609498576,
+      "sharpe_annualized": 0.46926785312003694,
+      "mean_ci_95": [
+        0.0013448633092308156,
+        0.010295396879134474
+      ],
+      "sharpe_ci_95": [
+        0.10813409068249812,
+        0.7956991012332708
+      ]
+    },
+    "market": {
+      "n_months": 437,
+      "mean_per_month": 0.005836696284921215,
+      "mean_annualized": 0.07004035541905458,
+      "sharpe_annualized": 0.4596768359913625,
+      "mean_ci_95": [
+        0.001350688599300722,
+        0.009649107141697106
+      ],
+      "sharpe_ci_95": [
+        0.10275604552880778,
+        0.8091748155876691
+      ]
+    }
+  },
+  "holdout": {
+    "managed": {
+      "n_months": 319,
+      "mean_per_month": 0.003862571604408837,
+      "mean_annualized": 0.046350859252906045,
+      "sharpe_annualized": 0.5000940207212003,
+      "mean_ci_95": [
+        0.0010685529085661069,
+        0.007040058096965371
+      ],
+      "sharpe_ci_95": [
+        0.12422509878790554,
+        0.9587004520134565
+      ]
+    },
+    "market": {
+      "n_months": 319,
+      "mean_per_month": 0.006233833989388301,
+      "mean_annualized": 0.0748060078726596,
+      "sharpe_annualized": 0.4764219559001746,
+      "mean_ci_95": [
+        0.001061236602322587,
+        0.011180388784187494
+      ],
+      "sharpe_ci_95": [
+        0.0738975900166284,
+        0.9182128400065092
+      ]
+    },
+    "spanning_managed_on_market": {
+      "alpha": 0.001601459835050895,
+      "alpha_t": 1.2067296396724463,
+      "alpha_se": 0.001327107400366493,
+      "alpha_ci": [
+        -0.0009996228732840095,
+        0.004202542543385799
+      ],
+      "betas": {
+        "market_excess": 0.3627160705926684
+      },
+      "beta_t": {
+        "market_excess": 7.6046060531844475
+      },
+      "r2": 0.3775815480977901,
+      "nobs": 319
+    },
+    "mean_turnover": 0.3942177643192028,
+    "cost_sensitivity": [
+      {
+        "cost_bps": 0,
+        "mean_per_period": 0.003862571604408837,
+        "mean_annualized": 0.046350859252906045,
+        "sharpe": 0.5000940207212003
+      },
+      {
+        "cost_bps": 5,
+        "mean_per_period": 0.003468353840089635,
+        "mean_annualized": 0.04162024608107562,
+        "sharpe": 0.44911778498074717
+      },
+      {
+        "cost_bps": 10,
+        "mean_per_period": 0.003074136075770432,
+        "mean_annualized": 0.036889632909245185,
+        "sharpe": 0.3979859165420253
+      },
+      {
+        "cost_bps": 20,
+        "mean_per_period": 0.0022857005471320266,
+        "mean_annualized": 0.027428406565584318,
+        "sharpe": 0.2954735778377099
+      }
+    ],
+    "breakeven_cost_bps": 48.990329127853144
+  },
+  "protocol_coverage": {
+    "complete": false,
+    "not_executed": [
+      "the paper's other equity factors, currency carry trade, and exact historical data vintages",
+      "a byte-for-byte replication of the paper's published sample and normalization choices",
+      "Cederburg et al.'s real-time portfolio-combination and certainty-equivalent analysis"
+    ]
+  }
+}

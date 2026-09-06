@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "case_id": "volatility-managed-market",
+  "role": "fresh-audit",
+  "state": "verdict-delivered",
+  "evidence_pattern": "public-data / bounded out-of-sample replication",
+  "protocol_coverage": {
+    "complete": false,
+    "gaps": [
+      "the paper's other equity factors, currency carry trade, and exact historical data vintages",
+      "a byte-for-byte replication of the paper's published sample and normalization choices",
+      "Cederburg et al.'s real-time portfolio-combination and certainty-equivalent analysis"
+    ]
+  },
+  "agent_mode": "evidence-readonly",
+  "artifacts": [
+    {
+      "path": "registry/volatility-managed-market.json",
+      "sha256": "a9f2a2b46241cdcb13141eb66406e9ac3fdd0a2dcaff794bba1cbb88bead6771",
+      "bytes": 2575
+    },
+    {
+      "path": "cases/volatility_managed/results.json",
+      "sha256": "7a4701a01198b8a656addfa599ece08add16ba7ce672ec85cc4b8f7c9dc44bb2",
+      "bytes": 4056
+    },
+    {
+      "path": "cases/volatility_managed/report.md",
+      "sha256": "7655cc6e2a91b4be913b4aee0b34fa9e11bc83a5d11b2464b315697060627421",
+      "bytes": 1979
+    },
+    {
+      "path": "cases/volatility_managed/report.html",
+      "sha256": "aad53e66b4051a749df7e83b84f95a9049dd7b0cfcdd0c2b48b0b8c99a39e6b8",
+      "bytes": 6083
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# The NBER working-paper PDF is downloaded for local reading only; retain its URL and SHA-256
+# in SOURCES.md rather than republishing the copyrighted document in this repository.
+source/*.pdf

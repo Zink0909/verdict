@@ -67,6 +67,18 @@ CASES: tuple[CaseSpec, ...] = (
                       PYTHON + ("cases/tsmom/make_report.py",)),
         result_files=("results.json", "results_series.csv", "results/holdout_ledger.json"),
     ),
+    CaseSpec(
+        "volatility-managed-market", "volatility_managed", "fresh-audit",
+        "public-data / bounded out-of-sample replication",
+        run_steps=(PYTHON + ("cases/volatility_managed/run.py",),),
+        report_steps=(PYTHON + ("cases/volatility_managed/make_report.py",),),
+        result_files=("results.json",),
+        protocol_gaps=(
+            "the paper's other equity factors, currency carry trade, and exact historical data vintages",
+            "a byte-for-byte replication of the paper's published sample and normalization choices",
+            "Cederburg et al.'s real-time portfolio-combination and certainty-equivalent analysis",
+        ),
+    ),
     CaseSpec("lazy-prices-10k-changes", "lazy_prices", "data-gated", "protocol only"),
 )
 
