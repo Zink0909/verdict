@@ -23,6 +23,11 @@ The graduate-application scope is fixed in the
 canonical five-minute path, non-goals, completion criteria, and the gate every
 proposed addition must pass.
 
+Release readiness is tracked in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+`scripts/audit_publication.py` covers every committed data-like artifact and
+fails strictly until provenance, redistribution, and internship-owner decisions
+are documented; an automated scanner is never treated as permission to publish.
+
 ```bash
 micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .

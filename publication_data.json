@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "purpose": "Pre-release inventory of tracked data-like artifacts. Approval means both provenance and public redistribution have been checked; it does not mean the underlying research claim is correct.",
+  "allowed_statuses": [
+    "approved",
+    "owner-confirmation-required",
+    "license-review-required"
+  ],
+  "groups": [
+    {
+      "id": "buy-the-dip-source-study",
+      "paths": [
+        "cases/buy_the_dip/data/",
+        "cases/buy_the_dip/results_attribution.parquet",
+        "cases/buy_the_dip/results_robustness.csv"
+      ],
+      "origin": "Derived and exported records from the completed Buy the Dip internship/research study; the README states that real daily option chains and raw fundamentals were used.",
+      "status": "owner-confirmation-required",
+      "canonical_demo_dependency": false,
+      "required_evidence": "Owner confirms that the committed rows are permitted for public redistribution and contain no employer/client-confidential fields; vendor-data terms are checked separately.",
+      "notes": "A reproducible audit does not itself grant permission to republish the underlying or derived vendor data."
+    },
+    {
+      "id": "vol-harvest-source-study",
+      "paths": [
+        "cases/vol_harvest/data/"
+      ],
+      "origin": "Model grids and recorded real-chain results recovered from the completed source study's authority documents; raw platform logs were not retained.",
+      "status": "owner-confirmation-required",
+      "canonical_demo_dependency": false,
+      "required_evidence": "Owner confirms public-release permission for the source-study outputs and that no employer/client identifiers or restricted platform data are exposed.",
+      "notes": "The files are evidence replay, not raw-chain recomputation."
+    },
+    {
+      "id": "distribution-shift-source-study",
+      "paths": [
+        "cases/drift/data/",
+        "cases/drift/results_rolling.csv"
+      ],
+      "origin": "Saved series from a completed study of a deployed dealer-gamma feature and an intraday rule.",
+      "status": "owner-confirmation-required",
+      "canonical_demo_dependency": false,
+      "required_evidence": "Owner confirms that public release of the deployed-feature, prediction and rolling-metric series is authorized and sufficiently de-identified.",
+      "notes": "This is the highest confidentiality-risk group because it represents deployed-study behavior rather than a public paper reproduction."
+    },
+    {
+      "id": "complexity-public-reproduction",
+      "paths": [
+        "cases/complexity/data/",
+        "cases/complexity/results/kmz_sweep.parquet",
+        "cases/complexity/results/kmz_sweep_quick.parquet"
+      ],
+      "origin": "Amit Goyal public predictors, the authors' GYdata anchor, and two open-source reproduction sources documented in M0_PINNED.md.",
+      "status": "license-review-required",
+      "canonical_demo_dependency": true,
+      "required_evidence": "Record the license or redistribution permission for every upstream file, especially the reproduced anchors; decide whether the 100.2 MB nkonts_metrics_anchor.parquet belongs in the public repository.",
+      "notes": "processed.parquet is required by the API-free canonical demo; the large nkonts anchor is not."
+    },
+    {
+      "id": "tsmom-quantconnect-export",
+      "paths": [
+        "cases/tsmom/data/",
+        "cases/tsmom/results/sign_draws.csv",
+        "cases/tsmom/results_series.csv"
+      ],
+      "origin": "Seven roll-adjusted commodity contracts exported from QuantConnect and derived strategy outputs.",
+      "status": "license-review-required",
+      "canonical_demo_dependency": false,
+      "required_evidence": "Confirm that the QuantConnect data-provider terms permit committing and redistributing the exported historical panel and its derived series.",
+      "notes": "The export process and normalization are documented, but technical provenance is not a redistribution license."
+    },
+    {
+      "id": "french-public-factor-archive",
+      "paths": [
+        "cases/volatility_managed/source/"
+      ],
+      "origin": "Kenneth French Data Library daily five-factor archive, URL and hash recorded in the case SOURCES.md.",
+      "status": "license-review-required",
+      "canonical_demo_dependency": false,
+      "required_evidence": "Record the public data library's redistribution terms or replace the committed archive with a hash-verified download step.",
+      "notes": "Publicly downloadable is not automatically equivalent to permission to redistribute a copy."
+    }
+  ]
+}

@@ -1119,6 +1119,23 @@ def t_project_charter_fixes_application_scope():
         assert expected in charter, expected
 
 
+def t_publication_audit_covers_data_and_stays_human_gated():
+    """Every tracked data artifact is inventoried; unresolved permission cannot pass strict."""
+    import importlib.util
+    path = Path(ROOT) / "scripts" / "audit_publication.py"
+    spec = importlib.util.spec_from_file_location("publication_audit", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    report = module.audit(Path(ROOT))
+    assert report["summary"]["tracked_data_artifacts"] > 0
+    assert report["summary"]["uncovered_artifacts"] == 0
+    assert report["summary"]["obvious_secret_findings"] == 0
+    assert report["summary"]["unresolved_groups"] >= 3
+    assert not report["release_ready"], "human publication approval was silently inferred"
+    assert any(item["bytes"] >= 100_000_000 for item in report["large_artifacts"])
+
+
 def t_case_catalog_is_complete():
     """One inventory must cover every card and preserve the four source studies."""
     from verdict.catalog import (CASE_BY_ID, FOUNDATIONAL_CASES, FOUNDATIONAL_CASE_IDS,
@@ -1379,6 +1396,8 @@ GATES = [
     ("volatility-realtime-audit", t_volatility_realtime_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("project-charter-fixes-application-scope", t_project_charter_fixes_application_scope),
+    ("publication-audit-covers-data-and-stays-human-gated",
+     t_publication_audit_covers_data_and_stays_human_gated),
     ("case-catalog-is-complete", t_case_catalog_is_complete),
     ("case-result-manifests", t_case_result_manifests),
     ("repository-integrity-audit", t_repository_integrity_audit),
