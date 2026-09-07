@@ -19,7 +19,7 @@ gate live in [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md).
 - [x] Project owner confirmed on 2026-09-07 that the three internship-derived case groups are authorized for public release.
 - [x] Project owner confirmed that the applicable licenses explicitly permit public GitHub storage, download and redistribution of the three external-data groups.
 - [x] Record specific redistribution permission for the QuantConnect panel and reconstructable derivatives.
-- [x] Retain the 100.2 MB Complexity anchor in v1 as licensed appendix reproducibility evidence; it is not required by the canonical demo.
+- [x] Externalize the optional 100.2 MB Complexity metrics grid; retain compact cross-checks and the canonical-demo input.
 - [ ] Have one reader unfamiliar with the project complete the comprehension test below.
 
 ## Thirty-second / five-minute comprehension test

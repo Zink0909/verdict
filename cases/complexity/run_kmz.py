@@ -9,7 +9,9 @@ For each seed we draw one max-P feature matrix and use nested prefix columns
 for smaller P (interleaved sin/cos pairs stay matched), so the P-sweep is
 comparable within a seed.
 
-Anchor: nkonts metrics.parquet (their reproduced grid) at gamma=2, T=12.
+Optional cross-check: an external nkonts metrics.parquet grid at gamma=2, T=12.
+The 100 MB grid is not shipped because it is not needed to reproduce our sweep
+or the canonical Verdict demo.
 
 Usage:
   micromamba run -n verdict python run_kmz.py --quick     # smoke: 2 seeds, small grid
@@ -73,8 +75,12 @@ def run(seeds, p_grid, z_grid):
 
 
 def anchor_vs_nkonts(df):
-    """Compare our sweep with nkonts' reproduced grid at gamma=2, T=12."""
-    nk = pd.read_parquet(DATA / "nkonts_metrics_anchor.parquet")
+    """Compare our sweep with an optional external nkonts grid at gamma=2, T=12."""
+    anchor = DATA / "nkonts_metrics_anchor.parquet"
+    if not anchor.is_file():
+        print("\noptional nkonts metrics cross-check not installed; skipping")
+        return
+    nk = pd.read_parquet(anchor)
     nk = nk[(nk["gamma"] == 2) & (nk["T"] == 12)]
     if len(nk) == 0:
         print("no nkonts rows at gamma=2, T=12"); return

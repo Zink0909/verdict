@@ -1133,7 +1133,7 @@ def t_publication_audit_covers_and_approves_data():
     assert report["summary"]["obvious_secret_findings"] == 0
     assert report["summary"]["unresolved_groups"] == 0
     assert report["release_ready"], "recorded publication approval did not close the gate"
-    assert any(item["bytes"] >= 100_000_000 for item in report["large_artifacts"])
+    assert report["summary"]["large_artifacts"] == 0
 
 
 def t_case_catalog_is_complete():

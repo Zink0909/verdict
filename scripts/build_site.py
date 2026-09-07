@@ -690,13 +690,12 @@ def main() -> int:
     system_page = build_system_page(cards, links)
     (SITE / "index.html").write_text(system_page)
     (SITE / "registry.html").write_text(build_index(cards, links))
-    (SITE / "system.html").write_text(system_page)
     (SITE / "demo.html").write_text(build_demo_page())
     (SITE / "portfolio.html").write_text(build_portfolio_page(cards, links))
     (SITE / "appendix.html").write_text(build_appendix_page())
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = sorted(["index.html", "registry.html", "system.html", "demo.html", "portfolio.html", "appendix.html", "agent.html",
+    generated = sorted(["index.html", "registry.html", "demo.html", "portfolio.html", "appendix.html", "agent.html",
                         ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),

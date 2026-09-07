@@ -55,7 +55,7 @@
       "status": "approved",
       "canonical_demo_dependency": true,
       "required_evidence": "Project owner confirmed on 2026-09-07 that the applicable license explicitly permits these exact source and transformed artifacts to be stored, downloaded and redistributed through a public GitHub repository.",
-      "notes": "The 100.2 MB nkonts anchor is retained in v1 as an appendix reproducibility artifact under that permission; processed.parquet remains the smaller canonical-demo dependency."
+      "notes": "The 100.2 MB nkonts metrics grid was externalized during repository slimming because it is only an optional cross-check. processed.parquet remains the compact canonical-demo dependency."
     },
     {
       "id": "tsmom-quantconnect-export",

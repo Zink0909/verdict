@@ -42,7 +42,9 @@ micromamba run -n verdict python cases/complexity/make_figures.py
 - `results/M2_NOTES.md`, `results/M3_NOTES.md` — result records + audit
   observations accumulated for the verdict.
 - Data anchored to the original authors' `GYdata.mat`; cross-checked against two
-  independent open-source replications (zivmi, nkonts).
+  independent open-source replications (zivmi, nkonts). The 100 MB nkonts metrics
+  grid is an optional cross-check and is not shipped; the compact nkonts input
+  cross-check remains in `data/`.
 
 ## Headline numbers
 

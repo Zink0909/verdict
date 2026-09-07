@@ -15,8 +15,7 @@
     "demo.html",
     "index.html",
     "portfolio.html",
-    "registry.html",
-    "system.html"
+    "registry.html"
   ],
   "inputs": {
     "registry/buy-the-dip-long-calls.json": "2518542b7b1f9ae7c7874cda95ec241a7f0f3e39a214a13c4cf92c18ff07f96b",
@@ -40,7 +39,7 @@
     "cases/agent_benchmark/volatility-managed-realtime.json": "c96a966c8fc81b6d9135506c6605b38984cbd24b607b42f8a7588d4f2b63d874",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "9a7ad0c9c80452b893fa34b80e007c94592af1580892d2fee5dac8f96114ebb6",
+    "scripts/build_site.py": "27312c4cd774d780cd2309aee9beb7ee58b4e76985566183bb83a73a22012328",
     "verdict/catalog.py": "92bfe0830cdf95fe6603492c793ffcb284fb10528ef6932bd844f48251387038",
     "PROJECT_CHARTER.md": "eea24622bd2cfc8cf4b9d03e9ca7ed6ff935654d50064a2e7a7f0dab6a553ace",
     "app.py": "032ff238f5dcdf65058aa2a52f9a2ab9c30d0e52b6f01104a79cc06fcbd092e3",
@@ -48,8 +47,8 @@
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "agent.html": "8183cc76133a61eaa00c476a302dc5bc575130f73612398a12874fbdd0aa184b",
-    "appendix.html": "696ca22345a4bf927a8141713cfe18e1398589928dd9060cb994ba66203ba986",
+    "agent.html": "80011c785f877f07465050908325f4c792bd31107634ecd69c23a79a661c8311",
+    "appendix.html": "72d9b40de8d872852fc3c5da2429dbfb411d5548c129552c4c6625ded426b025",
     "cases/buy_the_dip.html": "35a56559e212a0a6772bd809827b7efb6f35c6257fd24dbd6ae676c138a91f88",
     "cases/chart_cnn.html": "800cf6f253f9db6b1ae26d44b925aa9ab8c1bb4e1eb8e26437015806d022965e",
     "cases/complexity.html": "9adaa18fb8f52002c78733d842653f39f41dcc5b9c13c4ecee9b8c806612527c",
@@ -58,10 +57,9 @@
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
     "cases/volatility_managed.html": "743fbce9152c631a03f2d663e3eeac404a233fc4cd4d04f9036f328ac9ee7531",
     "cases/volatility_realtime.html": "8961b0122f910344b9304b9ab214e8f8785bdcef5ad341bbc6ef73e8a6db86c4",
-    "demo.html": "5d068906c6f91cc62df17d22c0ad5985997578339acc122fd0e9b4a128c38145",
-    "index.html": "6ba0c86a322c6ef251432b9e51ebb7dd095dc4360fa73251a1b2a6d91127ba69",
-    "portfolio.html": "0138e56b045d5156fdd7946ff5b2426b081af7892c371666a120d3ac9cd3ab0c",
-    "registry.html": "c5c641d72e2e3bf6736c1a31461d9ac9383d4a9a9d1a03bc0bb5d7c6114ca042",
-    "system.html": "6ba0c86a322c6ef251432b9e51ebb7dd095dc4360fa73251a1b2a6d91127ba69"
+    "demo.html": "87d32a67de67fb185c975f9b9e6a1f5eb4219366bd6dd34cb31365bb9d9b8b63",
+    "index.html": "31a376c89f26f244ac5c755c7d89fb361f0eb730e350143d993df7d05e4d79fb",
+    "portfolio.html": "5a26aac407812ace52fd076c4501ce46f36cdae19a6c6e3e87f8b0ae22c437e8",
+    "registry.html": "1026a28d340fec19c7e4aa932e9cf53dbea7453b50e4de8cbd08be59d37c3af4"
   }
 }
