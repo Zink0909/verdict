@@ -90,7 +90,9 @@ The Complexity case is the principal technical demonstration because it runs
 the shared contract end to end and is recognizably an ML evaluation problem.
 Its presentation should be simplified before another principal case is added.
 
-The main interactive route is:
+The canonical page presents that prepared claim, fixed protocol, live battery,
+bounded verdict and evidence manifest without navigation. After completing it,
+the Core workbench exposes the same lifecycle as separate reusable actions:
 
 1. **New claim** — make the hypothesis and kill criteria explicit;
 2. **Evaluate a result** — run the deterministic validation battery;
@@ -105,7 +107,7 @@ The main interactive route is:
 - deterministic validation modules and known-answer controls;
 - Claim Card, Protocol, case contract and evidence modes;
 - the Complexity canonical case;
-- the three-step interactive route and public evidence register.
+- the single-page canonical demo, three Core workbench actions and public evidence register.
 
 ### Advanced
 

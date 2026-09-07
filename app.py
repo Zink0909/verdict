@@ -5,7 +5,7 @@
 The library underneath is the system; this is the interactive companion. The
 core workflow is deliberately smaller than the full project:
 
-  Start here       take the core three-minute path
+  Five-minute demo run one prepared claim from protocol to evidence
   New claim        draft a claim card and pre-register a protocol locally
   Evaluate         run the deterministic battery over a return series
   Evidence register inspect completed cases and their limitations
@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from verdict import costs as C          # noqa: E402
+from verdict import canonical_demo as CD  # noqa: E402
 from verdict import diagnose as D       # noqa: E402
 from verdict import evaluate as E       # noqa: E402
 from verdict import synthetic as S      # noqa: E402
@@ -114,43 +115,91 @@ def page_register() -> None:
 
 
 def page_start_here() -> None:
-    """A short, honest route through the interactive surface for a live demo."""
-    st.title("Start here")
-    st.caption("The core three-minute path — not a trading demo and not a tour of every feature.")
-    st.info("Verdict asks a narrow question: what evidence would make a predictive claim fail, "
-            "and can the result be checked afterwards? The interface is a working surface for "
-            "that question; it does not recommend trades or connect to a broker.")
+    """One prepared claim, executed and traced on a single API-free page."""
+    context = CD.load_context()
+    st.title("The five-minute demo")
+    st.caption("Four project lessons → one claim → fixed protocol → live checks → bounded verdict.")
+    st.info("This is an ML evidence demo, not a trading product. It uses a pinned public research "
+            "case, calls no LLM API, and makes no portfolio recommendation.")
 
-    st.subheader("1 · State a claim before touching data")
-    st.write("Draft a claim card and a protocol with explicit kill criteria. It saves as a "
-             "local draft, not as a published verdict.")
-    if st.button("Open New claim", type="primary"):
-        st.session_state["section"] = "Core · New claim"
-        st.rerun()
+    st.subheader("1 · What the four projects taught")
+    st.dataframe(pd.DataFrame(context["learning_map"]), hide_index=True, width="stretch")
+    st.write("The common lesson is that predictive performance is an evidence chain, not one metric.")
 
-    st.subheader("2 · Run the deterministic validation battery")
-    st.write("Use the built-in synthetic series or upload a dated return CSV. The library, "
-             "not this interface, computes time splits, spanning, bootstrap uncertainty, "
-             "cost sensitivity, and diagnosis playbooks.")
-    if st.button("Open Evaluate a result"):
-        st.session_state["section"] = "Core · Evaluate a result"
-        st.rerun()
+    st.subheader("2 · The prepared claim")
+    claim = context["claim"]
+    st.markdown(f"**{claim['source']}**")
+    st.write(claim["claimed_effect"])
+    with st.expander("Inspect the complete Claim Card"):
+        st.json(claim, expanded=True)
 
-    st.subheader("3 · Inspect a completed evidence record")
-    st.write("See how the same contract records the claim, protocol, execution mode, verdict, "
-             "and limitations. This is where a reader can distinguish a recomputation from a "
-             "read-only evidence replay or a data-gated protocol.")
-    if st.button("Open Evidence register"):
-        st.session_state["section"] = "Core · Evidence register"
-        st.rerun()
+    st.subheader("3 · Protocol fixed before execution")
+    protocol = context["protocol"]
+    for test in protocol["tests"]:
+        st.markdown(f"- {test}")
+    with st.expander("Inspect parameters, thresholds, and kill criterion"):
+        st.json(protocol, expanded=True)
+    st.caption("These arguments and thresholds are constants in `verdict/canonical_demo.py`; "
+               "the button below cannot tune them after seeing the result.")
 
-    st.subheader("Optional advanced material")
-    st.write("Audit a paper, the recorded Agent loop, and the hash-verified Evidence Vault are "
-             "implementation details. They are useful after you understand the core workflow; "
-             "only paper ingestion needs optional API credentials.")
+    if st.button("Run the fixed protocol", type="primary"):
+        with st.spinner("Running seven deterministic tool calls on the pinned dataset…"):
+            st.session_state["canonical_demo_run"] = CD.run()
 
-    st.caption("For the application-facing narrative, open `docs/index.html` or the GitHub "
-               "Pages site first. This local interface is the interactive companion.")
+    run = st.session_state.get("canonical_demo_run")
+    if not run:
+        st.caption("Expected runtime is several seconds on a laptop. No credentials or network "
+                   "connection are used.")
+        return
+
+    result = run["verdict"]
+    headline = result["headline"]
+    small, large = headline["small"], headline["large"]
+    kernel, destroyed = headline["kernel"], headline["destroy_information"]
+    st.subheader("4 · What the checks found")
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Timing Sharpe", f"{small['sharpe_annualized']:.2f} → {large['sharpe_annualized']:.2f}",
+              help="60 features to 1,200 features in the fixed 12-month configuration")
+    m2.metric("Kernel forecast correlation", f"{kernel['forecast_correlation']:.3f}")
+    m3.metric("Performance retained", f"{result['information_retention_ratio']:.0%}",
+              help="counterfactual Sharpe after predictor information is destroyed, divided by real-data Sharpe")
+
+    check_labels = {
+        "headline_direction_reproduced": "reported performance direction reproduces",
+        "formal_forecast_test_passed": "formal forecast comparison passes",
+        "kernel_equivalence": "mechanical kernel meets the pre-registered equivalence rule",
+        "information_survives_destruction": "performance survives destroyed predictor information",
+        "reversal_is_negative": "reversal world flips the performance sign",
+    }
+    st.dataframe(pd.DataFrame([
+        {"pre-registered check": check_labels[key], "result": "YES" if value else "NO"}
+        for key, value in result["checks"].items()
+    ]), hide_index=True, width="stretch")
+    with st.expander("Inspect every tool call and returned value"):
+        st.json(run["trace"], expanded=False)
+
+    st.subheader("5 · Bounded verdict")
+    st.warning(result["outcome"])
+    st.write(result["summary"])
+    st.markdown("**Honest limitations**")
+    for limitation in result["limitations"]:
+        st.markdown(f"- {limitation}")
+
+    evidence = context["evidence"]
+    verified = sum(item["verified"] for item in evidence["artifacts"])
+    st.subheader("6 · Inspect the evidence record")
+    if verified == len(evidence["artifacts"]):
+        st.success(f"{verified}/{len(evidence['artifacts'])} declared artifacts match their saved hashes.")
+    else:
+        st.error("The saved case manifest does not match the current repository artifacts.")
+    st.write(f"Published full-case record: **{context['published_verdict']['outcome']}**")
+    with st.expander("Artifact paths and SHA-256 digests"):
+        st.dataframe(pd.DataFrame(evidence["artifacts"]), hide_index=True, width="stretch")
+    st.download_button("Download this demo run (JSON)",
+                       json.dumps(run, indent=2), file_name="verdict-canonical-demo.json",
+                       mime="application/json")
+    st.caption("The full report is `cases/complexity/report.md`; the public evidence page is "
+               "`docs/cases/complexity.html`. Advanced pages remain available in the sidebar.")
 
 
 def page_new_claim() -> None:
@@ -695,7 +744,7 @@ def page_evidence_vault() -> None:
 
 
 PAGES = {
-    "Core · Start here": page_start_here,
+    "Core · Five-minute demo": page_start_here,
     "Core · New claim": page_new_claim,
     "Core · Evaluate a result": page_evaluate,
     "Core · Evidence register": page_register,
@@ -707,7 +756,7 @@ PAGES = {
 if st.session_state.get("section") not in PAGES:
     # A running Streamlit session can retain the pre-convergence navigation value.
     # Reset only unknown values so a deployed app upgrades without a widget error.
-    st.session_state["section"] = "Core · Start here"
+    st.session_state["section"] = "Core · Five-minute demo"
 
 with st.sidebar:
     st.markdown("## ⚖ Verdict")

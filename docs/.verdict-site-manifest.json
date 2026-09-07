@@ -40,9 +40,11 @@
     "cases/agent_benchmark/volatility-managed-realtime.json": "c96a966c8fc81b6d9135506c6605b38984cbd24b607b42f8a7588d4f2b63d874",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "1d78271cc3c290f2cb16a8c2708e44577e5a7656ab99e62aaf88db9161e288ee",
+    "scripts/build_site.py": "9a7ad0c9c80452b893fa34b80e007c94592af1580892d2fee5dac8f96114ebb6",
     "verdict/catalog.py": "92bfe0830cdf95fe6603492c793ffcb284fb10528ef6932bd844f48251387038",
-    "PROJECT_CHARTER.md": "099062972be05902fd11336c8053eb1cdb3c1300a2be8e69555935cba4e83606"
+    "PROJECT_CHARTER.md": "eea24622bd2cfc8cf4b9d03e9ca7ed6ff935654d50064a2e7a7f0dab6a553ace",
+    "app.py": "032ff238f5dcdf65058aa2a52f9a2ab9c30d0e52b6f01104a79cc06fcbd092e3",
+    "verdict/canonical_demo.py": "1a1b4320dc47ef3fd15e90e2e1328d6fee215b54d86d778a8535c204cd1149b3"
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -56,9 +58,9 @@
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
     "cases/volatility_managed.html": "743fbce9152c631a03f2d663e3eeac404a233fc4cd4d04f9036f328ac9ee7531",
     "cases/volatility_realtime.html": "8961b0122f910344b9304b9ab214e8f8785bdcef5ad341bbc6ef73e8a6db86c4",
-    "demo.html": "0c51347de824cd63fa3b38a8f0ec8c96e83d6c36a0c12286584a3e9d1184bc57",
+    "demo.html": "5d068906c6f91cc62df17d22c0ad5985997578339acc122fd0e9b4a128c38145",
     "index.html": "6ba0c86a322c6ef251432b9e51ebb7dd095dc4360fa73251a1b2a6d91127ba69",
-    "portfolio.html": "3b377c00bfd41c986190461c709b137cfc1f8fd653cf7243a9ad509a75b8fa11",
+    "portfolio.html": "0138e56b045d5156fdd7946ff5b2426b081af7892c371666a120d3ac9cd3ab0c",
     "registry.html": "c5c641d72e2e3bf6736c1a31461d9ac9383d4a9a9d1a03bc0bb5d7c6114ca042",
     "system.html": "6ba0c86a322c6ef251432b9e51ebb7dd095dc4360fa73251a1b2a6d91127ba69"
   }

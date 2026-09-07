@@ -41,6 +41,7 @@ rest is available as advanced implementation material:
 
 | | |
 |---|---|
+| **Core: Five-minute demo** | run the prepared Complexity claim from its fixed protocol through live deterministic checks to a bounded verdict and verified evidence manifest, without an API key. |
 | **Core: New claim** | fill in a Claim Card and pre-register a local protocol draft. If you cannot write a result that would falsify the claim, it is not testable. A draft is not silently published. |
 | **Core: Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, diagnosis playbooks, sealed-holdout ledger, and a verdict document that will not render without limitations. |
 | **Core: Evidence register** | every adjudicated claim, its protocol, verdict, execution mode, and limitations. |
@@ -51,14 +52,16 @@ rest is available as advanced implementation material:
 The interface computes nothing. It collects inputs, calls the library, and shows what came
 back — so there is one source of truth, and it is the part with the tests.
 
-## A three-minute demo
+## A five-minute demo
 
 Open the public [system overview](https://zink0909.github.io/verdict/) first, then follow
-the [guided tour](https://zink0909.github.io/verdict/demo.html): system origin → claim
-register → one evidence case → recorded Agent loop. For a live demo, run
-`micromamba run -n verdict streamlit run app.py` and use **Start here**. It guides a viewer
-through a local protocol draft, the deterministic CSV evaluation battery, and the Agent
-boundary. The interactive surface is research infrastructure, not a trading interface.
+the [guided tour](https://zink0909.github.io/verdict/demo.html): system origin → the
+principal evidence case → its bounded conclusion. For a live demo, run
+`micromamba run -n verdict streamlit run app.py` and use **Core · Five-minute demo**.
+One page shows the four source-project lessons, prepared claim, fixed protocol, seven live
+deterministic checks, bounded verdict, limitations, and verified artifact manifest. It needs
+no API key or network connection. The interactive surface is research infrastructure, not a
+trading interface.
 
 For a presentation-ready route, use the public
 [portfolio briefing](https://zink0909.github.io/verdict/portfolio.html). It gives a bounded

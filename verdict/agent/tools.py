@@ -27,6 +27,7 @@ from .. import synthetic as S
 CASE_DATA = Path(__file__).resolve().parents[2] / "cases" / "complexity" / "data" / "processed.parquet"
 GAMMA = 2.0
 _CACHE: dict[str, tuple] = {}
+_REAL_STRATEGY_CACHE: dict[tuple[int, int, float, int], tuple[np.ndarray, np.ndarray]] = {}
 
 
 def _load() -> tuple[np.ndarray, np.ndarray, pd.Index]:
@@ -48,6 +49,15 @@ def _strategy(X, R, P: int, T: int, z: float, seeds: int):
     return fc * R, fc
 
 
+def _real_strategy(P: int, T: int, z: float, seeds: int):
+    """Reuse an identical real-data fit across tools in one process."""
+    key = (P, T, float(z), seeds)
+    if key not in _REAL_STRATEGY_CACHE:
+        X, R, _ = _load()
+        _REAL_STRATEGY_CACHE[key] = _strategy(X, R, P, T, z, seeds)
+    return _REAL_STRATEGY_CACHE[key]
+
+
 # --------------------------------------------------------------- the tools ----
 
 def describe_dataset() -> dict:
@@ -62,7 +72,7 @@ def describe_dataset() -> dict:
 def run_complex_model(n_features: int, window: int, shrinkage: float, seeds: int = 3) -> dict:
     """Fit the over-parameterized model in rolling windows and time the market with it."""
     X, R, _ = _load()
-    strat, fc = _strategy(X, R, n_features, window, shrinkage, seeds)
+    strat, fc = _real_strategy(n_features, window, shrinkage, seeds)
     m = ~np.isnan(strat)
     return {"n_features": n_features, "window": window, "shrinkage": shrinkage, "seeds": seeds,
             "sharpe_annualized": round(E.sharpe(pd.Series(strat[m])), 4),
@@ -75,7 +85,7 @@ def kernel_equivalence_check(window: int, n_features: int = 2000, seeds: int = 2
     X, R, _ = _load()
     ker = D.kernel_ridgeless_forecast(X, R, T=window, gamma=GAMMA)
     strat_k = ker["forecast"] * R
-    strat_m, fc_m = _strategy(X, R, n_features, window, 1e-3, seeds)
+    strat_m, fc_m = _real_strategy(n_features, window, 1e-3, seeds)
     m = ~np.isnan(fc_m) & ~np.isnan(ker["forecast"])
     span = E.spanning(pd.Series(strat_m[m]), pd.DataFrame({"kernel": strat_k[m]}))
     return {"window": window, "n_features_compared": n_features,
@@ -98,7 +108,7 @@ def counterfactual_world(kind: str, n_features: int, window: int, draws: int = 4
     and heteroskedasticity: a model using that information should collapse.
     """
     X, R, _ = _load()
-    base, _ = _strategy(X, R, n_features, window, 1e-3, seeds)
+    base, _ = _real_strategy(n_features, window, 1e-3, seeds)
     bm = ~np.isnan(base)
     out = []
     for d in range(draws):
@@ -121,7 +131,7 @@ def counterfactual_world(kind: str, n_features: int, window: int, draws: int = 4
 def forecast_comparison_test(n_features: int, window: int, seeds: int = 2) -> dict:
     """Formal test of whether the complex forecast beats the no-predictability benchmark."""
     X, R, _ = _load()
-    _, fc = _strategy(X, R, n_features, window, 1e-3, seeds)
+    _, fc = _real_strategy(n_features, window, 1e-3, seeds)
     m = ~np.isnan(fc)
     cw = E.clark_west(R[m], np.zeros(m.sum()), fc[m])
     return {"n_features": n_features, "window": window,

@@ -993,6 +993,34 @@ def t_agent_protocol_benchmark():
         assert expected in report, expected
 
 
+def t_canonical_demo_contract():
+    """The main demo has a fixed rule, bounded language, and verified evidence."""
+    from verdict import canonical_demo
+    context = canonical_demo.load_context(Path(ROOT))
+    assert context["case_id"] == "complexity-voc"
+    assert len(context["learning_map"]) == 4
+    assert all(item["verified"] for item in context["evidence"]["artifacts"])
+    trace = [
+        {"tool": "run_complex_model", "result": {"sharpe_annualized": 0.20}},
+        {"tool": "run_complex_model", "result": {"sharpe_annualized": 0.30}},
+        {"tool": "forecast_comparison_test",
+         "result": {"rejects_equal_accuracy_5pct": True}},
+        {"tool": "kernel_equivalence_check",
+         "result": {"forecast_correlation": 0.91, "kernel_spans_r2": 0.86,
+                    "residual_alpha_t": 0.5}},
+        {"tool": "counterfactual_world",
+         "result": {"kind": "reversal", "share_negative": 1.0}},
+        {"tool": "counterfactual_world",
+         "result": {"kind": "destroy_information", "sharpe_real_data": 0.30,
+                    "sharpe_counterfactual_mean": 0.24}},
+    ]
+    verdict = canonical_demo.adjudicate(trace)
+    assert verdict["state"] == "bounded-verdict-delivered"
+    assert verdict["information_retention_ratio"] == 0.8
+    assert "LEARNED-SIGNAL INTERPRETATION NOT SUPPORTED" in verdict["outcome"]
+    assert len(verdict["limitations"]) >= 3
+
+
 def t_volatility_managed_public_data_audit():
     """The new paper case is deterministic and does not promote a Sharpe comparison to alpha."""
     import importlib.util
@@ -1062,7 +1090,8 @@ def t_site_index_covers_registry():
     assert "Chart-CNN stock selection" in system
     assert 'href="registry.html"' in system
     demo = build_site.build_demo_page()
-    assert "See the system in three minutes" in demo
+    assert "See the system in five minutes" in demo
+    assert "seven deterministic checks" in demo
     assert "streamlit run app.py" in demo
     portfolio = build_site.build_portfolio_page(cards, links)
     assert "One system, assembled from four research studies" in portfolio
@@ -1174,7 +1203,7 @@ def t_app_pages_render():
     at = AppTest.from_file(os.path.join(ROOT, "app.py"), default_timeout=120)
     at.run()
     assert not at.exception, [e.value for e in at.exception]
-    for page in ("Core · Start here", "Core · New claim", "Core · Evaluate a result",
+    for page in ("Core · Five-minute demo", "Core · New claim", "Core · Evaluate a result",
                  "Core · Evidence register", "Advanced · Audit a paper",
                  "Advanced · Evidence vault", "Advanced · Recorded Agent"):
         at.sidebar.radio[0].set_value(page).run()
@@ -1345,6 +1374,7 @@ GATES = [
     ("agent-vault-verifies-compares-exports", t_agent_vault_verifies_compares_exports),
     ("agent-eval-scoring", t_agent_eval_scoring),
     ("agent-protocol-benchmark", t_agent_protocol_benchmark),
+    ("canonical-demo-contract", t_canonical_demo_contract),
     ("volatility-managed-public-data-audit", t_volatility_managed_public_data_audit),
     ("volatility-realtime-audit", t_volatility_realtime_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),

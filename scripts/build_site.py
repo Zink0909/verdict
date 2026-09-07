@@ -393,12 +393,12 @@ requires it. Start with the <a href="portfolio.html">five-minute route</a>; use 
 
 
 def build_demo_page() -> str:
-    """A self-contained viewing route that distinguishes static evidence from local UI."""
+    """A self-contained five-minute route that distinguishes static evidence from local UI."""
     return page(
-        "Verdict — a three-minute demo",
+        "Verdict — a five-minute demo",
         f"""{nav("interactive demo")}
 <p class="kicker">guided tour</p>
-<h1>See the system in three minutes.</h1>
+<h1>See the system in five minutes.</h1>
 <p class="lede">This is a research-validation workflow: define what would falsify a claim,
 run deterministic checks, preserve evidence, and publish a bounded verdict. It is not a
 trading terminal or an automated investment adviser.</p>
@@ -417,7 +417,7 @@ register</a> then shows that the same evidence contract is applied across the re
 library. A case is executable, a labelled read-only replay of pinned evidence, or data-gated;
 no mode is silently promoted to another.</p>
 
-<h2>Minute 3 · Inspect the workflow boundary</h2>
+<h2>Minutes 3–5 · Inspect the workflow boundary</h2>
 <p>Open <a href="appendix.html#agent">the recorded Agent loop</a>. It turns a paper into a structured claim, drafts a
 falsifiable protocol, waits for human approval, calls deterministic tools, and writes a
 verdict whose figures are checked against tool output. The demo also exposes what its
@@ -425,13 +425,16 @@ evaluation did <em>not</em> measure.</p>
 
 <h2>Interactive companion: run locally</h2>
 <p>The GitHub Pages site is intentionally static: it is the shareable evidence layer. The
-interactive working surface runs locally and has a guided <em>Start here</em> screen:</p>
+interactive working surface runs locally and has a single-page <em>Core · Five-minute demo</em>:</p>
 <pre>micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .
 micromamba run -n verdict streamlit run app.py</pre>
-<p>From there, create a local protocol draft, upload a dated return CSV or use the synthetic
-control, run the validation battery, and inspect the recorded Agent loop. The local
-<em>Audit a paper</em> page also accepts pasted text or `.txt` / `.md` / `.pdf` uploads:
+<p>The canonical page needs no API key: it loads the prepared Complexity Claim Card and fixed
+Protocol, runs seven deterministic checks against the pinned dataset, applies pre-written
+decision thresholds, reports a bounded Verdict with limitations, and verifies the saved
+artifact hashes without navigating elsewhere. The separate Core workbench pages then allow a
+reader to draft a new protocol, evaluate a dated return series, or inspect the register. The
+advanced <em>Audit a paper</em> page also accepts pasted text or `.txt` / `.md` / `.pdf` uploads:
 it extracts a Claim Card and protocol, then either uses a genuinely matching provider, evaluates
 a supplied dated return/benchmark CSV with clearly bounded deterministic tools, or stops at
 data-gated. CSV evaluation does not reproduce the paper's strategy or prove its source data is
@@ -495,11 +498,10 @@ approved protocol without a verdict. Every case page carries claim, protocol, ou
 limitations, artifacts, and execution mode.</p>
 
 <h2>The interactive proof — 90 seconds</h2>
-<p>Run the local working surface and follow <em>Start here</em>. The offline Complexity walkthrough
-demonstrates the full Agent loop. For a new paper, the paper route turns text into a Claim Card
-and protocol, waits for approval, and either runs a matching provider, evaluates a user-supplied
-dated return CSV with explicit boundaries, or stops data-gated. The Evidence Vault then hashes,
-reviews, compares, and exports the local audit package.</p>
+<p>Run the local working surface and open <em>Core · Five-minute demo</em>. It executes the
+prepared Complexity claim from fixed protocol through seven deterministic checks, bounded
+Verdict, limitations, and artifact verification on one page, without an API key. Paper
+ingestion, the recorded Agent loop, and the Evidence Vault remain optional Advanced material.</p>
 <pre>micromamba run -n verdict streamlit run app.py</pre>
 
 <h2>What this project demonstrates</h2>
@@ -702,7 +704,8 @@ def main() -> int:
                     ROOT / "cases/complexity/agent_run/run.json",
                     ROOT / "cases/complexity/agent_eval/report.md",
                     ROOT / "scripts/build_site.py", ROOT / "verdict/catalog.py",
-                    ROOT / "PROJECT_CHARTER.md"]
+                    ROOT / "PROJECT_CHARTER.md", ROOT / "app.py",
+                    ROOT / "verdict/canonical_demo.py"]
     source_paths = [path for path in source_paths if path.is_file()]
     manifest = {
         "schema_version": 2,
