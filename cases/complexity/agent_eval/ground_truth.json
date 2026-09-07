@@ -1,7 +1,7 @@
 {
   "claim": "complexity-voc",
   "what_this_is": "The checks that published human auditors actually performed on this claim, plus the checks any competent evaluation protocol should contain. An agent that reads only the original paper is scored against this list.",
-  "provenance": "Assembled from the two published critiques of the claim (a mechanism critique and an implementation critique) and from standard forecast-evaluation practice, as recorded in CASE_COMPLEXITY_PLAN.md section 8. Assembled after the fact, so it reflects a judgment about what mattered.",
+  "provenance": "Assembled from the two published critiques of the claim (a mechanism critique and an implementation critique) and from standard forecast-evaluation practice, as recorded in the internal Complexity planning record. Assembled after the fact, so it reflects a judgment about what mattered.",
   "items": [
     {
       "id": "kernel-equivalence",

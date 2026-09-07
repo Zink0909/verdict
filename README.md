@@ -19,16 +19,16 @@ component here ships with a control proving it can detect an effect that is real
 present.
 
 The graduate-application scope is fixed in the
-[`PROJECT_CHARTER.md`](PROJECT_CHARTER.md): it defines the learning argument,
+[`PROJECT_CHARTER.md`](governance/PROJECT_CHARTER.md): it defines the learning argument,
 canonical five-minute path, non-goals, completion criteria, and the gate every
 proposed addition must pass.
 
-Release readiness is tracked in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+Release readiness is tracked in [`RELEASE_CHECKLIST.md`](governance/RELEASE_CHECKLIST.md).
 `scripts/audit_publication.py` covers every committed data-like artifact and
 fails strictly until provenance, redistribution, and internship-owner decisions
 are documented; an automated scanner is never treated as permission to publish.
 The conservative source review and required sanitization sequence are recorded
-in [`DATA_PUBLICATION_REVIEW.md`](DATA_PUBLICATION_REVIEW.md).
+in [`DATA_PUBLICATION_REVIEW.md`](governance/DATA_PUBLICATION_REVIEW.md).
 
 ```bash
 micromamba env create -f environment.yml
@@ -38,6 +38,18 @@ micromamba run -n verdict streamlit run app.py          # the working surface
 micromamba run -n verdict python scripts/regress.py     # known-answer gates, seconds
 micromamba run -n verdict python scripts/run_case.py --all --verify
 micromamba run -n verdict python scripts/audit_integrity.py
+```
+
+## Repository layout
+
+```text
+app.py        Streamlit entry point
+verdict/      reusable validation and Agent library
+cases/        case-specific data, code and evidence
+registry/     machine-readable claim and verdict cards
+scripts/      build, regression, integrity and release commands
+docs/         generated GitHub Pages site
+governance/   fixed scope, release checklist and publication approvals
 ```
 
 ## The working surface

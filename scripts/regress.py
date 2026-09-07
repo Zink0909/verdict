@@ -1103,7 +1103,7 @@ def t_site_index_covers_registry():
 
 def t_project_charter_fixes_application_scope():
     """The admissions narrative and its anti-scope-creep boundary are executable invariants."""
-    charter = (Path(ROOT) / "PROJECT_CHARTER.md").read_text()
+    charter = (Path(ROOT) / "governance" / "PROJECT_CHARTER.md").read_text()
     for expected in (
         "predictive-ML evidence system",
         "Chart-CNN stock selection",

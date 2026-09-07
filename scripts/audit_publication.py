@@ -8,7 +8,7 @@ must have documented approval.
 
 This scanner cannot determine contractual permission, recognize all PII, or
 prove that a derived dataset is non-confidential.  Those are explicit human
-sign-offs in ``publication_data.json`` rather than conclusions inferred from a
+sign-offs in ``governance/publication_data.json`` rather than conclusions inferred from a
 regex.
 """
 from __future__ import annotations
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MANIFEST = ROOT / "publication_data.json"
+MANIFEST = ROOT / "governance" / "publication_data.json"
 DATA_SUFFIXES = {".csv", ".xlsx", ".xls", ".mat", ".parquet", ".zip", ".pdf"}
 SECRET_PATTERNS = {
     "private-key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
@@ -64,7 +64,7 @@ def scan_secrets(root: Path, paths: list[str]) -> list[dict]:
 
 
 def audit(root: Path = ROOT) -> dict:
-    manifest = json.loads((root / "publication_data.json").read_text())
+    manifest = json.loads((root / "governance" / "publication_data.json").read_text())
     if manifest.get("schema_version") != 1:
         raise ValueError("publication manifest schema must be 1")
     allowed = set(manifest.get("allowed_statuses", []))

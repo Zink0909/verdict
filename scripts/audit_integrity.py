@@ -146,7 +146,7 @@ def _site_manifest(manifest: dict, root: Path) -> str:
                        root / "cases/complexity/agent_run/run.json",
                        root / "cases/complexity/agent_eval/report.md",
                        root / "scripts/build_site.py", root / "verdict/catalog.py",
-                       root / "PROJECT_CHARTER.md", root / "app.py",
+                       root / "governance/PROJECT_CHARTER.md", root / "app.py",
                        root / "verdict/canonical_demo.py"]
     expected_inputs = {str(path.relative_to(root)): _digest(path)
                        for path in expected_inputs if path.is_file()}

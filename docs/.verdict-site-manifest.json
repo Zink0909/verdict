@@ -39,9 +39,9 @@
     "cases/agent_benchmark/volatility-managed-realtime.json": "c96a966c8fc81b6d9135506c6605b38984cbd24b607b42f8a7588d4f2b63d874",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "27312c4cd774d780cd2309aee9beb7ee58b4e76985566183bb83a73a22012328",
+    "scripts/build_site.py": "2efa75a463e1c53c835e6df13fe0730a9a605fcede0b4c292b5e9bb281629268",
     "verdict/catalog.py": "92bfe0830cdf95fe6603492c793ffcb284fb10528ef6932bd844f48251387038",
-    "PROJECT_CHARTER.md": "eea24622bd2cfc8cf4b9d03e9ca7ed6ff935654d50064a2e7a7f0dab6a553ace",
+    "governance/PROJECT_CHARTER.md": "eea24622bd2cfc8cf4b9d03e9ca7ed6ff935654d50064a2e7a7f0dab6a553ace",
     "app.py": "032ff238f5dcdf65058aa2a52f9a2ab9c30d0e52b6f01104a79cc06fcbd092e3",
     "verdict/canonical_demo.py": "1a1b4320dc47ef3fd15e90e2e1328d6fee215b54d86d778a8535c204cd1149b3"
   },
@@ -58,7 +58,7 @@
     "cases/volatility_managed.html": "743fbce9152c631a03f2d663e3eeac404a233fc4cd4d04f9036f328ac9ee7531",
     "cases/volatility_realtime.html": "8961b0122f910344b9304b9ab214e8f8785bdcef5ad341bbc6ef73e8a6db86c4",
     "demo.html": "87d32a67de67fb185c975f9b9e6a1f5eb4219366bd6dd34cb31365bb9d9b8b63",
-    "index.html": "31a376c89f26f244ac5c755c7d89fb361f0eb730e350143d993df7d05e4d79fb",
+    "index.html": "ffbf3995f85293c3d8f0e2bd9e88bef4b662bf25e96ffb60423535f8297181d5",
     "portfolio.html": "5a26aac407812ace52fd076c4501ce46f36cdae19a6c6e3e87f8b0ae22c437e8",
     "registry.html": "1026a28d340fec19c7e4aa932e9cf53dbea7453b50e4de8cbd08be59d37c3af4"
   }

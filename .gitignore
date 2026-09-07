@@ -6,13 +6,5 @@ __pycache__/
 .ipynb_checkpoints/
 # large intermediate data kept but heavy re-derivables ignored
 
-# private application material — never publish
-_private/
-
-# internal handoff docs — kept in place for future sessions, never published
-# (they carry the author's name, the source firm, the mentor, and application details)
-/SYSTEM_PROPOSAL.md
-/SYSTEM_PROPOSAL.html
-/CASE_COMPLEXITY_PLAN.md
-/CASE_COMPLEXITY_PLAN.html
-/CLAUDE.md
+# private application material and archived handoff notes — never publish
+.private/

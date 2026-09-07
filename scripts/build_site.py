@@ -349,7 +349,7 @@ only through deterministic code, and preserve the evidence and limits of the con
 <td>Agent, Evidence Vault, extra cases, and benchmark machinery remain inspectable without competing with the main story.</td></tr>
 </table></div>
 <p>The graduate-application scope, non-goals, and completion gate are fixed in the
-<a href="https://github.com/Zink0909/verdict/blob/main/PROJECT_CHARTER.md">project charter</a>.</p>
+<a href="https://github.com/Zink0909/verdict/blob/main/governance/PROJECT_CHARTER.md">project charter</a>.</p>
 
 <h2>Where the framework came from</h2>
 <p>The source studies are not decorative portfolio entries. Each left behind a reusable
@@ -703,7 +703,7 @@ def main() -> int:
                     ROOT / "cases/complexity/agent_run/run.json",
                     ROOT / "cases/complexity/agent_eval/report.md",
                     ROOT / "scripts/build_site.py", ROOT / "verdict/catalog.py",
-                    ROOT / "PROJECT_CHARTER.md", ROOT / "app.py",
+                    ROOT / "governance/PROJECT_CHARTER.md", ROOT / "app.py",
                     ROOT / "verdict/canonical_demo.py"]
     source_paths = [path for path in source_paths if path.is_file()]
     manifest = {
