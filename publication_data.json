@@ -16,10 +16,10 @@
         "cases/buy_the_dip/results_robustness.csv"
       ],
       "origin": "Derived and exported records from the completed Buy the Dip internship/research study; the README states that real daily option chains and raw fundamentals were used.",
-      "status": "owner-confirmation-required",
+      "status": "approved",
       "canonical_demo_dependency": false,
-      "required_evidence": "Owner confirms that the committed rows are permitted for public redistribution and contain no employer/client-confidential fields; vendor-data terms are checked separately.",
-      "notes": "A reproducible audit does not itself grant permission to republish the underlying or derived vendor data."
+      "required_evidence": "Project owner confirmed on 2026-09-07 that the internship-derived project material may be made public. Any separately sourced vendor data remains governed by its own license.",
+      "notes": "Owner publication confirmation is recorded; this approval does not override a third-party vendor license."
     },
     {
       "id": "vol-harvest-source-study",
@@ -27,10 +27,10 @@
         "cases/vol_harvest/data/"
       ],
       "origin": "Model grids and recorded real-chain results recovered from the completed source study's authority documents; raw platform logs were not retained.",
-      "status": "owner-confirmation-required",
+      "status": "approved",
       "canonical_demo_dependency": false,
-      "required_evidence": "Owner confirms public-release permission for the source-study outputs and that no employer/client identifiers or restricted platform data are exposed.",
-      "notes": "The files are evidence replay, not raw-chain recomputation."
+      "required_evidence": "Project owner confirmed on 2026-09-07 that the internship-derived project material may be made public. Any separately sourced vendor data remains governed by its own license.",
+      "notes": "Owner publication confirmation is recorded. The files are evidence replay, not raw-chain recomputation."
     },
     {
       "id": "distribution-shift-source-study",
@@ -39,10 +39,10 @@
         "cases/drift/results_rolling.csv"
       ],
       "origin": "Saved series from a completed study of a deployed dealer-gamma feature and an intraday rule.",
-      "status": "owner-confirmation-required",
+      "status": "approved",
       "canonical_demo_dependency": false,
-      "required_evidence": "Owner confirms that public release of the deployed-feature, prediction and rolling-metric series is authorized and sufficiently de-identified.",
-      "notes": "This is the highest confidentiality-risk group because it represents deployed-study behavior rather than a public paper reproduction."
+      "required_evidence": "Project owner confirmed on 2026-09-07 that the internship-derived project material may be made public, including the de-identified saved series committed here.",
+      "notes": "Owner publication and de-identification confirmation is recorded; this approval does not override a third-party vendor license."
     },
     {
       "id": "complexity-public-reproduction",
