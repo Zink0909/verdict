@@ -14,9 +14,11 @@ gate live in [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md).
 
 ## Human publication decisions
 
+- [x] Complete a source-and-license evidence review; see [`DATA_PUBLICATION_REVIEW.md`](DATA_PUBLICATION_REVIEW.md).
 - [ ] Resolve every group reported by `python scripts/audit_publication.py --strict`.
 - [ ] Confirm that the three internship-derived case groups are authorized for public release.
 - [ ] Record redistribution permission or replace redistributed vendor/public files with lawful download instructions.
+- [ ] Remove the QuantConnect panel and reconstructable derivatives from the public tree and public Git history, or record written permission for the exact artifacts.
 - [ ] Decide whether to retain or externalize the 100.2 MB Complexity anchor.
 - [ ] Have one reader unfamiliar with the project complete the comprehension test below.
 

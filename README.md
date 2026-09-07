@@ -27,6 +27,8 @@ Release readiness is tracked in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 `scripts/audit_publication.py` covers every committed data-like artifact and
 fails strictly until provenance, redistribution, and internship-owner decisions
 are documented; an automated scanner is never treated as permission to publish.
+The conservative source review and required sanitization sequence are recorded
+in [`DATA_PUBLICATION_REVIEW.md`](DATA_PUBLICATION_REVIEW.md).
 
 ```bash
 micromamba env create -f environment.yml

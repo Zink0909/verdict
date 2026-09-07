@@ -4,7 +4,8 @@
   "allowed_statuses": [
     "approved",
     "owner-confirmation-required",
-    "license-review-required"
+    "license-review-required",
+    "public-removal-required"
   ],
   "groups": [
     {
@@ -64,10 +65,10 @@
         "cases/tsmom/results_series.csv"
       ],
       "origin": "Seven roll-adjusted commodity contracts exported from QuantConnect and derived strategy outputs.",
-      "status": "license-review-required",
+      "status": "public-removal-required",
       "canonical_demo_dependency": false,
-      "required_evidence": "Confirm that the QuantConnect data-provider terms permit committing and redistributing the exported historical panel and its derived series.",
-      "notes": "The export process and normalization are documented, but technical provenance is not a redistribution license."
+      "required_evidence": "Remove the exported panel and reconstructable derived series from the public repository and its public Git history, or obtain written redistribution permission covering these exact artifacts.",
+      "notes": "QuantConnect's official licensing page says most datasets cannot be freely redistributed and downloaded data cannot be redistributed or converted in any format. Technical provenance is not a redistribution license."
     },
     {
       "id": "french-public-factor-archive",
