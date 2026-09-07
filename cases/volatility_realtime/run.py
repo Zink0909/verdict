@@ -47,7 +47,8 @@ def _summary(returns: pd.Series) -> dict:
             "mean_ci_95": list(mean_ci), "sharpe_ci_95": list(sharpe_ci)}
 
 
-def execute() -> dict:
+def execute(*, write: bool = False) -> dict:
+    """Compute the bounded audit; persist only when a caller explicitly requests it."""
     daily = managed_case.load_daily_market()
     monthly, scale = managed_case.make_managed_returns(
         managed_case.monthly_market_with_lagged_variance(daily))
@@ -124,9 +125,10 @@ def execute() -> dict:
             ],
         },
     }
-    OUT.write_text(json.dumps(results, indent=2, allow_nan=False) + "\n")
+    if write:
+        OUT.write_text(json.dumps(results, indent=2, allow_nan=False) + "\n")
     return results
 
 
 if __name__ == "__main__":
-    print(json.dumps(execute()["evaluation"], indent=2))
+    print(json.dumps(execute(write=True)["evaluation"], indent=2))

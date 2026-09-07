@@ -103,7 +103,8 @@ def _summary(returns: pd.Series) -> dict:
             "mean_ci_95": list(mean_ci), "sharpe_ci_95": list(sharpe_ci)}
 
 
-def execute() -> dict:
+def execute(*, write: bool = False) -> dict:
+    """Compute the bounded audit; persist only when a caller explicitly requests it."""
     daily = load_daily_market()
     monthly, scale = make_managed_returns(monthly_market_with_lagged_variance(daily))
     calibration = monthly.loc[monthly.index <= CALIBRATION_END]
@@ -149,10 +150,11 @@ def execute() -> dict:
             ],
         },
     }
-    OUT.write_text(json.dumps(results, indent=2, allow_nan=False) + "\n")
+    if write:
+        OUT.write_text(json.dumps(results, indent=2, allow_nan=False) + "\n")
     return results
 
 
 if __name__ == "__main__":
-    result = execute()
+    result = execute(write=True)
     print(json.dumps(result["holdout"], indent=2))
