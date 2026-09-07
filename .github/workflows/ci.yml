@@ -25,6 +25,8 @@ jobs:
         run: python scripts/regress.py
       - name: Verify repository evidence chain
         run: python scripts/audit_integrity.py
+      - name: Verify public-data publication approvals
+        run: python scripts/audit_publication.py --strict
       - name: Execute the API-free canonical demo
         run: |
           python - <<'PY'

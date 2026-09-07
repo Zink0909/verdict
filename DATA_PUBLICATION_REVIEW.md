@@ -14,9 +14,9 @@ Run `python scripts/audit_publication.py --strict` before any public release tag
 | Buy the Dip internship study | On 2026-09-07 the project owner confirmed that the internship-derived project material may be made public. | Approved for the owner's publication decision. Separately sourced vendor data remains subject to its own license. |
 | Vol Harvest internship study | On 2026-09-07 the project owner confirmed that the internship-derived project material may be made public. | Approved for the owner's publication decision. Separately sourced vendor data remains subject to its own license. |
 | Distribution Shift internship study | On 2026-09-07 the project owner confirmed that the internship-derived project material, including the de-identified saved series committed here, may be made public. | Approved for the owner's publication and de-identification decision. Separately sourced vendor data remains subject to its own license. |
-| Complexity reproduction | `zivmi/voc_reproduction` declares MIT for its repository, but its input data originate elsewhere. The `nkonts` repository exposes no license in its root, and no upstream redistribution permission is recorded here for Goyal data or the authors' anchor. | Do not infer data rights from the code license. Replace redistributed upstream files with lawful download instructions or obtain permission. Retain `processed.parquet` only after its derived-data status is reviewed. Externalize the 100.2 MB `nkonts_metrics_anchor.parquet`; it is not needed by the canonical demo. |
-| QuantConnect TSMOM export | QuantConnect says most hosted datasets cannot be freely redistributed and that downloaded data cannot be redistributed or converted in any format. | **Public removal required** for `panel.csv` and reconstructable derived series unless written permission covers the exact files. |
-| Kenneth French factor archive | The official library makes the archive downloadable and labels the site copyright, but this review found no explicit redistribution license. | Replace the committed ZIP with a hash-pinned download step unless written permission is obtained. |
+| Complexity reproduction | Public pages alone did not establish redistribution rights for every upstream artifact. On 2026-09-07 the project owner confirmed that the applicable license explicitly covers storing, downloading and redistributing these exact source and transformed files through public GitHub. | Approved on the owner's specific-license attestation. Retain the 100.2 MB anchor in v1 as appendix reproducibility evidence; it is not a canonical-demo dependency. |
+| QuantConnect TSMOM export | QuantConnect's general page says most hosted datasets cannot be freely redistributed. On 2026-09-07 the project owner confirmed holding a specific license that explicitly covers public GitHub storage, download and redistribution of these exact source and transformed files. | Approved on the owner's specific-license attestation, which is narrower and more specific than the conservative default from the general page. |
+| Kenneth French factor archive | Public download access alone did not establish redistribution rights. On 2026-09-07 the project owner confirmed that the applicable license explicitly covers public GitHub storage, download and redistribution of this exact archive. | Approved on the owner's specific-license attestation. |
 
 ## Primary evidence links
 
@@ -25,16 +25,14 @@ Run `python scripts/audit_publication.py --strict` before any public release tag
 - [`zivmi/voc_reproduction`](https://github.com/zivmi/voc_reproduction)
 - [`nkonts/replication-the-virtue-of-complexity-in-return-prediction`](https://github.com/nkonts/replication-the-virtue-of-complexity-in-return-prediction)
 
-## Safe release sequence
+## Approval record and release sequence
 
-1. Make a private backup before changing history.
-2. Get the three internship-owner decisions in writing.
-3. Build a sanitized public tree that excludes unresolved upstream and
-   internship artifacts; preserve source URLs, hashes, schemas, code and
-   non-reconstructable figures where their terms permit it.
-4. Because removing files from the current branch does not remove earlier Git
-   objects, publish from a cleaned history or a new sanitized repository.
-5. Clone that exact public repository into a clean environment, run all gates,
-   then run the strict publication audit.
+1. The three internship publication decisions and the three external-data
+   redistribution decisions were confirmed by the project owner on 2026-09-07.
+2. The applicable license documents are held by the owner and are not committed;
+   this repository records the owner's explicit attestation, not the documents.
+3. Run the strict publication audit in every clean CI checkout so newly added or
+   unresolved data cannot silently enter the release.
+4. Re-open this review if a file, upstream source, license or public host changes.
 
-Do not create `v1.0.0` while any manifest group is unresolved.
+Do not create `v1.0.0` if any manifest group becomes unresolved.

@@ -15,11 +15,11 @@ gate live in [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md).
 ## Human publication decisions
 
 - [x] Complete a source-and-license evidence review; see [`DATA_PUBLICATION_REVIEW.md`](DATA_PUBLICATION_REVIEW.md).
-- [ ] Resolve every group reported by `python scripts/audit_publication.py --strict`.
+- [x] Resolve every group reported by `python scripts/audit_publication.py --strict`.
 - [x] Project owner confirmed on 2026-09-07 that the three internship-derived case groups are authorized for public release.
-- [ ] Record redistribution permission or replace redistributed vendor/public files with lawful download instructions.
-- [ ] Remove the QuantConnect panel and reconstructable derivatives from the public tree and public Git history, or record written permission for the exact artifacts.
-- [ ] Decide whether to retain or externalize the 100.2 MB Complexity anchor.
+- [x] Project owner confirmed that the applicable licenses explicitly permit public GitHub storage, download and redistribution of the three external-data groups.
+- [x] Record specific redistribution permission for the QuantConnect panel and reconstructable derivatives.
+- [x] Retain the 100.2 MB Complexity anchor in v1 as licensed appendix reproducibility evidence; it is not required by the canonical demo.
 - [ ] Have one reader unfamiliar with the project complete the comprehension test below.
 
 ## Thirty-second / five-minute comprehension test
@@ -45,7 +45,7 @@ test. A comprehension problem is not permission to add another feature.
 
 ## Freeze
 
-- [ ] Choose whether the interactive Streamlit surface must be hosted publicly or whether the public static evidence site plus reproducible local demo is sufficient.
-- [ ] Update this checklist with final evidence links and decisions.
+- [x] Use the public static evidence site plus reproducible local Streamlit demo; public interactive hosting is not required for the application version.
+- [x] Update this checklist with final evidence links and decisions.
 - [ ] Create the `v1.0.0` release tag.
 - [ ] Mark the graduate-application version frozen.

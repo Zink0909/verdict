@@ -1119,8 +1119,8 @@ def t_project_charter_fixes_application_scope():
         assert expected in charter, expected
 
 
-def t_publication_audit_covers_data_and_stays_human_gated():
-    """Every tracked data artifact is inventoried; unresolved permission cannot pass strict."""
+def t_publication_audit_covers_and_approves_data():
+    """Every tracked data artifact is inventoried and has explicit human approval."""
     import importlib.util
     path = Path(ROOT) / "scripts" / "audit_publication.py"
     spec = importlib.util.spec_from_file_location("publication_audit", path)
@@ -1131,8 +1131,8 @@ def t_publication_audit_covers_data_and_stays_human_gated():
     assert report["summary"]["tracked_data_artifacts"] > 0
     assert report["summary"]["uncovered_artifacts"] == 0
     assert report["summary"]["obvious_secret_findings"] == 0
-    assert report["summary"]["unresolved_groups"] >= 3
-    assert not report["release_ready"], "human publication approval was silently inferred"
+    assert report["summary"]["unresolved_groups"] == 0
+    assert report["release_ready"], "recorded publication approval did not close the gate"
     assert any(item["bytes"] >= 100_000_000 for item in report["large_artifacts"])
 
 
@@ -1396,8 +1396,8 @@ GATES = [
     ("volatility-realtime-audit", t_volatility_realtime_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),
     ("project-charter-fixes-application-scope", t_project_charter_fixes_application_scope),
-    ("publication-audit-covers-data-and-stays-human-gated",
-     t_publication_audit_covers_data_and_stays_human_gated),
+    ("publication-audit-covers-and-approves-data",
+     t_publication_audit_covers_and_approves_data),
     ("case-catalog-is-complete", t_case_catalog_is_complete),
     ("case-result-manifests", t_case_result_manifests),
     ("repository-integrity-audit", t_repository_integrity_audit),

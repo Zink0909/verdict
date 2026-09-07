@@ -52,10 +52,10 @@
         "cases/complexity/results/kmz_sweep_quick.parquet"
       ],
       "origin": "Amit Goyal public predictors, the authors' GYdata anchor, and two open-source reproduction sources documented in M0_PINNED.md.",
-      "status": "license-review-required",
+      "status": "approved",
       "canonical_demo_dependency": true,
-      "required_evidence": "Record the license or redistribution permission for every upstream file, especially the reproduced anchors; decide whether the 100.2 MB nkonts_metrics_anchor.parquet belongs in the public repository.",
-      "notes": "processed.parquet is required by the API-free canonical demo; the large nkonts anchor is not."
+      "required_evidence": "Project owner confirmed on 2026-09-07 that the applicable license explicitly permits these exact source and transformed artifacts to be stored, downloaded and redistributed through a public GitHub repository.",
+      "notes": "The 100.2 MB nkonts anchor is retained in v1 as an appendix reproducibility artifact under that permission; processed.parquet remains the smaller canonical-demo dependency."
     },
     {
       "id": "tsmom-quantconnect-export",
@@ -65,10 +65,10 @@
         "cases/tsmom/results_series.csv"
       ],
       "origin": "Seven roll-adjusted commodity contracts exported from QuantConnect and derived strategy outputs.",
-      "status": "public-removal-required",
+      "status": "approved",
       "canonical_demo_dependency": false,
-      "required_evidence": "Remove the exported panel and reconstructable derived series from the public repository and its public Git history, or obtain written redistribution permission covering these exact artifacts.",
-      "notes": "QuantConnect's official licensing page says most datasets cannot be freely redistributed and downloaded data cannot be redistributed or converted in any format. Technical provenance is not a redistribution license."
+      "required_evidence": "Project owner confirmed on 2026-09-07 that the applicable license explicitly permits these exact source and transformed artifacts to be stored, downloaded and redistributed through a public GitHub repository.",
+      "notes": "The owner's specific-license attestation is the approval basis; it supersedes the conservative default inferred from QuantConnect's general public licensing page."
     },
     {
       "id": "french-public-factor-archive",
@@ -76,10 +76,10 @@
         "cases/volatility_managed/source/"
       ],
       "origin": "Kenneth French Data Library daily five-factor archive, URL and hash recorded in the case SOURCES.md.",
-      "status": "license-review-required",
+      "status": "approved",
       "canonical_demo_dependency": false,
-      "required_evidence": "Record the public data library's redistribution terms or replace the committed archive with a hash-verified download step.",
-      "notes": "Publicly downloadable is not automatically equivalent to permission to redistribute a copy."
+      "required_evidence": "Project owner confirmed on 2026-09-07 that the applicable license explicitly permits this exact archive to be stored, downloaded and redistributed through a public GitHub repository.",
+      "notes": "The owner's specific-license attestation is the approval basis; public download access alone would not have been sufficient."
     }
   ]
 }
