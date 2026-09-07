@@ -6,11 +6,11 @@ gate live in [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md).
 ## Automated evidence
 
 - [x] API-free canonical demo executes the fixed protocol and reaches a bounded verdict.
-- [x] Local regression suite passes: 66/66 on 2026-09-07.
+- [x] Local regression suite passes: 67/67 on 2026-09-07.
 - [x] Repository integrity audit passes: 41/41 on 2026-09-07.
 - [x] Static public site is deployed from `docs/`.
-- [ ] GitHub Actions passes from a clean hosted runner.
-- [ ] Fresh-clone installation and demo commands are tested outside the development checkout.
+- [x] GitHub Actions passes from a clean hosted runner: [run 34119641279](https://github.com/Zink0909/verdict/actions/runs/34119641279) on 2026-09-07.
+- [x] A fresh GitHub-hosted checkout installs the application and research dependencies, passes all gates, and executes the API-free canonical demo in that run.
 
 ## Human publication decisions
 
