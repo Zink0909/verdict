@@ -1058,7 +1058,7 @@ def t_site_index_covers_registry():
     for jargon in ("Sharpe", "alpha", "backtest"):
         assert jargon.lower() not in lede.lower(), f"positioning language uses {jargon!r}"
     system = build_site.build_system_page(cards, links)
-    assert "one system, not a pile of backtests" in system
+    assert "Four research projects, one auditable system" in system
     assert "Chart-CNN stock selection" in system
     assert 'href="registry.html"' in system
     demo = build_site.build_demo_page()
@@ -1067,6 +1067,9 @@ def t_site_index_covers_registry():
     portfolio = build_site.build_portfolio_page(cards, links)
     assert "One system, assembled from four research studies" in portfolio
     assert "Evidence Vault" in portfolio and "recommend trades" in portfolio
+    appendix = build_site.build_appendix_page()
+    assert "Advanced material, kept separate" in appendix
+    assert 'href="agent.html"' in appendix
 
 
 def t_case_catalog_is_complete():
@@ -1153,12 +1156,13 @@ def t_app_pages_render():
     at = AppTest.from_file(os.path.join(ROOT, "app.py"), default_timeout=120)
     at.run()
     assert not at.exception, [e.value for e in at.exception]
-    for page in ("Start here", "Audit a paper", "Evidence vault", "The register", "New claim",
-                 "Evaluate a result", "The agent"):
+    for page in ("Core · Start here", "Core · New claim", "Core · Evaluate a result",
+                 "Core · Evidence register", "Advanced · Audit a paper",
+                 "Advanced · Evidence vault", "Advanced · Recorded Agent"):
         at.sidebar.radio[0].set_value(page).run()
         assert not at.exception, (page, [e.value for e in at.exception])
     # the evaluate screen must actually compute when given a series
-    at.sidebar.radio[0].set_value("Evaluate a result").run()
+    at.sidebar.radio[0].set_value("Core · Evaluate a result").run()
     at.radio[0].set_value("Use a synthetic example").run()
     assert not at.exception, [e.value for e in at.exception]
     assert len(at.metric) >= 3, "the evaluation screen reported no figures"

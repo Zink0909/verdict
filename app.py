@@ -2,17 +2,16 @@
 
     micromamba run -n verdict streamlit run app.py
 
-The library underneath is the system; this is the way in. Four things you can do
-without writing a line of code:
+The library underneath is the system; this is the interactive companion. The
+core workflow is deliberately smaller than the full project:
 
-  Start here  take the three-minute guided tour of the system
-  Register    browse every claim that has been adjudicated, and what it cost
-  New claim   draft a claim card and pre-register a protocol locally — the step
-              that decides whether a claim is worth weeks of work, done in an hour
-  Evaluate    point at a return series and get the whole battery: interval,
-              spanning, cost sensitivity, breakeven, the diagnosis playbooks,
-              and a verdict document that will not render without limitations
-  Agent       watch the loop run end to end
+  Start here       take the core three-minute path
+  New claim        draft a claim card and pre-register a protocol locally
+  Evaluate         run the deterministic battery over a return series
+  Evidence register inspect completed cases and their limitations
+
+Paper ingestion, the Agent, and the Evidence Vault remain available as
+advanced implementation material. They are not prerequisites for the demo.
 
 Every number on every screen is computed by the framework's own functions. This
 file contains no analysis: it collects inputs, calls the library, and shows what
@@ -117,23 +116,16 @@ def page_register() -> None:
 def page_start_here() -> None:
     """A short, honest route through the interactive surface for a live demo."""
     st.title("Start here")
-    st.caption("A three-minute tour of the research-validation system — not a trading demo.")
+    st.caption("The core three-minute path — not a trading demo and not a tour of every feature.")
     st.info("Verdict asks a narrow question: what evidence would make a predictive claim fail, "
             "and can the result be checked afterwards? The interface is a working surface for "
             "that question; it does not recommend trades or connect to a broker.")
 
-    st.subheader("0 · Give the system a paper")
-    st.write("Paste paper text or upload a `.txt`, `.md`, or `.pdf` paper. The system extracts "
-             "a claim and drafts a protocol before it is allowed to access any provider.")
-    if st.button("Open Audit a paper", type="primary"):
-        st.session_state["section"] = "Audit a paper"
-        st.rerun()
-
-    st.subheader("1 · Start with a claim, before touching data")
+    st.subheader("1 · State a claim before touching data")
     st.write("Draft a claim card and a protocol with explicit kill criteria. It saves as a "
              "local draft, not as a published verdict.")
     if st.button("Open New claim", type="primary"):
-        st.session_state["section"] = "New claim"
+        st.session_state["section"] = "Core · New claim"
         st.rerun()
 
     st.subheader("2 · Run the deterministic validation battery")
@@ -141,23 +133,21 @@ def page_start_here() -> None:
              "not this interface, computes time splits, spanning, bootstrap uncertainty, "
              "cost sensitivity, and diagnosis playbooks.")
     if st.button("Open Evaluate a result"):
-        st.session_state["section"] = "Evaluate a result"
+        st.session_state["section"] = "Core · Evaluate a result"
         st.rerun()
 
-    st.subheader("3 · Inspect the Agent boundary")
-    st.write("Watch a recorded end-to-end audit. The Agent chooses a protocol and tool calls; "
-             "deterministic code supplies every number, and unsupported figures are withheld.")
-    if st.button("Open The agent"):
-        st.session_state["section"] = "The agent"
+    st.subheader("3 · Inspect a completed evidence record")
+    st.write("See how the same contract records the claim, protocol, execution mode, verdict, "
+             "and limitations. This is where a reader can distinguish a recomputation from a "
+             "read-only evidence replay or a data-gated protocol.")
+    if st.button("Open Evidence register"):
+        st.session_state["section"] = "Core · Evidence register"
         st.rerun()
 
-    st.subheader("4 · Review what was actually saved")
-    st.write("Every approved paper audit is local and hash-checked. Open the Evidence Vault to "
-             "inspect its source text, approval, protocol, tool trace, conclusion, and any "
-             "uploaded CSV — or compare two audit records.")
-    if st.button("Open Evidence vault"):
-        st.session_state["section"] = "Evidence vault"
-        st.rerun()
+    st.subheader("Optional advanced material")
+    st.write("Audit a paper, the recorded Agent loop, and the hash-verified Evidence Vault are "
+             "implementation details. They are useful after you understand the core workflow; "
+             "only paper ingestion needs optional API credentials.")
 
     st.caption("For the application-facing narrative, open `docs/index.html` or the GitHub "
                "Pages site first. This local interface is the interactive companion.")
@@ -704,18 +694,28 @@ def page_evidence_vault() -> None:
                 st.error(str(exc))
 
 
-PAGES = {"Start here": page_start_here, "Audit a paper": page_paper_audit,
-         "Evidence vault": page_evidence_vault,
-         "The register": page_register, "New claim": page_new_claim,
-         "Evaluate a result": page_evaluate, "The agent": page_agent}
+PAGES = {
+    "Core · Start here": page_start_here,
+    "Core · New claim": page_new_claim,
+    "Core · Evaluate a result": page_evaluate,
+    "Core · Evidence register": page_register,
+    "Advanced · Audit a paper": page_paper_audit,
+    "Advanced · Evidence vault": page_evidence_vault,
+    "Advanced · Recorded Agent": page_agent,
+}
+
+if st.session_state.get("section") not in PAGES:
+    # A running Streamlit session can retain the pre-convergence navigation value.
+    # Reset only unknown values so a deployed app upgrades without a widget error.
+    st.session_state["section"] = "Core · Start here"
 
 with st.sidebar:
     st.markdown("## ⚖ Verdict")
-    st.caption("A harness for checking predictive claims.")
+    st.caption("A research-validation system, not a trading product.")
+    st.caption("Core workflow")
     choice = st.radio("Section", list(PAGES), label_visibility="collapsed", key="section")
     st.divider()
-    st.caption("Every figure on every screen is computed by the library, not by this "
-               "interface. Analysis lives in `verdict/`; this file only collects inputs "
-               "and shows results.")
+    st.caption("The Advanced pages are optional implementation detail. Every figure on every "
+               "screen comes from the library; this interface only collects inputs and shows results.")
 
 PAGES[choice]()

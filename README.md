@@ -30,16 +30,18 @@ micromamba run -n verdict python scripts/audit_integrity.py
 
 ## The working surface
 
-`app.py` is the way in — four screens, no code required:
+`app.py` is the interactive companion. Its core path is deliberately short:
+state a claim, run deterministic checks, then inspect an evidence record. The
+rest is available as advanced implementation material:
 
 | | |
 |---|---|
-| **The register** | every claim that has been adjudicated, its protocol, its verdict, its limitations |
-| **Audit a paper** | paste or upload a `.txt`, `.md`, or `.pdf` paper; extract a Claim Card, pre-register a protocol, approve it, then execute through a matching provider, a clearly bounded return/benchmark CSV evaluation, or stop honestly at data-gated |
-| **Evidence vault** | inspect, hash-verify, compare, and export local approved paper-audit packages without silently promoting them to the public register |
-| **New claim** | fill in a claim card and pre-register a local protocol draft. The cheapest thing the system does: if you cannot write a result that would falsify the claim, the claim is not testable and you have saved yourself the weeks you were about to spend. A draft is not silently published into the evidence register |
-| **Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, the diagnosis playbooks, the sealed-holdout ledger, and a verdict document that will not render without limitations |
-| **The agent** | watch the loop run end to end |
+| **Core: New claim** | fill in a Claim Card and pre-register a local protocol draft. If you cannot write a result that would falsify the claim, it is not testable. A draft is not silently published. |
+| **Core: Evaluate a result** | point at a return series and get the battery — bootstrap interval, spanning, cost sensitivity, breakeven cost, diagnosis playbooks, sealed-holdout ledger, and a verdict document that will not render without limitations. |
+| **Core: Evidence register** | every adjudicated claim, its protocol, verdict, execution mode, and limitations. |
+| **Advanced: Audit a paper** | paste or upload a paper; extract a Claim Card, pre-register a protocol, then use a matching provider, a bounded CSV evaluation, or stop honestly at data-gated. |
+| **Advanced: Evidence Vault** | inspect, hash-verify, compare, and export local approved paper-audit packages without silently promoting them to the public register. |
+| **Advanced: Recorded Agent** | watch the constrained Agent loop run end to end. |
 
 The interface computes nothing. It collects inputs, calls the library, and shows what came
 back — so there is one source of truth, and it is the part with the tests.

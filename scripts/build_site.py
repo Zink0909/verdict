@@ -135,8 +135,9 @@ files that produced them, so this site cannot claim something the code does not.
 
 
 def nav(active: str) -> str:
-    items = [("index.html", "the system"), ("registry.html", "registry"),
-             ("demo.html", "demo"), ("portfolio.html", "portfolio"), ("agent.html", "the agent"),
+    items = [("index.html", "overview"), ("portfolio.html", "five-minute route"),
+             ("demo.html", "interactive demo"), ("registry.html", "evidence"),
+             ("appendix.html", "appendix"),
              ("https://github.com/Zink0909/verdict", "source")]
     out = []
     for href, label in items:
@@ -210,7 +211,7 @@ def build_index(cards: list[dict], links: dict[str, str]) -> str:
     delivered = sum(1 for c in cards if c["state"] == "verdict-delivered")
     return page(
         "Verdict — a claim registry",
-        f"""{nav("registry")}
+        f"""{nav("evidence")}
 <p class="kicker">claim registry</p>
 <h1>Verdict</h1>
 <p class="lede">A harness for checking predictive claims, and the record of what happened
@@ -317,12 +318,12 @@ def build_system_page(cards: list[dict], links: dict[str, str]) -> str:
 
     return page(
         "Verdict — the system",
-        f"""{nav("the system")}
+        f"""{nav("overview")}
 <p class="kicker">system overview</p>
-<h1>Verdict is one system, not a pile of backtests.</h1>
-<p class="lede">Four completed research studies exposed the same problem: predictive
-claims need repeatable tests that can survive a no. Verdict turns that discipline into a
-tested framework, then puts new and old claims through the same evidence contract.</p>
+<h1>Four research projects, one auditable system.</h1>
+<p class="lede">Verdict is my attempt to turn the recurring research discipline from four
+completed studies into one tested workflow: state a claim, decide how it could fail, compute
+only through deterministic code, and preserve the evidence and limits of the conclusion.</p>
 
 <div class="flow">
   four source studies<br>
@@ -334,6 +335,19 @@ tested framework, then puts new and old claims through the same evidence contrac
   &nbsp;&nbsp;↓<br>
   <b>claim register</b> — what was tested, what survived, and what remains unresolved
 </div>
+
+<h2>How to read this project</h2>
+<div class="scroll"><table>
+<tr><th>layer</th><th>what to open</th><th>why it matters</th></tr>
+<tr><td><strong>Core</strong></td><td>This page and the four source studies below</td>
+<td>Shows the abstraction: four different projects left behind four reusable research constraints.</td></tr>
+<tr><td><strong>Demo</strong></td><td><a href="portfolio.html">Five-minute route</a> or <a href="demo.html">interactive demo</a></td>
+<td>Shows one claim moving from protocol to bounded evidence, rather than a tour of every feature.</td></tr>
+<tr><td><strong>Evidence</strong></td><td><a href="registry.html">Claim register</a></td>
+<td>Lets a reader inspect the cases, their execution mode, their verdict, and their limits.</td></tr>
+<tr><td><strong>Appendix</strong></td><td><a href="appendix.html">Advanced material</a></td>
+<td>Agent, Evidence Vault, extra cases, and benchmark machinery remain inspectable without competing with the main story.</td></tr>
+</table></div>
 
 <h2>Where the framework came from</h2>
 <p>The source studies are not decorative portfolio entries. Each left behind a reusable
@@ -368,11 +382,10 @@ fresh recomputation.</p>
 
 <h2>What this demonstrates</h2>
 <p>The point is not to recommend a trade. It is to show the ability to abstract common
-research discipline from different projects, build the shared infrastructure, preserve
-the provenance and limits of each case, and let a conclusion be negative when the evidence
-requires it. Browse the <a href="registry.html">claim register</a>, follow the
-<a href="demo.html">three-minute demo</a>, or inspect
-<a href="agent.html">the recorded Agent loop</a>.</p>
+research discipline from different projects, build shared infrastructure, preserve the
+provenance and limits of each case, and let a conclusion be negative when the evidence
+requires it. Start with the <a href="portfolio.html">five-minute route</a>; use the
+<a href="appendix.html">appendix</a> only when you want implementation detail.</p>
 """,
         "A validation framework and research-audit agent extracted from four completed studies.")
 
@@ -381,7 +394,7 @@ def build_demo_page() -> str:
     """A self-contained viewing route that distinguishes static evidence from local UI."""
     return page(
         "Verdict — a three-minute demo",
-        f"""{nav("demo")}
+        f"""{nav("interactive demo")}
 <p class="kicker">guided tour</p>
 <h1>See the system in three minutes.</h1>
 <p class="lede">This is a research-validation workflow: define what would falsify a claim,
@@ -395,13 +408,15 @@ instrument expression; real friction; and distribution-shift diagnosis. Later ca
 that shared infrastructure without rewriting its provenance.</p>
 
 <h2>Minute 2 · Follow one claim to its evidence</h2>
-<p>Open the <a href="registry.html">claim register</a>, then choose a case. Each case links a
-claim, a pre-registered protocol, an outcome, limitations, and its evidence mode. A case is
-either executable, a labelled read-only replay of pinned evidence, or data-gated. No mode is
-silently promoted to another.</p>
+<p>Open the <a href="cases/complexity.html">Complexity case</a>. It is the principal
+end-to-end demonstration: one structured claim, a pre-registered protocol, deterministic
+tests, a bounded verdict, and explicit limitations. The <a href="registry.html">claim
+register</a> then shows that the same evidence contract is applied across the rest of the
+library. A case is executable, a labelled read-only replay of pinned evidence, or data-gated;
+no mode is silently promoted to another.</p>
 
-<h2>Minute 3 · Watch the workflow run</h2>
-<p>Open <a href="agent.html">the Agent</a>. It turns a paper into a structured claim, drafts a
+<h2>Minute 3 · Inspect the workflow boundary</h2>
+<p>Open <a href="appendix.html#agent">the recorded Agent loop</a>. It turns a paper into a structured claim, drafts a
 falsifiable protocol, waits for human approval, calls deterministic tools, and writes a
 verdict whose figures are checked against tool output. The demo also exposes what its
 evaluation did <em>not</em> measure.</p>
@@ -442,7 +457,7 @@ def build_portfolio_page(cards: list[dict], links: dict[str, str]) -> str:
     delivered = sum(card["state"] == "verdict-delivered" for card in cards)
     return page(
         "Verdict — portfolio briefing",
-        f"""{nav("portfolio")}
+        f"""{nav("five-minute route")}
 <p class="kicker">presentation route</p>
 <h1>One system, assembled from four research studies.</h1>
 <p class="lede">Verdict is a research-validation system for predictive claims. It does not
@@ -471,10 +486,11 @@ tools, and write prose; it never computes the figures. A result may be executabl
 read-only evidence replay, or data-gated. Those are different states, never interchangeable.</p>
 
 <h2>The evidence — 90 seconds</h2>
-<p>Open the <a href="registry.html">claim register</a>. It contains {delivered} adjudicated
-cases and a data-gated case whose honest outcome is an approved protocol without a verdict.
-Then open one case page: it carries the claim, the protocol, the outcome, limitations, artifacts,
-and its execution mode.</p>
+<p>Open the <a href="cases/complexity.html">Complexity case</a> first: it is the one complete
+end-to-end demonstration. The <a href="registry.html">claim register</a> then provides context:
+it contains {delivered} adjudicated cases and a data-gated case whose honest outcome is an
+approved protocol without a verdict. Every case page carries claim, protocol, outcome,
+limitations, artifacts, and execution mode.</p>
 
 <h2>The interactive proof — 90 seconds</h2>
 <p>Run the local working surface and follow <em>Start here</em>. The offline Complexity walkthrough
@@ -498,6 +514,49 @@ paper strategy was reproduced; a read-only result replay is not a new computatio
 data-gated protocol is not a failed implementation. These distinctions are part of the result.</p>
 """,
         "A five-minute, evidence-grounded presentation route through the Verdict research-validation system.")
+
+
+def build_appendix_page() -> str:
+    """Keep advanced machinery inspectable without making it the opening story."""
+    return page(
+        "Verdict — appendix",
+        f"""{nav("appendix")}
+<p class="kicker">implementation appendix</p>
+<h1>Advanced material, kept separate from the main argument.</h1>
+<p class="lede">The public story is four studies → reusable research discipline → one
+end-to-end audit. This page is for readers who want to inspect the additional engineering
+without mistaking it for the project’s thesis.</p>
+
+<h2>Evidence library</h2>
+<p>The <a href="registry.html">claim register</a> contains every delivered and data-gated
+case. It is deliberately broader than the main demo: the extra cases test portability, but do
+not redefine the four source studies or turn Verdict into a strategy catalogue.</p>
+
+<h2 id="agent">Research-audit Agent</h2>
+<p>The <a href="agent.html">Agent page</a> records an offline, end-to-end walkthrough. A model
+may structure a paper and draft a protocol; a human approves the protocol; deterministic code
+provides every number; and a number audit rejects unsupported figures. It is a boundary and
+workflow demonstration, not the project’s decision-maker.</p>
+
+<h2>Local Evidence Vault</h2>
+<p>The local Streamlit interface can save approved paper audits as hash-verified evidence
+packages, compare two records, and export a ZIP. This supports review and reproducibility for
+new work; it does not silently promote a local audit into the public register.</p>
+
+<h2>Protocol benchmarks</h2>
+<p>The repository includes two curator-authored, real-paper protocol checklists for the
+volatility-management pair. They test only whether a live model proposes pre-written checks;
+they do not execute a strategy, reproduce a paper, or establish investment value. They remain
+local, optional, and secondary to the deterministic framework.</p>
+
+<h2>For technical review</h2>
+<ul>
+<li><a href="https://github.com/Zink0909/verdict">Source repository</a> — tested modules, case contracts, and integrity checks.</li>
+<li><a href="registry.html">Evidence register</a> — claim-level records and their limitations.</li>
+<li><a href="agent.html">Recorded Agent loop</a> — protocol, trace, result audit, and its limitations.</li>
+</ul>
+""",
+        "Implementation details and optional advanced workflows for the Verdict research-validation system.")
 
 
 def build_agent_page() -> str:
@@ -540,7 +599,7 @@ def build_agent_page() -> str:
 
     return page(
         "Verdict — the agent",
-        f"""{nav("the agent")}
+        f"""{nav("appendix")}
 <p class="kicker">layer B</p>
 <h1>The agent</h1>
 <p class="lede">A thin layer over the harness that reads a paper, pre-registers a protocol,
@@ -630,9 +689,10 @@ def main() -> int:
     (SITE / "system.html").write_text(system_page)
     (SITE / "demo.html").write_text(build_demo_page())
     (SITE / "portfolio.html").write_text(build_portfolio_page(cards, links))
+    (SITE / "appendix.html").write_text(build_appendix_page())
     (SITE / "agent.html").write_text(build_agent_page())
 
-    generated = sorted(["index.html", "registry.html", "system.html", "demo.html", "portfolio.html", "agent.html",
+    generated = sorted(["index.html", "registry.html", "system.html", "demo.html", "portfolio.html", "appendix.html", "agent.html",
                         ".nojekyll", *links.values()])
     source_paths = [*sorted(REGISTRY.glob("*.json")),
                     *sorted(CASES.glob("*/report.md")),

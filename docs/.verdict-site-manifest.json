@@ -3,6 +3,7 @@
   "generated": [
     ".nojekyll",
     "agent.html",
+    "appendix.html",
     "cases/buy_the_dip.html",
     "cases/chart_cnn.html",
     "cases/complexity.html",
@@ -39,12 +40,13 @@
     "cases/agent_benchmark/volatility-managed-realtime.json": "c96a966c8fc81b6d9135506c6605b38984cbd24b607b42f8a7588d4f2b63d874",
     "cases/complexity/agent_run/run.json": "90a3243078c99c57b025279fcff42b5545a03cb7678d8bb9136f75c109293f42",
     "cases/complexity/agent_eval/report.md": "f03a1e861dee09b28636d73b6bd5e99c116e88818f8401057b0e4617c6aed515",
-    "scripts/build_site.py": "6bf2dd37c7bf52697994d3680affce63ae0699fe3d00d7b3435dc91c22899c70",
+    "scripts/build_site.py": "b9cb1038fdcf5541a21d48b16217b979182492f7a9b16a29ff44cd74d60cb16e",
     "verdict/catalog.py": "92bfe0830cdf95fe6603492c793ffcb284fb10528ef6932bd844f48251387038"
   },
   "outputs": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "agent.html": "77043ecf3e686bb4c3754429e2c3abbd8a9a7bdb8edf27ba0c153cf674c48cc5",
+    "agent.html": "8183cc76133a61eaa00c476a302dc5bc575130f73612398a12874fbdd0aa184b",
+    "appendix.html": "696ca22345a4bf927a8141713cfe18e1398589928dd9060cb994ba66203ba986",
     "cases/buy_the_dip.html": "35a56559e212a0a6772bd809827b7efb6f35c6257fd24dbd6ae676c138a91f88",
     "cases/chart_cnn.html": "800cf6f253f9db6b1ae26d44b925aa9ab8c1bb4e1eb8e26437015806d022965e",
     "cases/complexity.html": "9adaa18fb8f52002c78733d842653f39f41dcc5b9c13c4ecee9b8c806612527c",
@@ -53,10 +55,10 @@
     "cases/vol_harvest.html": "ebba6e3509bde2eb9d2fcb6972515925c6517b4700616dfe0b1e03894d8f7bc3",
     "cases/volatility_managed.html": "743fbce9152c631a03f2d663e3eeac404a233fc4cd4d04f9036f328ac9ee7531",
     "cases/volatility_realtime.html": "8961b0122f910344b9304b9ab214e8f8785bdcef5ad341bbc6ef73e8a6db86c4",
-    "demo.html": "008e1ae2e9d81d51be3c52800dffcb914490b9a20bf8b24cbcfa7324693e7097",
-    "index.html": "ea2a50ff779fc89090f94bc7c355c2ea5dfb6dc3a5f86f51057d98ed2cbaf9eb",
-    "portfolio.html": "a7e2239b17dfc253fdfb733a3db5bb5f34f434581383a44e0e79784da6c1c4a3",
-    "registry.html": "4b7184d4eb74586537fcdb2a560fa2c3619c0006d5e0c5a06ffaf3c66856b70b",
-    "system.html": "ea2a50ff779fc89090f94bc7c355c2ea5dfb6dc3a5f86f51057d98ed2cbaf9eb"
+    "demo.html": "0c51347de824cd63fa3b38a8f0ec8c96e83d6c36a0c12286584a3e9d1184bc57",
+    "index.html": "9bc38c6b1fe06d7e9a064eba499a6fae8a3f890478297c9743ffeb17918de29a",
+    "portfolio.html": "3b377c00bfd41c986190461c709b137cfc1f8fd653cf7243a9ad509a75b8fa11",
+    "registry.html": "c5c641d72e2e3bf6736c1a31461d9ac9383d4a9a9d1a03bc0bb5d7c6114ca042",
+    "system.html": "9bc38c6b1fe06d7e9a064eba499a6fae8a3f890478297c9743ffeb17918de29a"
   }
 }

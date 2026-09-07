@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verdict — a three-minute demo</title>
-<meta name="description" content="A guided tour of Verdict&#x27;s system, evidence register, and interactive local working surface.">
+<title>Verdict — appendix</title>
+<meta name="description" content="Implementation details and optional advanced workflows for the Verdict research-validation system.">
 <style>
 :root {
   --bg: #fbfaf8; --surface: #ffffff; --ink: #1a1a1a; --muted: #5f5f5f;
@@ -78,54 +78,41 @@ footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line
 </style>
 </head>
 <body><div class="wrap">
-<div class="nav"><a href="index.html">overview</a><a href="portfolio.html">five-minute route</a><b>interactive demo</b><a href="registry.html">evidence</a><a href="appendix.html">appendix</a><a href="https://github.com/Zink0909/verdict">source</a></div>
-<p class="kicker">guided tour</p>
-<h1>See the system in three minutes.</h1>
-<p class="lede">This is a research-validation workflow: define what would falsify a claim,
-run deterministic checks, preserve evidence, and publish a bounded verdict. It is not a
-trading terminal or an automated investment adviser.</p>
+<div class="nav"><a href="index.html">overview</a><a href="portfolio.html">five-minute route</a><a href="demo.html">interactive demo</a><a href="registry.html">evidence</a><b>appendix</b><a href="https://github.com/Zink0909/verdict">source</a></div>
+<p class="kicker">implementation appendix</p>
+<h1>Advanced material, kept separate from the main argument.</h1>
+<p class="lede">The public story is four studies → reusable research discipline → one
+end-to-end audit. This page is for readers who want to inspect the additional engineering
+without mistaking it for the project’s thesis.</p>
 
-<h2>Minute 1 · Start with the system, not a strategy</h2>
-<p>Open <a href="index.html">the system overview</a>. The table shows how four prior studies
-became reusable playbooks: sealed holdouts and spanning; point-in-time construction and
-instrument expression; real friction; and distribution-shift diagnosis. Later cases exercise
-that shared infrastructure without rewriting its provenance.</p>
+<h2>Evidence library</h2>
+<p>The <a href="registry.html">claim register</a> contains every delivered and data-gated
+case. It is deliberately broader than the main demo: the extra cases test portability, but do
+not redefine the four source studies or turn Verdict into a strategy catalogue.</p>
 
-<h2>Minute 2 · Follow one claim to its evidence</h2>
-<p>Open the <a href="cases/complexity.html">Complexity case</a>. It is the principal
-end-to-end demonstration: one structured claim, a pre-registered protocol, deterministic
-tests, a bounded verdict, and explicit limitations. The <a href="registry.html">claim
-register</a> then shows that the same evidence contract is applied across the rest of the
-library. A case is executable, a labelled read-only replay of pinned evidence, or data-gated;
-no mode is silently promoted to another.</p>
+<h2 id="agent">Research-audit Agent</h2>
+<p>The <a href="agent.html">Agent page</a> records an offline, end-to-end walkthrough. A model
+may structure a paper and draft a protocol; a human approves the protocol; deterministic code
+provides every number; and a number audit rejects unsupported figures. It is a boundary and
+workflow demonstration, not the project’s decision-maker.</p>
 
-<h2>Minute 3 · Inspect the workflow boundary</h2>
-<p>Open <a href="appendix.html#agent">the recorded Agent loop</a>. It turns a paper into a structured claim, drafts a
-falsifiable protocol, waits for human approval, calls deterministic tools, and writes a
-verdict whose figures are checked against tool output. The demo also exposes what its
-evaluation did <em>not</em> measure.</p>
+<h2>Local Evidence Vault</h2>
+<p>The local Streamlit interface can save approved paper audits as hash-verified evidence
+packages, compare two records, and export a ZIP. This supports review and reproducibility for
+new work; it does not silently promote a local audit into the public register.</p>
 
-<h2>Interactive companion: run locally</h2>
-<p>The GitHub Pages site is intentionally static: it is the shareable evidence layer. The
-interactive working surface runs locally and has a guided <em>Start here</em> screen:</p>
-<pre>micromamba env create -f environment.yml
-micromamba run -n verdict pip install -e .
-micromamba run -n verdict streamlit run app.py</pre>
-<p>From there, create a local protocol draft, upload a dated return CSV or use the synthetic
-control, run the validation battery, and inspect the recorded Agent loop. The local
-<em>Audit a paper</em> page also accepts pasted text or `.txt` / `.md` / `.pdf` uploads:
-it extracts a Claim Card and protocol, then either uses a genuinely matching provider, evaluates
-a supplied dated return/benchmark CSV with clearly bounded deterministic tools, or stops at
-data-gated. CSV evaluation does not reproduce the paper's strategy or prove its source data is
-point-in-time. Each approved paper audit is saved locally as a hashed evidence package, outside
-the public register. New-paper extraction needs the optional live-model dependency and
-credentials; the Complexity walkthrough is available offline. Local drafts are kept outside the
-public register until a case contract, evidence artifacts, report, and integrity audit exist.</p>
+<h2>Protocol benchmarks</h2>
+<p>The repository includes two curator-authored, real-paper protocol checklists for the
+volatility-management pair. They test only whether a live model proposes pre-written checks;
+they do not execute a strategy, reproduce a paper, or establish investment value. They remain
+local, optional, and secondary to the deterministic framework.</p>
 
-<h2>What to say while presenting it</h2>
-<blockquote>I did not combine internship projects by putting their reports in one folder. I
-looked for the repeated research discipline behind them, made that discipline reusable and
-testable, then used a common evidence contract to retain both results and their limits.</blockquote>
+<h2>For technical review</h2>
+<ul>
+<li><a href="https://github.com/Zink0909/verdict">Source repository</a> — tested modules, case contracts, and integrity checks.</li>
+<li><a href="registry.html">Evidence register</a> — claim-level records and their limitations.</li>
+<li><a href="agent.html">Recorded Agent loop</a> — protocol, trace, result audit, and its limitations.</li>
+</ul>
 
 <footer>
 Generated from the repository on 2026-09-07 —
