@@ -1072,6 +1072,24 @@ def t_site_index_covers_registry():
     assert 'href="agent.html"' in appendix
 
 
+def t_project_charter_fixes_application_scope():
+    """The admissions narrative and its anti-scope-creep boundary are executable invariants."""
+    charter = (Path(ROOT) / "PROJECT_CHARTER.md").read_text()
+    for expected in (
+        "predictive-ML evidence system",
+        "Chart-CNN stock selection",
+        "Buy the Dip",
+        "Retail volatility harvesting",
+        "Gamma-signal distribution shift",
+        "The Complexity case is the principal technical demonstration",
+        "Explicit non-goals",
+        "Definition of done",
+        "Change gate",
+        "not a trading system",
+    ):
+        assert expected in charter, expected
+
+
 def t_case_catalog_is_complete():
     """One inventory must cover every card and preserve the four source studies."""
     from verdict.catalog import (CASE_BY_ID, FOUNDATIONAL_CASES, FOUNDATIONAL_CASE_IDS,
@@ -1330,6 +1348,7 @@ GATES = [
     ("volatility-managed-public-data-audit", t_volatility_managed_public_data_audit),
     ("volatility-realtime-audit", t_volatility_realtime_audit),
     ("site-index-covers-registry", t_site_index_covers_registry),
+    ("project-charter-fixes-application-scope", t_project_charter_fixes_application_scope),
     ("case-catalog-is-complete", t_case_catalog_is_complete),
     ("case-result-manifests", t_case_result_manifests),
     ("repository-integrity-audit", t_repository_integrity_audit),

@@ -18,6 +18,11 @@ accident of the sample: a harness that can only confirm is not a harness, and ev
 component here ships with a control proving it can detect an effect that is really
 present.
 
+The graduate-application scope is fixed in the
+[`PROJECT_CHARTER.md`](PROJECT_CHARTER.md): it defines the learning argument,
+canonical five-minute path, non-goals, completion criteria, and the gate every
+proposed addition must pass.
+
 ```bash
 micromamba env create -f environment.yml
 micromamba run -n verdict pip install -e .

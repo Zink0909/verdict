@@ -348,6 +348,8 @@ only through deterministic code, and preserve the evidence and limits of the con
 <tr><td><strong>Appendix</strong></td><td><a href="appendix.html">Advanced material</a></td>
 <td>Agent, Evidence Vault, extra cases, and benchmark machinery remain inspectable without competing with the main story.</td></tr>
 </table></div>
+<p>The graduate-application scope, non-goals, and completion gate are fixed in the
+<a href="https://github.com/Zink0909/verdict/blob/main/PROJECT_CHARTER.md">project charter</a>.</p>
 
 <h2>Where the framework came from</h2>
 <p>The source studies are not decorative portfolio entries. Each left behind a reusable
@@ -699,7 +701,8 @@ def main() -> int:
                     *sorted((ROOT / "cases" / "agent_benchmark").glob("*.json")),
                     ROOT / "cases/complexity/agent_run/run.json",
                     ROOT / "cases/complexity/agent_eval/report.md",
-                    ROOT / "scripts/build_site.py", ROOT / "verdict/catalog.py"]
+                    ROOT / "scripts/build_site.py", ROOT / "verdict/catalog.py",
+                    ROOT / "PROJECT_CHARTER.md"]
     source_paths = [path for path in source_paths if path.is_file()]
     manifest = {
         "schema_version": 2,
